@@ -1,2 +1,0 @@
-(()=>{"use strict";const n=document.getElementById("app");n&&(n.innerHTML='\n    <main style="font-family: system-ui, sans-serif; padding: 2rem; text-align: center;">\n      <h1>Webpack + TypeScript</h1>\n      <p>프로젝트가 성공적으로 설정되었습니다.</p>\n    </main>\n  ')})();
-//# sourceMappingURL=bundle.js.map
