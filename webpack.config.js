@@ -9,6 +9,7 @@ const htmlPages = [
   { filename: "page/info.html", template: "public/page/info.html" }, // 내정보 페이지 템플릿
   { filename: "page/favorites.html", template: "public/page/favorites.html" }, // 즐겨찾기
   { filename: "page/cart.html", template: "public/page/cart.html" }, // 장바구니
+  // { filename: "page/signup.html", template: "public/page/signup.html" }, // 회원가입
   { filename: "page/bootstrap.html", template: "public/page/bootstrap.html" }, // 부트스트랩
 ];
 
