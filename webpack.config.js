@@ -17,7 +17,7 @@ const htmlPages = [
 
 // 진입점(여기서부터 번들링 시작)
 const entries = {
-  index: "./src/index.ts", // 프로젝트의 메인 진입점 파일
+  index: "./src/ts/index.ts", // 프로젝트의 메인 진입점 파일 (moved into src/ts)
 };
 
 module.exports = {
@@ -90,7 +90,7 @@ module.exports = {
       directory: path.resolve(__dirname, "public"), // 개발 서버가 제공할 정적 파일 위치
     },
     historyApiFallback: true, // SPA 라우팅 대응 (404를 index.html로 포워딩)
-    port: 3001, // 개발 서버 포트
+    port: 3002, // 개발 서버 포트
     open: true, // 서버 시작 시 브라우저 자동 오픈
     hot: true, // 변경사항을 페이지에 바로 반영(HMR)
   },

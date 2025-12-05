@@ -8,12 +8,12 @@
   <body>
     <div class="page-shell">
       <header class="main-header">
-        <a href="../index.html" class="main-header__logo" aria-label="Shopping TS">
+        <a href="../index.html" class="main-header__logo">
           <span class="logo-emblem">TS</span>
         </a>
         <div class="main-header__search" role="search">
-          <input type="search" placeholder="상품, 브랜드, 키워드를 검색하세요" aria-label="상품 검색" />
-          <button type="button" aria-label="검색">🔍</button>
+          <input type="search" placeholder="상품, 브랜드, 키워드를 검색하세요" />
+          <button type="button">🔍</button>
         </div>
         <div class="main-header__actions">
           <a href="info.html" class="header-action">👤 <span class="header-action__label">내정보</span></a>
@@ -24,7 +24,7 @@
       </header>
 
       <div id="app" data-page="info">
-        <section class="info-login" aria-labelledby="login-heading">
+        <section class="info-login">
           <div class="info-login__card">
             <div class="info-login__hero">
               <p class="info-login__eyebrow">내 정보 보호</p>
@@ -34,13 +34,19 @@
             <form id="info-login-form" class="info-login__form">
               <label class="info-login__field">
                 <span>아이디</span>
-                <input type="text" name="username" placeholder="영문+숫자 4글자 이상" autocomplete="username" required />
+                <input
+                  type="text"
+                  class="js-login-username"
+                  placeholder="영문+숫자 4글자 이상"
+                  autocomplete="username"
+                  required
+                />
               </label>
               <label class="info-login__field">
                 <span>비밀번호</span>
                 <input
                   type="password"
-                  name="password"
+                  class="js-login-password"
                   placeholder="영문+숫자 8자 이상"
                   autocomplete="current-password"
                   minlength="6"
@@ -48,9 +54,9 @@
                 />
               </label>
               <div class="info-login__hint">가입한 계정 정보로 로그인해주세요.</div>
-              <p class="info-login__feedback" role="alert" aria-live="polite"></p>
+              <p class="info-login__feedback" role="alert"></p>
               <button class="btn btn--primary info-login__submit" type="submit">로그인</button>
-              <div class="info-login__actions" aria-label="추가 계정 옵션">
+              <div class="info-login__actions">
                 <button class="btn btn--ghost js-info-open-signup" type="button">회원가입</button>
                 <button class="btn" type="button">아이디 찾기</button>
                 <button class="btn" type="button">비밀번호 찾기</button>
@@ -59,7 +65,7 @@
           </div>
         </section>
 
-        <section class="info-signup d-none" aria-labelledby="signup-heading">
+        <section class="info-signup d-none">
           <div class="info-login__card">
             <div class="info-login__hero">
               <p class="info-login__eyebrow">새 계정 만들기</p>
@@ -70,7 +76,7 @@
               <label class="info-login__field">
                 <span>아이디</span>
                 <div class="info-field-control">
-                  <input type="text" name="signup-username" placeholder="새 아이디" autocomplete="username" required />
+                  <input type="text" class="js-signup-username" placeholder="새 아이디" autocomplete="username" required />
                   <button class="btn btn--ghost info-field-check js-field-check" type="button" data-check-target="username">
                     중복확인
                   </button>
@@ -86,7 +92,7 @@
               <label class="info-login__field">
                 <span>이메일</span>
                 <div class="info-field-control">
-                  <input type="email" name="signup-email" placeholder="you@example.com" autocomplete="email" required />
+                  <input type="email" class="js-signup-email" placeholder="you@example.com" autocomplete="email" required />
                   <button class="btn btn--ghost info-field-check js-field-check" type="button" data-check-target="email">
                     중복확인
                   </button>
@@ -101,14 +107,14 @@
               </label>
               <label class="info-login__field">
                 <span>이름</span>
-                <input type="text" name="signup-name" placeholder="홍길동" autocomplete="name" required />
+                <input type="text" class="js-signup-name" placeholder="홍길동" autocomplete="name" required />
                 <small class="info-field-hint" data-hint-target="name" data-hint-default="실제 이름을 입력해주세요.">
                   실제 이름을 입력해주세요.
                 </small>
               </label>
               <label class="info-login__field">
                 <span>휴대폰</span>
-                <input type="tel" name="signup-phone" placeholder="010-1234-5678" autocomplete="tel" required />
+                <input type="tel" class="js-signup-phone" placeholder="010-1234-5678" autocomplete="tel" required />
                 <small
                   class="info-field-hint"
                   data-hint-target="phone"
@@ -122,7 +128,7 @@
                 <div class="info-field-control">
                   <input
                     type="text"
-                    name="signup-road-address"
+                    class="js-signup-road-address"
                     placeholder="도로명 주소 검색"
                     autocomplete="street-address"
                     readonly
@@ -140,7 +146,7 @@
               </label>
               <label class="info-login__field">
                 <span>상세 주소</span>
-                <input type="text" name="signup-address-detail" placeholder="동/호수 등 상세 주소" required />
+                <input type="text" class="js-signup-address-detail" placeholder="동/호수 등 상세 주소" required />
                 <small
                   class="info-field-hint"
                   data-hint-target="address-detail"
@@ -153,7 +159,7 @@
                 <span>비밀번호</span>
                 <input
                   type="password"
-                  name="signup-password"
+                  class="js-signup-password"
                   placeholder="대/소문자 + 특수문자 포함"
                   minlength="6"
                   autocomplete="new-password"
@@ -169,42 +175,42 @@
               </label>
               <label class="info-login__field">
                 <span>비밀번호 확인</span>
-                <input type="password" name="signup-password-confirm" placeholder="다시 한 번 입력" minlength="6" required />
+                <input type="password" class="js-signup-password-confirm" placeholder="다시 한 번 입력" minlength="6" required />
                 <small class="info-field-hint" data-hint-target="password-confirm" data-hint-default=""
                   >비밀번호를 다시 입력하세요.</small
                 >
               </label>
-              <p class="info-login__feedback info-signup__feedback" role="alert" aria-live="polite"></p>
+              <p class="info-login__feedback info-signup__feedback" role="alert"></p>
               <div class="info-signup__actions">
                 <button class="btn" type="button" data-action="back">로그인으로 돌아가기</button>
                 <button class="btn btn--primary" type="submit">가입 완료하기</button>
               </div>
             </form>
           </div>
+
+          <div class="address-modal d-none" role="dialog">
+            <div class="address-modal__card">
+              <header class="address-modal__header">
+                <h2 id="address-modal-title">주소 검색</h2>
+                <button class="address-modal__close" type="button">×</button>
+              </header>
+              <form class="address-modal__search" role="search">
+                <input type="text" class="js-address-keyword" placeholder="도로명/건물명을 입력" required />
+                <button class="btn btn--primary" type="submit">검색</button>
+              </form>
+              <p class="address-modal__hint">예: 도로명(반포대로 58), 건물명(독립기념관), 지번(삼성동 25)</p>
+              <div class="address-modal__status"></div>
+              <ul class="address-modal__results"></ul>
+            </div>
+          </div>
         </section>
 
-        <div class="address-modal d-none" role="dialog" aria-modal="true" aria-labelledby="address-modal-title">
-          <div class="address-modal__card">
-            <header class="address-modal__header">
-              <h2 id="address-modal-title">주소 검색</h2>
-              <button class="address-modal__close" type="button" aria-label="닫기">×</button>
-            </header>
-            <form class="address-modal__search" role="search">
-              <input type="text" name="address-keyword" placeholder="도로명/건물명을 입력" required />
-              <button class="btn btn--primary" type="submit">검색</button>
-            </form>
-            <p class="address-modal__hint">예: 도로명(반포대로 58), 건물명(독립기념관), 지번(삼성동 25)</p>
-            <div class="address-modal__status" aria-live="polite"></div>
-            <ul class="address-modal__results"></ul>
-          </div>
-        </div>
-
-        <main class="page-content info-page d-none" role="main">
+        <section class="page-content info-page d-none" role="main">
           <div class="layout container info-panel">
             <!-- Profile summary -->
-            <section class="profile-card" aria-labelledby="profile-heading">
+            <section class="profile-card">
               <div class="profile-card__media">
-                <div class="avatar avatar--xl" aria-hidden="true">👤</div>
+                <div class="avatar avatar--xl">👤</div>
               </div>
               <div class="profile-card__body">
                 <h1 id="profile-heading" class="profile-card__title js-info-name">회원 이름</h1>
@@ -218,7 +224,7 @@
             </section>
 
             <!-- Account / contact details -->
-            <section class="account-details" aria-labelledby="account-heading">
+            <section class="account-details">
               <header class="section-header">
                 <h2 id="account-heading">연락처 & 주소</h2>
                 <p class="section-sub">계정에 등록된 연락처와 배송지를 확인/수정하세요.</p>
@@ -245,7 +251,7 @@
                 <div class="card address-card">
                   <h3 class="card__title">기본 배송지</h3>
                   <div class="address-card__label">
-                    <span class="badge badge--home" aria-label="집 배송지">🏠 집</span>
+                    <span class="badge badge--home">🏠 집</span>
                     <span class="address-card__label-text">퇴근 후 수령 가능</span>
                   </div>
                   <address class="address">
@@ -260,7 +266,7 @@
             </section>
 
             <!-- Recent orders / activity -->
-            <section class="orders" aria-labelledby="orders-heading">
+            <section class="orders">
               <header class="section-header">
                 <h2 id="orders-heading">최근 주문 내역</h2>
                 <p class="section-sub">최근 주문 3건을 보여줍니다.</p>
@@ -296,7 +302,7 @@
               </div>
             </section>
           </div>
-        </main>
+        </section>
       </div>
     </div>
   </body>
