@@ -58,10 +58,79 @@
               <button class="btn btn--primary info-login__submit" type="submit">로그인</button>
               <div class="info-login__actions">
                 <button class="btn btn--ghost js-info-open-signup" type="button">회원가입</button>
-                <button class="btn" type="button">아이디 찾기</button>
-                <button class="btn" type="button">비밀번호 찾기</button>
+                <button class="btn js-info-find-username" type="button">아이디 찾기</button>
+                <button class="btn js-info-find-password" type="button">비밀번호 찾기</button>
               </div>
             </form>
+          </div>
+          <!-- 프로필 비밀번호 변경 모달 -->
+          <div class="change-password-modal d-none" role="dialog">
+            <div class="change-password-modal__card">
+              <header class="change-password-modal__header">
+                <h2>비밀번호 변경</h2>
+                <button class="change-password-modal__close" type="button">×</button>
+              </header>
+              <form class="change-password-modal__form">
+                <input type="password" class="js-change-current" placeholder="현재 비밀번호" required />
+                <input type="password" class="js-change-new" placeholder="새 비밀번호" required />
+                <input type="password" class="js-change-new-confirm" placeholder="새 비밀번호 확인" required />
+                <div class="change-password-modal__actions">
+                  <button class="btn btn--primary js-change-save" type="button">변경</button>
+                </div>
+                <div class="change-password-modal__status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+
+          <!-- (login-area) 연락처 모달s removed; single modal is placed inside info-page below so it becomes visible when info-page is shown -->
+
+          <!-- 배송지 관리 모달 -->
+          <!-- address-manage-modal moved to the info-page section below so the profile '배송지 관리' button reveals the in-page dialog -->
+
+          <!-- 아이디 찾기 모달 -->
+          <div class="findid-modal d-none" role="dialog">
+            <div class="findid-modal__card">
+              <header class="findid-modal__header">
+                <h2 id="findid-modal-title">아이디 찾기</h2>
+                <button class="findid-modal__close" type="button">×</button>
+              </header>
+              <form class="findid-modal__search" role="search">
+                <input type="email" class="js-findid-email" placeholder="가입하신 이메일을 입력하세요" required />
+                <button class="btn btn--primary" type="submit">검색</button>
+              </form>
+              <p class="findid-modal__hint">가입할 때 사용한 이메일 주소를 입력하면 등록된 아이디를 알려드립니다.</p>
+              <div class="findid-modal__status" aria-live="polite"></div>
+              <ul class="findid-modal__results"></ul>
+            </div>
+          </div>
+          <!-- 비밀번호 찾기 모달 -->
+          <div class="findpw-modal d-none" role="dialog">
+            <div class="findpw-modal__card">
+              <header class="findpw-modal__header">
+                <h2 id="findpw-modal-title">비밀번호 재설정</h2>
+                <button class="findpw-modal__close" type="button">×</button>
+              </header>
+              <form class="findpw-modal__search" role="search">
+                <input type="text" class="js-findpw-username" placeholder="아이디를 입력하세요" required />
+                <input type="email" class="js-findpw-email" placeholder="등록된 이메일을 입력하세요" required />
+                <button class="btn btn--primary" type="submit">확인</button>
+              </form>
+              <p class="findpw-modal__hint">아이디와 이메일이 일치하면 비밀번호 재설정 입력창이 나타납니다.</p>
+              <div class="findpw-modal__status" aria-live="polite"></div>
+              <div class="findpw-modal__reset d-none">
+                <label
+                  ><span class="findpw-modal__label">새 비밀번호</span
+                  ><input type="password" class="js-findpw-newpass" placeholder="새 비밀번호" required
+                /></label>
+                <label
+                  ><span class="findpw-modal__label">새 비밀번호 확인</span
+                  ><input type="password" class="js-findpw-newpass-confirm" placeholder="새 비밀번호 확인" required
+                /></label>
+                <div class="findpw-modal__actions">
+                  <button class="btn btn--primary js-findpw-reset" type="button">비밀번호 변경</button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -210,20 +279,33 @@
             <!-- Profile summary -->
             <section class="profile-card">
               <div class="profile-card__media">
-                <div class="avatar avatar--xl">👤</div>
+                <div class="avatar avatar--xl" aria-hidden="true">👤</div>
+                <!-- 프로필 이미지 업로드 버튼 (숨김 input + 오버레이 버튼) -->
+                <input id="js-profile-upload" class="d-none" type="file" accept="image/*" />
+                <label
+                  id="js-profile-upload-btn"
+                  for="js-profile-upload"
+                  class="btn profile-card__upload"
+                  title="프로필 사진 변경"
+                  aria-label="프로필 업로드"
+                  >📷</label
+                >
+                <button id="js-profile-remove" class="btn profile-card__remove" type="button" title="프로필 사진 삭제">
+                  삭제
+                </button>
               </div>
               <div class="profile-card__body">
                 <h1 id="profile-heading" class="profile-card__title js-info-name">회원 이름</h1>
                 <p class="profile-card__sub js-info-email">email@example.com</p>
                 <div class="profile-card__actions">
-                  <button class="btn btn--primary" type="button">프로필 편집</button>
-                  <button class="btn" type="button">비밀번호 변경</button>
+                  <button id="js-profile-change-password" class="btn" type="button">비밀번호 변경</button>
                   <button class="btn" type="button" id="js-info-logout">로그아웃</button>
                 </div>
               </div>
             </section>
 
             <!-- Account / contact details -->
+            <!-- In-page contact modal (info page) - single instance used by profile view -->
             <section class="account-details">
               <header class="section-header">
                 <h2 id="account-heading">연락처 & 주소</h2>
@@ -244,9 +326,11 @@
                     </div>
                   </dl>
                   <div class="card__actions">
-                    <button class="btn" type="button">연락처 수정</button>
+                    <button id="js-contact-edit" class="btn" type="button">연락처 수정</button>
                   </div>
                 </div>
+
+                <!-- Single in-page contact modal used for profile (moved here) -->
 
                 <div class="card address-card">
                   <h3 class="card__title">기본 배송지</h3>
@@ -259,7 +343,7 @@
                     <div class="js-info-address-line2">배송지를 추가하면 여기에 표시됩니다.</div>
                   </address>
                   <div class="card__actions">
-                    <button class="btn" type="button">배송지 관리</button>
+                    <button id="js-address-manage" class="btn" type="button">배송지 관리</button>
                   </div>
                 </div>
               </div>
@@ -301,6 +385,57 @@
                 <a class="btn" href="#">모든 주문 보기</a>
               </div>
             </section>
+          </div>
+          <div class="address-manage-modal d-none" role="dialog">
+            <div class="address-manage-modal__card">
+              <header class="address-manage-modal__header">
+                <h2>배송지 관리</h2>
+                <button class="address-manage-modal__close" type="button">×</button>
+              </header>
+              <form class="address-manage-modal__form">
+                <input type="text" class="js-address-road" placeholder="도로명 주소" />
+                <input type="text" class="js-address-detail" placeholder="상세 주소" />
+                <div class="address-manage-modal__actions">
+                  <button class="btn btn--primary js-address-save" type="button">저장</button>
+                </div>
+                <div class="address-manage-modal__status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="change-password-modal change-pw-modal d-none" role="dialog">
+            <div class="change-password-modal__card">
+              <header class="change-password-modal__header">
+                <h2>비밀번호 변경</h2>
+                <button class="change-password-modal__close" type="button">×</button>
+              </header>
+              <form class="change-password-modal__form">
+                <input type="password" class="js-change-current" placeholder="현재 비밀번호" required />
+                <input type="password" class="js-change-new" placeholder="새 비밀번호" required />
+                <input type="password" class="js-change-new-confirm" placeholder="새 비밀번호 확인" required />
+                <div class="change-password-modal__actions">
+                  <button class="btn btn--primary js-change-save" type="button">변경</button>
+                </div>
+                <div class="change-password-modal__status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="contact-modal d-none" role="dialog">
+            <div class="contact-modal__card">
+              <header class="contact-modal__header">
+                <h2>연락처 수정</h2>
+                <button class="contact-modal__close" type="button">×</button>
+              </header>
+              <form class="contact-modal__form">
+                <label><span>이메일</span><input type="email" class="js-contact-email" required /></label>
+                <label><span>휴대폰</span><input type="tel" class="js-contact-phone" required /></label>
+                <div class="contact-modal__actions">
+                  <button class="btn btn--primary js-contact-save" type="button">저장</button>
+                </div>
+                <div class="contact-modal__status" aria-live="polite"></div>
+              </form>
+            </div>
           </div>
         </section>
       </div>

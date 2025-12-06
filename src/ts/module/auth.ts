@@ -9,6 +9,7 @@ export type StoredUser = {
   password: string;
   phone: string;
   address: string;
+  profileImage?: string;
   roadAddress?: string;
   addressDetail?: string;
 };
@@ -117,6 +118,12 @@ export function findUserByUsername(username: string): StoredUser | undefined {
   return loadUsers().find((user) => user.username.toLowerCase() === target);
 }
 
+export function findUserByEmail(email: string): StoredUser | undefined {
+  if (!email) return undefined;
+  const target = email.toLowerCase();
+  return loadUsers().find((user) => user.email.toLowerCase() === target);
+}
+
 export function loadUsers(): StoredUser[] {
   try {
     const raw = localStorage.getItem(USERS_STORAGE_KEY);
@@ -134,6 +141,7 @@ export function loadUsers(): StoredUser[] {
           email: user.email,
           password: user.password,
           phone: typeof user.phone === "string" ? user.phone : "",
+          profileImage: typeof user.profileImage === "string" ? user.profileImage : undefined,
           address: typeof user.address === "string" ? user.address : "",
           roadAddress: typeof user.roadAddress === "string" ? user.roadAddress : undefined,
           addressDetail: typeof user.addressDetail === "string" ? user.addressDetail : undefined,
@@ -151,4 +159,13 @@ export function loadUsers(): StoredUser[] {
   } catch {
     return [];
   }
+}
+
+export function updateUser(username: string, patch: Partial<StoredUser>) {
+  const users = loadUsers();
+  const idx = users.findIndex((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (idx === -1) return false;
+  users[idx] = { ...users[idx], ...patch };
+  saveUsers(users);
+  return true;
 }
