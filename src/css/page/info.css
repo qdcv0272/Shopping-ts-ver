@@ -36,7 +36,7 @@
   margin: 0 0 6px;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 1.28px;
   text-transform: uppercase;
   color: rgba(15, 23, 42, 0.6);
 }
@@ -499,23 +499,24 @@
 
 /* toast */
 .app-toast {
+  /* center the toast in the viewport */
   position: fixed;
-  right: 24px;
-  bottom: 24px;
-  min-width: 180px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateY(10px);
+  min-width: 220px;
   background: linear-gradient(90deg, #111827, #1f2937);
   color: #fff;
   padding: 10px 14px;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
   opacity: 0;
-  transform: translateY(10px);
   transition: opacity 260ms ease, transform 260ms ease;
   z-index: 1200;
 }
 .app-toast.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, -50%) translateY(0);
 }
 .findpw-modal__header {
   display: flex;
@@ -714,7 +715,7 @@
   margin: 0 0 6px;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.16px;
 }
 
 .address-modal__meta {

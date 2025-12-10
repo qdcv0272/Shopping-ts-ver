@@ -80,6 +80,31 @@
           </div>
         </section>
 
+        <button class="category-fab" type="button" aria-controls="category-sheet" aria-expanded="false">
+          <span class="category-fab__icon">📂</span>
+          <span class="category-fab__label">카테고리</span>
+        </button>
+
+        <aside id="category-sheet" class="category-sheet" aria-hidden="true" aria-label="제품 카테고리">
+          <header class="category-sheet__header">
+            <div class="category-sheet__title">카테고리</div>
+            <button class="category-sheet__close" type="button" aria-label="카테고리 닫기">✕</button>
+          </header>
+          <div class="category-sheet__body">
+            <div class="category-sheet__chips">
+              <a class="category-chip" href="#tv-audio">📺 TV · 오디오</a>
+              <a class="category-chip" href="#laptop">💻 노트북 · 태블릿</a>
+              <a class="category-chip" href="#mobile">📱 모바일 · 웨어러블</a>
+              <a class="category-chip" href="#pc">🖥 PC · 부품</a>
+              <a class="category-chip" href="#gaming">🎮 게이밍</a>
+              <a class="category-chip" href="#home">🏠 생활가전</a>
+              <a class="category-chip" href="#kitchen">🍳 주방가전</a>
+              <a class="category-chip" href="#accessory">🎧 액세서리</a>
+              <a class="category-chip category-chip--accent" href="#deal">⚡ 특가 · 베스트</a>
+            </div>
+          </div>
+        </aside>
+
         <!-- 회원가입 카드 -->
         <section class="info-signup d-none">
           <div class="info-login__card">

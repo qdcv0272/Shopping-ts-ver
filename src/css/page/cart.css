@@ -1,0 +1,110 @@
+/* cart page styles */
+.page-shell #app {
+  padding: 10px 0;
+}
+
+.page-shell #app .products-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.clear-cart {
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  /* keep compatibility but prefer accent styling via accent-btn */
+  cursor: pointer;
+}
+
+.btn-remove {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
+.order-btn {
+  padding: 10px 18px;
+  font-weight: 800;
+  border-radius: 12px;
+}
+
+/* disabled ghost buttons (qty decrease) */
+.accent-btn[disabled],
+.accent-btn:disabled,
+.ghost-btn[disabled],
+.ghost-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(20%);
+}
+
+/* accent (colored) button for cart controls */
+.accent-btn {
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2e5bff, #845ef7);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(46, 91, 255, 0.12);
+}
+
+.accent-btn:active {
+  transform: translateY(1px);
+}
+
+/* qty control layout */
+.qty-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.qty-value {
+  font-weight: 800;
+  font-size: 18px;
+  color: #0b1220;
+}
+
+/* small round circle buttons for qty +/- */
+.circle-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: none;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2e5bff, #5fb0ff);
+  box-shadow: 0 6px 18px rgba(46, 91, 255, 0.18);
+}
+
+.circle-btn[disabled],
+.circle-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* danger button for remove — purple */
+.danger-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(90deg, #ff6f91, #9b6bff);
+  box-shadow: 0 10px 30px rgba(156, 103, 255, 0.15);
+}
+
+.danger-btn:active {
+  transform: translateY(1px);
+}

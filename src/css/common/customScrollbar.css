@@ -1,0 +1,57 @@
+/* OverlayScrollbars custom theme dedicated to the shopping shell */
+.shopping-shell .os-scrollbar {
+  --scrollbar-track: rgba(15, 23, 42, 0.08);
+  --scrollbar-track-active: rgba(15, 23, 42, 0.16);
+  --scrollbar-thumb: linear-gradient(135deg, #6366f1, #ec4899);
+  --scrollbar-thumb-hover: linear-gradient(135deg, #4f46e5, #db2777);
+  --scrollbar-thumb-active: linear-gradient(135deg, #4338ca, #be185d);
+  width: 10px;
+}
+
+.shopping-shell .os-scrollbar-horizontal {
+  display: none !important; /* vertical scroll only */
+}
+
+.shopping-shell .os-scrollbar-track {
+  background-color: transparent;
+  border-radius: 999px;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.shopping-shell .os-scrollbar-vertical {
+  right: 5px;
+}
+
+.shopping-shell .os-scrollbar-track:hover {
+  background-color: var(--scrollbar-track);
+}
+
+.shopping-shell .os-scrollbar-track.os-scrollbar-track-active {
+  background-color: var(--scrollbar-track-active);
+}
+
+.shopping-shell .os-scrollbar-handle {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.shopping-shell .os-scrollbar-handle:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.shopping-shell .os-scrollbar-handle:active {
+  background: var(--scrollbar-thumb-active);
+  transform: scaleX(1.05);
+}
+
+.shopping-shell .os-scrollbar-vertical .os-scrollbar-track {
+  top: 30px;
+  max-height: 820px;
+}
+[data-overlayscrollbars-padding],
+[data-overlayscrollbars-viewport]:not([data-overlayscrollbars]) {
+  margin-bottom: -80px !important;
+}

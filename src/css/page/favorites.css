@@ -1,0 +1,14 @@
+/* favorites page styles */
+.page-shell #app {
+  padding: 10px 0;
+}
+.page-shell #app .products-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.btn-unfav {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
