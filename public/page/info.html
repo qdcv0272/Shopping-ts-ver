@@ -12,14 +12,25 @@
           <span class="logo-emblem">TS</span>
         </a>
         <div class="main-header__search" role="search">
-          <input type="search" placeholder="상품, 브랜드, 키워드를 검색하세요" />
+          <input
+            type="search"
+            placeholder="상품, 브랜드, 키워드를 검색하세요"
+          />
           <button type="button">🔍</button>
         </div>
         <div class="main-header__actions">
-          <a href="info.html" class="header-action">👤 <span class="header-action__label">내정보</span></a>
-          <a href="favorites.html" class="header-action">⭐ <span class="header-action__label">즐겨찾기</span></a>
-          <a href="cart.html" class="header-action">🛒 <span class="header-action__label">장바구니</span></a>
-          <a href="bootstrap.html" class="header-action">⚙️ <span class="header-action__label">부트스트랩</span></a>
+          <a href="info.html" class="header-action"
+            >👤 <span class="header-action__label">내정보</span></a
+          >
+          <a href="favorites.html" class="header-action"
+            >⭐ <span class="header-action__label">즐겨찾기</span></a
+          >
+          <a href="cart.html" class="header-action"
+            >🛒 <span class="header-action__label">장바구니</span></a
+          >
+          <a href="bootstrap.html" class="header-action"
+            >⚙️ <span class="header-action__label">부트스트랩</span></a
+          >
         </div>
       </header>
 
@@ -29,7 +40,10 @@
             <div class="info-login__hero">
               <p class="info-login__eyebrow">내 정보 보호</p>
               <h1 id="login-heading">로그인이 필요해요</h1>
-              <p>보안을 위해 먼저 본인 인증을 완료하면 내 정보와 주문 내역을 보여드릴게요.</p>
+              <p>
+                보안을 위해 먼저 본인 인증을 완료하면 내 정보와 주문 내역을
+                보여드릴게요.
+              </p>
             </div>
             <form id="info-login-form" class="info-login__form">
               <label class="info-login__field">
@@ -53,13 +67,26 @@
                   required
                 />
               </label>
-              <div class="info-login__hint">가입한 계정 정보로 로그인해주세요.</div>
+              <div class="info-login__hint">
+                가입한 계정 정보로 로그인해주세요.
+              </div>
               <p class="info-login__feedback" role="alert"></p>
-              <button class="btn btn--primary info-login__submit" type="submit">로그인</button>
+              <button class="btn btn--primary info-login__submit" type="submit">
+                로그인
+              </button>
               <div class="info-login__actions">
-                <button class="btn btn--ghost js-info-open-signup" type="button">회원가입</button>
-                <button class="btn js-info-find-username" type="button">아이디 찾기</button>
-                <button class="btn js-info-find-password" type="button">비밀번호 찾기</button>
+                <button
+                  class="btn btn--ghost js-info-open-signup"
+                  type="button"
+                >
+                  회원가입
+                </button>
+                <button class="btn js-info-find-username" type="button">
+                  아이디 찾기
+                </button>
+                <button class="btn js-info-find-password" type="button">
+                  비밀번호 찾기
+                </button>
               </div>
             </form>
           </div>
@@ -68,16 +95,38 @@
             <div class="change-password-modal__card">
               <header class="change-password-modal__header">
                 <h2>비밀번호 변경</h2>
-                <button class="change-password-modal__close" type="button">×</button>
+                <button class="change-password-modal__close" type="button">
+                  ×
+                </button>
               </header>
               <form class="change-password-modal__form">
-                <input type="password" class="js-change-current" placeholder="현재 비밀번호" required />
-                <input type="password" class="js-change-new" placeholder="새 비밀번호" required />
-                <input type="password" class="js-change-new-confirm" placeholder="새 비밀번호 확인" required />
+                <input
+                  type="password"
+                  class="js-change-current"
+                  placeholder="현재 비밀번호"
+                  required
+                />
+                <input
+                  type="password"
+                  class="js-change-new"
+                  placeholder="새 비밀번호"
+                  required
+                />
+                <input
+                  type="password"
+                  class="js-change-new-confirm"
+                  placeholder="새 비밀번호 확인"
+                  required
+                />
                 <div class="change-password-modal__actions">
-                  <button class="btn btn--primary js-change-save" type="button">변경</button>
+                  <button class="btn btn--primary js-change-save" type="button">
+                    변경
+                  </button>
                 </div>
-                <div class="change-password-modal__status" aria-live="polite"></div>
+                <div
+                  class="change-password-modal__status"
+                  aria-live="polite"
+                ></div>
               </form>
             </div>
           </div>
@@ -95,10 +144,18 @@
                 <button class="findid-modal__close" type="button">×</button>
               </header>
               <form class="findid-modal__search" role="search">
-                <input type="email" class="js-findid-email" placeholder="가입하신 이메일을 입력하세요" required />
+                <input
+                  type="email"
+                  class="js-findid-email"
+                  placeholder="가입하신 이메일을 입력하세요"
+                  required
+                />
                 <button class="btn btn--primary" type="submit">검색</button>
               </form>
-              <p class="findid-modal__hint">가입할 때 사용한 이메일 주소를 입력하면 등록된 아이디를 알려드립니다.</p>
+              <p class="findid-modal__hint">
+                가입할 때 사용한 이메일 주소를 입력하면 등록된 아이디를
+                알려드립니다.
+              </p>
               <div class="findid-modal__status" aria-live="polite"></div>
               <ul class="findid-modal__results"></ul>
             </div>
@@ -111,23 +168,48 @@
                 <button class="findpw-modal__close" type="button">×</button>
               </header>
               <form class="findpw-modal__search" role="search">
-                <input type="text" class="js-findpw-username" placeholder="아이디를 입력하세요" required />
-                <input type="email" class="js-findpw-email" placeholder="등록된 이메일을 입력하세요" required />
+                <input
+                  type="text"
+                  class="js-findpw-username"
+                  placeholder="아이디를 입력하세요"
+                  required
+                />
+                <input
+                  type="email"
+                  class="js-findpw-email"
+                  placeholder="등록된 이메일을 입력하세요"
+                  required
+                />
                 <button class="btn btn--primary" type="submit">확인</button>
               </form>
-              <p class="findpw-modal__hint">아이디와 이메일이 일치하면 비밀번호 재설정 입력창이 나타납니다.</p>
+              <p class="findpw-modal__hint">
+                아이디와 이메일이 일치하면 비밀번호 재설정 입력창이 나타납니다.
+              </p>
               <div class="findpw-modal__status" aria-live="polite"></div>
               <div class="findpw-modal__reset d-none">
                 <label
                   ><span class="findpw-modal__label">새 비밀번호</span
-                  ><input type="password" class="js-findpw-newpass" placeholder="새 비밀번호" required
+                  ><input
+                    type="password"
+                    class="js-findpw-newpass"
+                    placeholder="새 비밀번호"
+                    required
                 /></label>
                 <label
                   ><span class="findpw-modal__label">새 비밀번호 확인</span
-                  ><input type="password" class="js-findpw-newpass-confirm" placeholder="새 비밀번호 확인" required
+                  ><input
+                    type="password"
+                    class="js-findpw-newpass-confirm"
+                    placeholder="새 비밀번호 확인"
+                    required
                 /></label>
                 <div class="findpw-modal__actions">
-                  <button class="btn btn--primary js-findpw-reset" type="button">비밀번호 변경</button>
+                  <button
+                    class="btn btn--primary js-findpw-reset"
+                    type="button"
+                  >
+                    비밀번호 변경
+                  </button>
                 </div>
               </div>
             </div>
@@ -139,14 +221,27 @@
             <div class="info-login__hero">
               <p class="info-login__eyebrow">새 계정 만들기</p>
               <h1 id="signup-heading">회원가입</h1>
-              <p>기본 정보를 입력하고 간단히 가입하세요. 가입 후 내 정보 페이지를 바로 이용할 수 있습니다.</p>
+              <p>
+                기본 정보를 입력하고 간단히 가입하세요. 가입 후 내 정보 페이지를
+                바로 이용할 수 있습니다.
+              </p>
             </div>
             <form id="info-signup-form" class="info-login__form">
               <label class="info-login__field">
                 <span>아이디</span>
                 <div class="info-field-control">
-                  <input type="text" class="js-signup-username" placeholder="새 아이디" autocomplete="username" required />
-                  <button class="btn btn--ghost info-field-check js-field-check" type="button" data-check-target="username">
+                  <input
+                    type="text"
+                    class="js-signup-username"
+                    placeholder="새 아이디"
+                    autocomplete="username"
+                    required
+                  />
+                  <button
+                    class="btn btn--ghost info-field-check js-field-check"
+                    type="button"
+                    data-check-target="username"
+                  >
                     중복확인
                   </button>
                 </div>
@@ -161,8 +256,18 @@
               <label class="info-login__field">
                 <span>이메일</span>
                 <div class="info-field-control">
-                  <input type="email" class="js-signup-email" placeholder="you@example.com" autocomplete="email" required />
-                  <button class="btn btn--ghost info-field-check js-field-check" type="button" data-check-target="email">
+                  <input
+                    type="email"
+                    class="js-signup-email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                  />
+                  <button
+                    class="btn btn--ghost info-field-check js-field-check"
+                    type="button"
+                    data-check-target="email"
+                  >
                     중복확인
                   </button>
                 </div>
@@ -176,14 +281,30 @@
               </label>
               <label class="info-login__field">
                 <span>이름</span>
-                <input type="text" class="js-signup-name" placeholder="홍길동" autocomplete="name" required />
-                <small class="info-field-hint" data-hint-target="name" data-hint-default="실제 이름을 입력해주세요.">
+                <input
+                  type="text"
+                  class="js-signup-name"
+                  placeholder="홍길동"
+                  autocomplete="name"
+                  required
+                />
+                <small
+                  class="info-field-hint"
+                  data-hint-target="name"
+                  data-hint-default="실제 이름을 입력해주세요."
+                >
                   실제 이름을 입력해주세요.
                 </small>
               </label>
               <label class="info-login__field">
                 <span>휴대폰</span>
-                <input type="tel" class="js-signup-phone" placeholder="010-1234-5678" autocomplete="tel" required />
+                <input
+                  type="tel"
+                  class="js-signup-phone"
+                  placeholder="010-1234-5678"
+                  autocomplete="tel"
+                  required
+                />
                 <small
                   class="info-field-hint"
                   data-hint-target="phone"
@@ -203,7 +324,12 @@
                     readonly
                     required
                   />
-                  <button class="btn btn--ghost info-field-check js-address-search" type="button">주소 검색</button>
+                  <button
+                    class="btn btn--ghost info-field-check js-address-search"
+                    type="button"
+                  >
+                    주소 검색
+                  </button>
                 </div>
                 <small
                   class="info-field-hint"
@@ -215,7 +341,12 @@
               </label>
               <label class="info-login__field">
                 <span>상세 주소</span>
-                <input type="text" class="js-signup-address-detail" placeholder="동/호수 등 상세 주소" required />
+                <input
+                  type="text"
+                  class="js-signup-address-detail"
+                  placeholder="동/호수 등 상세 주소"
+                  required
+                />
                 <small
                   class="info-field-hint"
                   data-hint-target="address-detail"
@@ -239,20 +370,37 @@
                   data-hint-target="password"
                   data-hint-default="대문자, 소문자, 특수문자를 각각 1개 이상 포함하고 6자 이상 입력하세요."
                 >
-                  대문자, 소문자, 특수문자를 각각 1개 이상 포함하고 6자 이상 입력하세요.
+                  대문자, 소문자, 특수문자를 각각 1개 이상 포함하고 6자 이상
+                  입력하세요.
                 </small>
               </label>
               <label class="info-login__field">
                 <span>비밀번호 확인</span>
-                <input type="password" class="js-signup-password-confirm" placeholder="다시 한 번 입력" minlength="6" required />
-                <small class="info-field-hint" data-hint-target="password-confirm" data-hint-default=""
+                <input
+                  type="password"
+                  class="js-signup-password-confirm"
+                  placeholder="다시 한 번 입력"
+                  minlength="6"
+                  required
+                />
+                <small
+                  class="info-field-hint"
+                  data-hint-target="password-confirm"
+                  data-hint-default=""
                   >비밀번호를 다시 입력하세요.</small
                 >
               </label>
-              <p class="info-login__feedback info-signup__feedback" role="alert"></p>
+              <p
+                class="info-login__feedback info-signup__feedback"
+                role="alert"
+              ></p>
               <div class="info-signup__actions">
-                <button class="btn" type="button" data-action="back">로그인으로 돌아가기</button>
-                <button class="btn btn--primary" type="submit">가입 완료하기</button>
+                <button class="btn" type="button" data-action="back">
+                  로그인으로 돌아가기
+                </button>
+                <button class="btn btn--primary" type="submit">
+                  가입 완료하기
+                </button>
               </div>
             </form>
           </div>
@@ -264,10 +412,17 @@
                 <button class="address-modal__close" type="button">×</button>
               </header>
               <form class="address-modal__search" role="search">
-                <input type="text" class="js-address-keyword" placeholder="도로명/건물명을 입력" required />
+                <input
+                  type="text"
+                  class="js-address-keyword"
+                  placeholder="도로명/건물명을 입력"
+                  required
+                />
                 <button class="btn btn--primary" type="submit">검색</button>
               </form>
-              <p class="address-modal__hint">예: 도로명(반포대로 58), 건물명(독립기념관), 지번(삼성동 25)</p>
+              <p class="address-modal__hint">
+                예: 도로명(반포대로 58), 건물명(독립기념관), 지번(삼성동 25)
+              </p>
               <div class="address-modal__status"></div>
               <ul class="address-modal__results"></ul>
             </div>
@@ -281,7 +436,12 @@
               <div class="profile-card__media">
                 <div class="avatar avatar--xl" aria-hidden="true">👤</div>
                 <!-- 프로필 이미지 업로드 버튼 (숨김 input + 오버레이 버튼) -->
-                <input id="js-profile-upload" class="d-none" type="file" accept="image/*" />
+                <input
+                  id="js-profile-upload"
+                  class="d-none"
+                  type="file"
+                  accept="image/*"
+                />
                 <label
                   id="js-profile-upload-btn"
                   for="js-profile-upload"
@@ -290,16 +450,34 @@
                   aria-label="프로필 업로드"
                   >📷</label
                 >
-                <button id="js-profile-remove" class="btn profile-card__remove" type="button" title="프로필 사진 삭제">
+                <button
+                  id="js-profile-remove"
+                  class="btn profile-card__remove"
+                  type="button"
+                  title="프로필 사진 삭제"
+                >
                   삭제
                 </button>
               </div>
               <div class="profile-card__body">
-                <h1 id="profile-heading" class="profile-card__title js-info-name">회원 이름</h1>
+                <h1
+                  id="profile-heading"
+                  class="profile-card__title js-info-name"
+                >
+                  회원 이름
+                </h1>
                 <p class="profile-card__sub js-info-email">email@example.com</p>
                 <div class="profile-card__actions">
-                  <button id="js-profile-change-password" class="btn" type="button">비밀번호 변경</button>
-                  <button class="btn" type="button" id="js-info-logout">로그아웃</button>
+                  <button
+                    id="js-profile-change-password"
+                    class="btn"
+                    type="button"
+                  >
+                    비밀번호 변경
+                  </button>
+                  <button class="btn" type="button" id="js-info-logout">
+                    로그아웃
+                  </button>
                 </div>
               </div>
             </section>
@@ -309,7 +487,9 @@
             <section class="account-details">
               <header class="section-header">
                 <h2 id="account-heading">연락처 & 주소</h2>
-                <p class="section-sub">계정에 등록된 연락처와 배송지를 확인/수정하세요.</p>
+                <p class="section-sub">
+                  계정에 등록된 연락처와 배송지를 확인/수정하세요.
+                </p>
               </header>
 
               <div class="grid grid--2">
@@ -326,7 +506,9 @@
                     </div>
                   </dl>
                   <div class="card__actions">
-                    <button id="js-contact-edit" class="btn" type="button">연락처 수정</button>
+                    <button id="js-contact-edit" class="btn" type="button">
+                      연락처 수정
+                    </button>
                   </div>
                 </div>
 
@@ -336,14 +518,22 @@
                   <h3 class="card__title">기본 배송지</h3>
                   <div class="address-card__label">
                     <span class="badge badge--home">🏠 집</span>
-                    <span class="address-card__label-text">퇴근 후 수령 가능</span>
+                    <span class="address-card__label-text"
+                      >퇴근 후 수령 가능</span
+                    >
                   </div>
                   <address class="address">
-                    <div class="js-info-address-line1">기본 배송지가 아직 등록되지 않았습니다.</div>
-                    <div class="js-info-address-line2">배송지를 추가하면 여기에 표시됩니다.</div>
+                    <div class="js-info-address-line1">
+                      기본 배송지가 아직 등록되지 않았습니다.
+                    </div>
+                    <div class="js-info-address-line2">
+                      배송지를 추가하면 여기에 표시됩니다.
+                    </div>
                   </address>
                   <div class="card__actions">
-                    <button id="js-address-manage" class="btn" type="button">배송지 관리</button>
+                    <button id="js-address-manage" class="btn" type="button">
+                      배송지 관리
+                    </button>
                   </div>
                 </div>
               </div>
@@ -361,24 +551,36 @@
                     <div class="order-id">주문 #20251127001</div>
                     <div class="order-date">2025-11-27</div>
                   </div>
-                  <div class="order-item__body">상품명 A × 1 — 결제금액 15,000원</div>
-                  <div class="order-item__actions"><a href="#" class="link">주문상세</a></div>
+                  <div class="order-item__body">
+                    상품명 A × 1 — 결제금액 15,000원
+                  </div>
+                  <div class="order-item__actions">
+                    <a href="#" class="link">주문상세</a>
+                  </div>
                 </li>
                 <li class="order-item">
                   <div class="order-item__meta">
                     <div class="order-id">주문 #20251120017</div>
                     <div class="order-date">2025-11-20</div>
                   </div>
-                  <div class="order-item__body">상품명 B × 2 — 결제금액 42,000원</div>
-                  <div class="order-item__actions"><a href="#" class="link">주문상세</a></div>
+                  <div class="order-item__body">
+                    상품명 B × 2 — 결제금액 42,000원
+                  </div>
+                  <div class="order-item__actions">
+                    <a href="#" class="link">주문상세</a>
+                  </div>
                 </li>
                 <li class="order-item">
                   <div class="order-item__meta">
                     <div class="order-id">주문 #20251005005</div>
                     <div class="order-date">2025-10-05</div>
                   </div>
-                  <div class="order-item__body">상품명 C × 1 — 결제금액 9,800원</div>
-                  <div class="order-item__actions"><a href="#" class="link">주문상세</a></div>
+                  <div class="order-item__body">
+                    상품명 C × 1 — 결제금액 9,800원
+                  </div>
+                  <div class="order-item__actions">
+                    <a href="#" class="link">주문상세</a>
+                  </div>
                 </li>
               </ul>
               <div class="orders__more">
@@ -390,33 +592,76 @@
             <div class="address-manage-modal__card">
               <header class="address-manage-modal__header">
                 <h2>배송지 관리</h2>
-                <button class="address-manage-modal__close" type="button">×</button>
+                <button class="address-manage-modal__close" type="button">
+                  ×
+                </button>
               </header>
               <form class="address-manage-modal__form">
-                <input type="text" class="js-address-road" placeholder="도로명 주소" />
-                <input type="text" class="js-address-detail" placeholder="상세 주소" />
+                <input
+                  type="text"
+                  class="js-address-road"
+                  placeholder="도로명 주소"
+                />
+                <input
+                  type="text"
+                  class="js-address-detail"
+                  placeholder="상세 주소"
+                />
                 <div class="address-manage-modal__actions">
-                  <button class="btn btn--primary js-address-save" type="button">저장</button>
+                  <button
+                    class="btn btn--primary js-address-save"
+                    type="button"
+                  >
+                    저장
+                  </button>
                 </div>
-                <div class="address-manage-modal__status" aria-live="polite"></div>
+                <div
+                  class="address-manage-modal__status"
+                  aria-live="polite"
+                ></div>
               </form>
             </div>
           </div>
 
-          <div class="change-password-modal change-pw-modal d-none" role="dialog">
+          <div
+            class="change-password-modal change-pw-modal d-none"
+            role="dialog"
+          >
             <div class="change-password-modal__card">
               <header class="change-password-modal__header">
                 <h2>비밀번호 변경</h2>
-                <button class="change-password-modal__close" type="button">×</button>
+                <button class="change-password-modal__close" type="button">
+                  ×
+                </button>
               </header>
               <form class="change-password-modal__form">
-                <input type="password" class="js-change-current" placeholder="현재 비밀번호" required />
-                <input type="password" class="js-change-new" placeholder="새 비밀번호" required />
-                <input type="password" class="js-change-new-confirm" placeholder="새 비밀번호 확인" required />
+                <input
+                  type="password"
+                  class="js-change-current"
+                  placeholder="현재 비밀번호"
+                  required
+                />
+                <input
+                  type="password"
+                  class="js-change-new"
+                  placeholder="새 비밀번호"
+                  required
+                />
+                <input
+                  type="password"
+                  class="js-change-new-confirm"
+                  placeholder="새 비밀번호 확인"
+                  required
+                />
                 <div class="change-password-modal__actions">
-                  <button class="btn btn--primary js-change-save" type="button">변경</button>
+                  <button class="btn btn--primary js-change-save" type="button">
+                    변경
+                  </button>
                 </div>
-                <div class="change-password-modal__status" aria-live="polite"></div>
+                <div
+                  class="change-password-modal__status"
+                  aria-live="polite"
+                ></div>
               </form>
             </div>
           </div>
@@ -428,10 +673,21 @@
                 <button class="contact-modal__close" type="button">×</button>
               </header>
               <form class="contact-modal__form">
-                <label><span>이메일</span><input type="email" class="js-contact-email" required /></label>
-                <label><span>휴대폰</span><input type="tel" class="js-contact-phone" required /></label>
+                <label
+                  ><span>이메일</span
+                  ><input type="email" class="js-contact-email" required
+                /></label>
+                <label
+                  ><span>휴대폰</span
+                  ><input type="tel" class="js-contact-phone" required
+                /></label>
                 <div class="contact-modal__actions">
-                  <button class="btn btn--primary js-contact-save" type="button">저장</button>
+                  <button
+                    class="btn btn--primary js-contact-save"
+                    type="button"
+                  >
+                    저장
+                  </button>
                 </div>
                 <div class="contact-modal__status" aria-live="polite"></div>
               </form>
@@ -440,12 +696,17 @@
         </section>
       </div>
 
-      <button class="category-fab" type="button" aria-controls="category-sheet" aria-expanded="false">
+      <!-- <button
+        class="category-fab"
+        type="button"
+        aria-controls="category-sheet"
+        aria-expanded="false"
+      >
         <span class="category-fab__icon">📂</span>
         <span class="category-fab__label">카테고리</span>
-      </button>
+      </button> -->
 
-      <aside id="category-sheet" class="category-sheet" aria-hidden="true" aria-label="제품 카테고리">
+      <!-- <aside id="category-sheet" class="category-sheet" aria-hidden="true" aria-label="제품 카테고리">
         <header class="category-sheet__header">
           <div class="category-sheet__title">카테고리</div>
           <button class="category-sheet__close" type="button" aria-label="카테고리 닫기">✕</button>
@@ -463,7 +724,7 @@
             <a class="category-chip category-chip--accent" href="#deal">⚡ 특가 · 베스트</a>
           </div>
         </div>
-      </aside>
+      </aside> -->
     </div>
   </body>
 </html>

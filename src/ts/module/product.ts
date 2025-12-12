@@ -19,7 +19,14 @@ export function initProductQuickView(): void {
 
   let isOpen = false;
   let isAnimating = false;
-  let currentData: { id?: string; title?: string; desc?: string; price?: string; thumb?: string } | null = null;
+  let lastFocusedBeforeOpen: HTMLElement | null = null;
+  let currentData: {
+    id?: string;
+    title?: string;
+    desc?: string;
+    price?: string;
+    thumb?: string;
+  } | null = null;
 
   // cart: store array of { id, qty }
   type CartItem = { id: string; qty: number };
@@ -30,11 +37,17 @@ export function initProductQuickView(): void {
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       // migrate old string[] format (titles or ids) -> CartItem[]
-      if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === "string") {
+      if (
+        Array.isArray(parsed) &&
+        parsed.length &&
+        typeof parsed[0] === "string"
+      ) {
         const converted: CartItem[] = (parsed as string[])
           .map((s) => {
             // try to find product by id or title
-            const p = (products as any[]).find((x) => x.id === s || x.title === s);
+            const p = (products as any[]).find(
+              (x) => x.id === s || x.title === s
+            );
             if (p && p.id) return { id: p.id, qty: 1 } as CartItem;
             // fallback: assume string is id
             return { id: s, qty: 1 } as CartItem;
@@ -70,11 +83,17 @@ export function initProductQuickView(): void {
       // migration: if favorites stored as titles, convert to ids
       if (!raw) return [];
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === "string") {
+      if (
+        Array.isArray(parsed) &&
+        parsed.length &&
+        typeof parsed[0] === "string"
+      ) {
         // if these look like titles, try mapping to id
         const mapped = (parsed as string[])
           .map((s) => {
-            const p = (products as any[]).find((x) => x.id === s || x.title === s);
+            const p = (products as any[]).find(
+              (x) => x.id === s || x.title === s
+            );
             return p?.id ?? null;
           })
           .filter(Boolean) as string[];
@@ -99,9 +118,17 @@ export function initProductQuickView(): void {
     return getFavorites().includes(id);
   }
 
-  const open = (data: { id?: string; title?: string; desc?: string; price?: string; thumb?: string }) => {
+  const open = (data: {
+    id?: string;
+    title?: string;
+    desc?: string;
+    price?: string;
+    thumb?: string;
+  }) => {
     if (isOpen || isAnimating) return;
     isAnimating = true;
+    // save focused element so we can restore focus after closing
+    lastFocusedBeforeOpen = document.activeElement as HTMLElement | null;
     modal.classList.remove("d-none");
     modal.setAttribute("aria-hidden", "false");
 
@@ -122,6 +149,10 @@ export function initProductQuickView(): void {
         onComplete: () => {
           isAnimating = false;
           isOpen = true;
+          // move focus into the dialog for accessibility (to the close button)
+          try {
+            (closeBtn as HTMLElement | null)?.focus();
+          } catch {}
         },
       }
     );
@@ -137,8 +168,22 @@ export function initProductQuickView(): void {
       duration: 0.24,
       ease: "power2.in",
       onComplete: () => {
+        // if an element inside the modal still has focus, blur it first
+        try {
+          const active = document.activeElement as HTMLElement | null;
+          if (active && modal.contains(active)) {
+            active.blur();
+          }
+        } catch {}
         modal.classList.add("d-none");
         modal.setAttribute("aria-hidden", "true");
+        // restore focus to the element that opened the modal (if any)
+        try {
+          if (lastFocusedBeforeOpen && !modal.contains(lastFocusedBeforeOpen)) {
+            lastFocusedBeforeOpen.focus();
+          }
+        } catch {}
+        lastFocusedBeforeOpen = null;
         isAnimating = false;
         isOpen = false;
       },
@@ -186,7 +231,10 @@ export function initProductQuickView(): void {
     }
 
     // close on backdrop or data-dismiss
-    if (el.matches("[data-dismiss=modal]") || el.closest("[data-dismiss=modal]")) {
+    if (
+      el.matches("[data-dismiss=modal]") ||
+      el.closest("[data-dismiss=modal]")
+    ) {
       close();
     }
 
@@ -203,7 +251,9 @@ export function initProductQuickView(): void {
         items.push({ id, qty: 1 });
       }
       setCartItems(items);
-      document.dispatchEvent(new CustomEvent("cart:changed", { detail: { id } }));
+      document.dispatchEvent(
+        new CustomEvent("cart:changed", { detail: { id } })
+      );
       showToast(`${title}이(가) 장바구니에 추가되었습니다`);
       // update UI quickly
       if (addBtn) addBtn.textContent = `장바구니 +1`;
@@ -223,14 +273,18 @@ export function initProductQuickView(): void {
         // remove
         const remaining = favs.filter((x) => x !== id);
         setFavorites(remaining);
-        document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { id } }));
+        document.dispatchEvent(
+          new CustomEvent("favorites:changed", { detail: { id } })
+        );
         showToast(`${title}이(가) 즐겨찾기에서 제거되었습니다`);
         favBtn?.classList.remove("is-favorited");
         if (favBtn) favBtn.textContent = "즐겨찾기";
       } else {
         favs.push(id);
         setFavorites(favs);
-        document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { id } }));
+        document.dispatchEvent(
+          new CustomEvent("favorites:changed", { detail: { id } })
+        );
         showToast(`${title}이(가) 즐겨찾기에 추가되었습니다`);
         favBtn?.classList.add("is-favorited");
         if (favBtn) favBtn.textContent = "즐겨찾기 해제";

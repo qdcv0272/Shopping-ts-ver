@@ -14,10 +14,22 @@ type Product = {
 export function initProducts(): void {
   if (typeof window === "undefined") return;
 
-  const grids = Array.from(document.querySelectorAll<HTMLElement>(".products-grid"));
+  const grids = Array.from(
+    document.querySelectorAll<HTMLElement>(".products-grid")
+  );
   if (!grids.length) return;
 
-  const CATEGORIES = ["tv-audio", "laptop", "mobile", "pc", "gaming", "home", "kitchen", "accessory", "deal"];
+  const CATEGORIES = [
+    "tv-audio",
+    "laptop",
+    "mobile",
+    "pc",
+    "gaming",
+    "home",
+    "kitchen",
+    "accessory",
+    "deal",
+  ];
 
   grids.forEach((grid) => {
     // determine this grid's category by walking up to nearest section and matching classes
@@ -67,8 +79,10 @@ export function initProducts(): void {
           return tb - ta;
         });
       }
-      if (mode === "price-asc") return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-      if (mode === "price-desc") return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+      if (mode === "price-asc")
+        return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+      if (mode === "price-desc")
+        return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
       return items;
     }
 
