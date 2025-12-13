@@ -247,7 +247,9 @@ export function initCart() {
         status: "접수",
       };
       ordersModule.addOrder(order);
-      try { sessionStorage.setItem("lastOrderId", order.id); } catch {}
+      try {
+        sessionStorage.setItem("lastOrderId", order.id);
+      } catch {}
       setCartItems([]);
       showToast("주문이 접수되었습니다. 감사합니다 🙏");
       // navigate to info page so user can see orders

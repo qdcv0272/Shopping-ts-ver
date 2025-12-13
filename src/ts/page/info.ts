@@ -66,7 +66,7 @@ function setupInfoLogin() {
   const authedUsername = authedUsernameSession;
 
   if (sessionAuthed && authedUsername) {
-    console.log("로그인 되어있는중");
+    
     const authedUser = auth.findUserByUsername(authedUsernameSession);
 
     if (authedUser) {

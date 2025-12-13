@@ -1,121 +1,151 @@
 import gsap from "gsap";
-// OverlayScrollbars: named export from package
-// Use a typed-any call because the library typings can be strict in this workspace
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { OverlayScrollbars } from "overlayscrollbars";
 
 export function initCategoryNavToggle(): void {
+  console.log("initCategoryNavToggle");
   if (typeof window === "undefined") return;
 
-  const fab = document.querySelector<HTMLButtonElement>(".category-fab");
-  const sheet = document.getElementById("category-sheet");
-  const closeButton = sheet?.querySelector<HTMLButtonElement>(".category-sheet__close");
-  const chips = Array.from(sheet?.querySelectorAll<HTMLAnchorElement>(".category-chip") ?? []);
+  const fab = document.querySelector<HTMLButtonElement>(".category-fab"); // 카테고리 버튼
+  const sheet = document.getElementById("category-sheet"); // 카테고리 시트
+  const closeButton = sheet?.querySelector<HTMLButtonElement>(
+    ".category-sheet__close"
+  );
+  // 카테고리 클로즈 버튼
+
+  const chips = Array.from(
+    sheet?.querySelectorAll<HTMLAnchorElement>(".category-chip") ?? []
+  );
+  // 카테고리 칩s
 
   if (!fab || !sheet || !closeButton) return;
+
+  // TypeScript + DOM 타입 안정성
+  const fabEl: HTMLButtonElement = fab;
+  const sheetEl: HTMLElement = sheet;
+  const closeButtonEl: HTMLButtonElement = closeButton;
 
   let isOpen = false;
   let isAnimating = false;
 
-  const lockInteraction = (locked: boolean) => {
-    [fab, sheet].forEach((el) => el.classList.toggle("pe-none", locked));
+  const ANIM = {
+    // 따로 빼 둠 나중에 조정하기 편하게
+    openDuration: 0.32,
+    closeDuration: 0.26,
+    openEase: "power2.out",
+    closeEase: "power2.in",
   };
 
-  const setAria = (open: boolean) => {
-    fab.setAttribute("aria-expanded", open ? "true" : "false");
-    sheet.setAttribute("aria-hidden", open ? "false" : "true");
-  };
+  function lockInteraction(locked: boolean): void {
+    [fabEl, sheetEl].forEach((el) => el.classList.toggle("pe-none", locked));
+  }
 
-  gsap.set(sheet, { autoAlpha: 0, scale: 0.96, y: 12 });
-  sheet.classList.remove("is-open");
+  function setAria(open: boolean): void {
+    fabEl.setAttribute("aria-expanded", open ? "true" : "false");
+    sheetEl.setAttribute("aria-hidden", open ? "false" : "true");
+  }
+
+  /*
+    난 원래는 opacity 를 쓰는데
+    autoAlpha 가 더 편함 visible + opacity 라서
+  */
+  gsap.set(sheetEl, { autoAlpha: 0, scale: 0.96, y: 12 });
+  sheetEl.classList.remove("is-open");
   setAria(false);
 
-  const openSheet = () => {
+  // 오픈 되지 않았을때 열어 주기
+  fabEl.addEventListener("click", () => {
+    if (!isOpen) openSheet();
+  });
+
+  function openSheet(): void {
     if (isAnimating || isOpen) return;
     isAnimating = true;
     lockInteraction(true);
-    sheet.classList.add("is-open");
-    gsap.killTweensOf(sheet);
+    sheetEl.classList.add("is-open");
+    gsap.killTweensOf(sheetEl);
 
-    gsap.fromTo(
-      sheet,
-      { autoAlpha: 0, scale: 0.96, y: 12 },
-      {
-        autoAlpha: 1,
-        scale: 1,
-        y: 0,
-        duration: 0.32,
-        ease: "power2.out",
-        onComplete: () => {
-          isAnimating = false;
-          isOpen = true;
-          lockInteraction(false);
-          setAria(true);
-        },
-      }
-    );
-  };
+    gsap.set(sheetEl, { autoAlpha: 0, scale: 0.96, y: 12 });
 
-  const closeSheet = () => {
+    gsap.to(sheetEl, {
+      autoAlpha: 1,
+      scale: 1,
+      y: 0,
+      duration: ANIM.openDuration,
+      ease: ANIM.openEase,
+      onComplete: () => {
+        isAnimating = false;
+        isOpen = true;
+        lockInteraction(false);
+        setAria(true);
+      },
+    });
+  }
+
+  function closeSheet(): void {
     if (isAnimating || !isOpen) return;
     isAnimating = true;
     lockInteraction(true);
-    sheet.classList.remove("is-open");
-    gsap.killTweensOf(sheet);
+    sheetEl.classList.remove("is-open");
+    gsap.killTweensOf(sheetEl);
 
-    gsap.to(sheet, {
+    gsap.set(sheetEl, { autoAlpha: 1, scale: 1, y: 0 });
+
+    gsap.to(sheetEl, {
       autoAlpha: 0,
       scale: 0.96,
       y: 12,
-      duration: 0.26,
-      ease: "power2.in",
+      duration: ANIM.closeDuration,
+      ease: ANIM.closeEase,
       onComplete: () => {
         isAnimating = false;
         isOpen = false;
         lockInteraction(false);
         setAria(false);
-        fab.focus({ preventScroll: true });
+        fabEl.focus({ preventScroll: true }); // 포커스 복귀 스크롤 방지
       },
     });
-  };
+  }
 
-  fab.addEventListener("click", () => {
-    if (isOpen) {
-      closeSheet();
-    } else {
-      openSheet();
-    }
-  });
+  closeButtonEl.addEventListener("click", closeSheet); // 닫기 버튼
 
-  closeButton.addEventListener("click", closeSheet);
-  // derive all category names from chips so we can hide/show consistently
+  // a 태그들 을 이용해서 section 태그 들을 처리
   const categoryNames = chips
-    .map((c) => c.getAttribute("href") || "")
-    .filter((h) => h.startsWith("#") && h.length > 1)
-    .map((h) => h.slice(1));
+    .map((c) => c.getAttribute("href") || "") // href 속성들
+    .filter((h) => h.startsWith("#") && h.length > 1) // #으로 시작하는 것들
+    .map((h) => h.slice(1)); // # 제거한 카테고리 이름들
 
   chips.forEach((chip) => {
     chip.addEventListener("click", (ev) => {
-      // prevent navigation to `index.html#fragment` — we want to reveal local elements instead
       ev.preventDefault();
 
       const href = chip.getAttribute("href") || "";
       if (href.startsWith("#") && href.length > 1) {
-        const name = href.slice(1);
+        const name = href.slice(1); // # 제거한 카테고리 이름, 선택된 색션
 
-        // Hide all known categories first
+        /*
+          1. 모든 섹션 태그들 숨기기
+          2. 선택된 섹션 태그들 보이기
+          3. 오버레일 스크롤바 초기화
+          4. 기존 오버레일 인스턴스 제거
+          5. 새로운 오버레일 인스턴스 생성
+        */
         categoryNames.forEach((cat) => {
           try {
-            const els = Array.from(document.querySelectorAll<HTMLElement>(`.${cat}`));
-            els.forEach((el) => el.classList.add("d-none"));
-            // if a products-grid inside this category had an OverlayScrollbars instance, destroy it
+            // 혹시 몰라 에러 방지
+            const els = Array.from(
+              // 섹션태그들
+              document.querySelectorAll<HTMLElement>(`.${cat}`)
+            );
+
             els.forEach((el) => {
+              el.classList.add("d-none");
+
               const grid = el.querySelector<HTMLElement>(".products-grid");
-              const inst = (grid as any)?.__osInstance;
+              const inst = (grid as any)?.__osInstance; // 오버레일 인스턴스
+
               if (inst && typeof inst.destroy === "function") {
                 try {
-                  inst.destroy();
+                  inst.destroy(); // 오버레일 스크롤바 제거
                 } catch (e) {
                   /* ignore */
                 }
@@ -127,79 +157,90 @@ export function initCategoryNavToggle(): void {
           }
         });
 
-        // Show only the selected
+        // 선택된 섹션 태그들 보이기
         try {
-          const selected = Array.from(document.querySelectorAll<HTMLElement>(`.${name}`));
-          if (selected.length) selected.forEach((t) => t.classList.remove("d-none"));
+          const selected = Array.from(
+            document.querySelectorAll<HTMLElement>(`.${name}`)
+          );
 
-          // ensure the grid remains in vertical list mode and initialize overlay
-          // scrollbars for any products-grid inside the selected section(s)
+          if (selected.length) {
+            selected.forEach((t) => t.classList.remove("d-none"));
+          }
+          // 오버레일 스크롤바 초기화
           if (typeof OverlayScrollbars !== "undefined") {
             selected.forEach((section) => {
               const grid = section.querySelector<HTMLElement>(".products-grid");
               if (!grid) return;
 
-              // Ensure selected area uses the vertical list layout (single column)
-              // so users see the same vertical, scrollable list as the initial page.
-              grid.classList.remove("products-grid--card");
+              // grid.classList.remove("products-grid--card");
               grid.classList.add("products-grid--list");
 
-              // Defensive inline styles: if OverlayScrollbars or page CSS attempts
-              // to change display/overflow, force the host into a single-column
-              // grid with a limited height so vertical scrollbar appears.
-              try {
-                grid.style.setProperty("display", "grid", "important");
-                grid.style.setProperty("grid-template-columns", "1fr", "important");
-                grid.style.setProperty("max-height", "54vh", "important");
-                grid.style.setProperty("overflow", "auto", "important");
-              } catch (e) {
-                /* ignore environments that restrict style access */
-              }
+              grid.style.setProperty("display", "grid", "important");
+              grid.style.setProperty(
+                "grid-template-columns",
+                "1fr",
+                "important"
+              );
+              const maxHeightPx = `${Math.round(window.innerHeight * 0.54)}px`;
+              grid.style.setProperty("max-height", maxHeightPx, "important");
+              grid.style.setProperty("overflow", "auto", "important");
 
-              // if already exists, update and skip
+              // 기존 인스턴스가 있으면 업데이트
               const existing = (grid as any).__osInstance as any | undefined;
+
               if (existing && typeof existing.update === "function") {
                 try {
                   existing.update();
                   return;
-                } catch (e) {
-                  // fallthrough to recreate
-                }
+                } catch (e) {}
               }
 
-              try {
-                // call OverlayScrollbars as function and store instance
-                const instance = (OverlayScrollbars as any)(grid, {
-                  theme: "os-theme-dark",
-                  resize: "none",
-                  sizeAutoCapable: true,
-                  // don't auto-hide on hover or leave — keep scrollbars visible
-                  scrollbars: { autoHide: "never", autoHideDelay: 600, clickScroll: true },
-                } as any);
+              // 새로운 인스턴스 생성
+              const instance = (OverlayScrollbars as any)(grid, {
+                theme: "os-theme-dark",
+                resize: "none",
+                sizeAutoCapable: true,
 
-                (grid as any).__osInstance = instance;
-              } catch (err) {
-                // eslint-disable-next-line no-console
-                console.warn("OverlayScrollbars init failed", err);
-              }
+                scrollbars: {
+                  autoHide: "never",
+                  autoHideDelay: 600,
+                  clickScroll: true,
+                },
+              } as any);
+
+              (grid as any).__osInstance = instance; // 인스턴스 저장
             });
           }
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.warn("category-nav: failed to reveal targets for", href, err);
-        }
+        } catch (err) {}
       }
 
-      // close sheet after revealing
+      console.log("클립 클릭됨, 카테고리 시트 닫기");
       closeSheet();
     });
   });
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+  // 시트 외부 클릭 시 닫기
+  document.addEventListener("pointerdown", (e) => {
+    if (!isOpen || isAnimating) return;
+
+    const target = e.target as Node | null;
+    if (!target) return;
+
+    const insideSheet = sheetEl.contains(target);
+    const onFab = fabEl.contains(target);
+
+    if (!insideSheet && !onFab) {
+      console.log("시트 외부 클릭, 카테고리 시트 닫기");
+      closeSheet();
+    }
+  });
+
+  // ESC 키 눌렀을 때 닫기
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      console.log("ESC 키 눌림, 카테고리 시트 닫기");
       closeSheet();
     }
   });
 }
-
 export default initCategoryNavToggle;
