@@ -45,8 +45,7 @@ export function initProducts(): void {
       ? (products as Product[]).filter((x) => x.category === matchedCategory)
       : (products as Product[]);
 
-    const selectEl = section?.querySelector<HTMLSelectElement>(".shop-sort");
-
+    const selectEl = section?.querySelector<HTMLSelectElement>(".shop-sort"); // 정렬 select 엘리먼트
     const initialMode = selectEl?.value ?? "popular";
     renderList(grid, sortProducts(source, initialMode));
 
@@ -81,6 +80,7 @@ function renderList(grid: HTMLElement, list: Product[]) {
     if (p.desc) article.dataset.desc = p.desc;
     if (p.thumb) article.dataset.thumb = p.thumb;
 
+    // tag, className, text
     const thumb = createEl("div", "product-thumb", p.thumb ?? "📦");
     thumb.setAttribute("aria-hidden", "true");
 
@@ -112,15 +112,38 @@ function renderList(grid: HTMLElement, list: Product[]) {
   });
 
   grid.appendChild(frag);
-}
+  /*
+    <div class="products-grid products-grid--list">
+  <article
+    class="product-card"
+    data-id="p001"
+    data-title="게이밍 노트북"
+    data-price="1,500,000원"
+    data-desc="고성능 게이밍 노트북"
+    data-thumb="💻">
+    <div class="product-thumb" aria-hidden="true">
+      💻
+    </div>
 
-function parsePrice(raw?: string): number {
-  if (!raw) return 0;
-  const digits = raw.replace(/[^0-9]/g, "");
-  return parseInt(digits || "0", 10);
+    <div class="product-meta">
+      <div class="product-title">게이밍 노트북</div>
+      <div class="product-desc">고성능 게이밍 노트북</div>
+
+      <div class="product-bottom">
+        <div class="price">1,500,000원</div>
+        <button type="button" class="primary-btn quick-view">
+          상세보기
+        </button>
+      </div>
+    </div>
+  </article>
+</div>
+
+  */
 }
 
 function sortProducts(list: Product[], mode?: string): Product[] {
+  // 인기순, 신규순, 가격높은순, 가격낮은순
   const items = [...list];
   if (!mode || mode === "popular") {
     return items.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
@@ -139,6 +162,13 @@ function sortProducts(list: Product[], mode?: string): Product[] {
   return items;
 }
 
+function parsePrice(raw?: string): number {
+  if (!raw) return 0;
+  const digits = raw.replace(/[^0-9]/g, "");
+  return parseInt(digits || "0", 10);
+}
+
+// 간단한 엘리먼트 생성 유틸 함수
 function createEl<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   className?: string,

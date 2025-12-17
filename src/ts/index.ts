@@ -53,7 +53,7 @@ headerActions.forEach((a) => {
 initTestSwiper(); // 스와이퍼
 initCategoryNavToggle(); // 카테고리 네비 토글
 initProducts(); // 상품 리스트
-initProductQuickView();
+initProductQuickView(); // 상품 퀵뷰
 
 if (currentPage === "home") {
   log("index");
