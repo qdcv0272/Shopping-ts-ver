@@ -1,7 +1,7 @@
 import "../../css/page/info.css";
 
-import { log } from "../function/log";
-import * as auth from "../module/auth";
+import { log } from "../function/log"; // 로그 찍기 테스트
+import * as auth from "../module/auth"; // 인증 모듈
 import { setupAddressManage } from "../module/info/address-manage";
 import { setupChangePassword } from "../module/info/password";
 import { setupContactModal } from "../module/info/contact";
@@ -15,50 +15,54 @@ import ordersModule, { Order } from "../module/orders";
 
 export function initInfo() {
   log("info");
-  setupInfoLogin();
-  setupChangePassword();
-  setupContactModal();
-  setupAddressManage();
+  setupInfoLogin(); // 정보 페이지 로그인 처리
+  setupChangePassword(); // 정보 페이지 안에서 비밀번호 변경
+  setupContactModal(); // 문의 모달
+  setupAddressManage(); // 주소 관리
 }
 
 function setupInfoLogin() {
-  const loginSection = document.querySelector<HTMLElement>(".info-login");
-  const signupSection = document.querySelector<HTMLElement>(".info-signup");
-  const infoPage = document.querySelector<HTMLElement>(".info-page");
+  const loginSection = document.querySelector<HTMLElement>(".info-login"); // 로그인 섹션
+  const signupSection = document.querySelector<HTMLElement>(".info-signup"); // 회원가입 섹션
+  const infoPage = document.querySelector<HTMLElement>(".info-page"); // 정보 페이지 섹션
 
   const form = document.querySelector(
     "#info-login-form"
-  ) as HTMLFormElement | null;
+  ) as HTMLFormElement | null; // 로그인 폼
 
   if (!loginSection || !infoPage || !form) return;
 
-  const feedback = form.querySelector<HTMLElement>(".info-login__feedback");
+  const feedback = form.querySelector<HTMLElement>(".info-login__feedback"); // 피드백 영역
 
   const submitButton = form.querySelector<HTMLButtonElement>(
     ".info-login__submit"
-  );
+  ); // 제출 버튼
   const signupTrigger = document.querySelector<HTMLButtonElement>(
     ".js-info-open-signup"
-  );
+  ); // 회원가입 열기 버튼
 
   const signupBackButton = signupSection?.querySelector<HTMLButtonElement>(
     '[data-action="back"]'
-  );
+  ); // 회원가입 뒤로가기 버튼
 
   if (signupTrigger && signupSection) {
-    signupTrigger.addEventListener("click", () =>
-      showSignup(loginSection, signupSection)
-    );
+    signupTrigger.addEventListener("click", () => {
+      console.log("회원가입 열기");
+      showSignup(loginSection, signupSection);
+    });
   }
+
   if (signupBackButton && signupSection) {
-    signupBackButton.addEventListener("click", () =>
-      hideSignup(loginSection, signupSection)
-    );
+    signupBackButton.addEventListener("click", () => {
+      console.log("뒤로가기 클릭");
+      hideSignup(loginSection, signupSection);
+    });
   }
 
-  setupFindUsername();
-  setupFindPassword();
+  setupFindUsername(); // 아이디 찾기
+  setupFindPassword(); // 비밀번호 찾기
 
+  // 자동 로그인 처리
   const sessionAuthed =
     sessionStorage.getItem(auth.LOGIN_STORAGE_KEY) === "true";
   const authedUsernameSession = sessionStorage.getItem(auth.LOGIN_USER_KEY);
@@ -66,27 +70,23 @@ function setupInfoLogin() {
   const authedUsername = authedUsernameSession;
 
   if (sessionAuthed && authedUsername) {
-    
     const authedUser = auth.findUserByUsername(authedUsernameSession);
-
     if (authedUser) {
-      populateInfoPage(authedUser);
-      setupProfileUploader();
-      setupChangePassword();
-      setupContactModal();
-      setupAddressManage();
-      revealInfoPage(loginSection, infoPage, signupSection ?? undefined);
-      // render orders list for this user
-      renderOrders(authedUser.username);
-      try {
-        const lastId = sessionStorage.getItem("lastOrderId");
-        if (lastId) {
-          sessionStorage.removeItem("lastOrderId");
-          const userOrders = ordersModule.getOrders(authedUser.username);
-          const target = userOrders.find((o) => o.id === lastId);
-          if (target) showOrderDetailsModal(target);
-        }
-      } catch {}
+      populateInfoPage(authedUser); // 정보 페이지 채우기
+      setupProfileUploader(); // 프로필 업로더 설정
+      setupChangePassword(); // 비밀번호 변경 설정
+      setupContactModal(); // 연락처 모달 설정
+      setupAddressManage(); // 주소 관리 설정
+      revealInfoPage(loginSection, infoPage, signupSection ?? undefined); // 정보 페이지 표시
+      renderOrders(authedUser.username); // 주문 내역 렌더링
+
+      const lastId = sessionStorage.getItem("lastOrderId");
+      if (lastId) {
+        sessionStorage.removeItem("lastOrderId");
+        const userOrders = ordersModule.getOrders(authedUser.username);
+        const target = userOrders.find((o) => o.id === lastId);
+        if (target) showOrderDetailsModal(target);
+      }
 
       const logoutBtnRestored = document.getElementById(
         "js-info-logout"
@@ -96,7 +96,6 @@ function setupInfoLogin() {
         sessionStorage.removeItem(auth.LOGIN_USER_KEY);
         localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
         localStorage.removeItem(auth.LOGIN_USER_KEY);
-        // remove local cart and favorites on logout to avoid previous user's data remaining in localStorage
         try {
           localStorage.removeItem("cartItems");
           localStorage.removeItem("favorites");
@@ -177,10 +176,8 @@ function setupInfoLogin() {
     form.reset();
     revealInfoPage(loginSection, infoPage, signupSection ?? undefined);
 
-    // migrate session items (cart/favorites) into local storage when logging in
     try {
       const summary = migrateSessionToLocal();
-      // build a friendly message: map ids to product titles
       const productMap: Record<string, string> = {};
       (products as any[]).forEach((p) => {
         if (p?.id && p?.title) productMap[p.id] = p.title;
@@ -206,7 +203,6 @@ function setupInfoLogin() {
     } catch (err) {
       // ignore errors
     }
-    // if login was triggered by checkout flow, redirect back to cart
     try {
       const r = sessionStorage.getItem("postLoginReturnTo");
       if (r === "cart") {
@@ -254,7 +250,7 @@ function showMergeSummaryModal(message: string) {
   }
   const modal = document.createElement("div");
   modal.id = "merge-summary-modal";
-  modal.className = "product-modal"; // reuse modal styling
+  modal.className = "product-modal";
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-hidden", "false");
   modal.innerHTML = `
@@ -271,9 +267,7 @@ function showMergeSummaryModal(message: string) {
     </div>
   `;
   document.body.appendChild(modal);
-  // show modal by removing d-none if present
   modal.classList.remove("d-none");
-  // focus the close button
   const closeBtn = modal.querySelector(
     ".product-modal__close"
   ) as HTMLElement | null;
@@ -302,7 +296,7 @@ function formatPrice(n: number) {
 function renderOrders(username?: string) {
   const list = document.querySelector<HTMLUListElement>(".orders-list");
   if (!list) return;
-  // clear existing
+
   list.innerHTML = "";
   const orders = ordersModule.getOrders(
     username ?? (sessionStorage.getItem(auth.LOGIN_USER_KEY) || undefined)

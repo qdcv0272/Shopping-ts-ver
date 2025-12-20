@@ -5,15 +5,34 @@ export function populateInfoPage(user: auth.StoredUser) {
   const safeEmail = user.email?.trim() || "이메일 정보가 없습니다.";
   const safePhoneRaw = user.phone?.trim() || "";
   const safePhone = safePhoneRaw || "휴대폰 정보가 없습니다.";
-  const primaryAddress = user.roadAddress?.trim() || user.address?.trim() || "";
-  const addressLine1 = primaryAddress || "기본 배송지가 아직 등록되지 않았습니다.";
+
+  const tagLabelMap: Record<string, { text: string; badge: string }> = {
+    home: { text: "집", badge: "badge--home" },
+    work: { text: "회사", badge: "badge--work" },
+    friend: { text: "친구집", badge: "badge--friend" },
+    other: { text: "기타", badge: "badge--other" },
+  };
+
+  const addresses = Array.isArray(user.addresses) ? user.addresses : [];
+  const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
+
+  const primaryRoad =
+    defaultAddress?.road?.trim() ||
+    user.roadAddress?.trim() ||
+    user.address?.trim() ||
+    "";
+  const primaryDetail =
+    defaultAddress?.detail?.trim() || user.addressDetail?.trim() || "";
+  const primaryLabel = defaultAddress?.label?.trim() || "기본 배송지";
+  const primaryTag = defaultAddress?.tag?.trim() || "home";
+
+  const addressLine1 = primaryRoad || "기본 배송지가 아직 등록되지 않았습니다.";
 
   const secondaryParts: string[] = [];
-
-  if (user.addressDetail?.trim()) secondaryParts.push(user.addressDetail.trim());
+  if (primaryDetail) secondaryParts.push(primaryDetail);
   if (safePhoneRaw) secondaryParts.push(`${safeName} (${safePhoneRaw})`);
 
-  const addressLine2 = primaryAddress
+  const addressLine2 = primaryRoad
     ? secondaryParts.join(" · ") || "상세 주소를 추가해주세요."
     : "배송지를 추가하면 여기에 표시됩니다.";
 
@@ -26,15 +45,40 @@ export function populateInfoPage(user: auth.StoredUser) {
   document.querySelectorAll<HTMLElement>(".js-info-phone").forEach((el) => {
     el.textContent = safePhone;
   });
-  document.querySelectorAll<HTMLElement>(".js-info-address-line1").forEach((el) => {
-    el.textContent = addressLine1;
-  });
-  document.querySelectorAll<HTMLElement>(".js-info-address-line2").forEach((el) => {
-    el.textContent = addressLine2;
-  });
+  document
+    .querySelectorAll<HTMLElement>(".js-info-address-line1")
+    .forEach((el) => {
+      el.textContent = addressLine1;
+    });
+  document
+    .querySelectorAll<HTMLElement>(".js-info-address-line2")
+    .forEach((el) => {
+      el.textContent = addressLine2;
+    });
 
-  const avatarEl = document.querySelector<HTMLDivElement>(".profile-card__media .avatar");
-  const removeBtn = document.getElementById("js-profile-remove") as HTMLButtonElement | null;
+  const badgeEl = document.querySelector<HTMLElement>(
+    ".address-card__label .badge"
+  );
+  const labelTextEl = document.querySelector<HTMLElement>(
+    ".address-card__label-text"
+  );
+
+  if (badgeEl) {
+    const tagInfo = tagLabelMap[primaryTag] ?? tagLabelMap.other;
+    badgeEl.textContent = tagInfo.text;
+    badgeEl.className = `badge ${tagInfo.badge}`;
+  }
+
+  if (labelTextEl) {
+    labelTextEl.textContent = primaryLabel;
+  }
+
+  const avatarEl = document.querySelector<HTMLDivElement>(
+    ".profile-card__media .avatar"
+  );
+  const removeBtn = document.getElementById(
+    "js-profile-remove"
+  ) as HTMLButtonElement | null;
   if (avatarEl) {
     if (user.profileImage) {
       avatarEl.innerHTML = "";
@@ -47,26 +91,25 @@ export function populateInfoPage(user: auth.StoredUser) {
       avatarEl.innerHTML = "👤";
       avatarEl.setAttribute("aria-hidden", "true");
     }
+
     if (removeBtn) removeBtn.disabled = !user.profileImage;
   }
 }
 
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(reader.error);
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.readAsDataURL(file);
-  });
-}
-
 export function setupProfileUploader() {
-  const uploadInput = document.getElementById("js-profile-upload") as HTMLInputElement | null;
-  const avatarEl = document.querySelector<HTMLDivElement>(".profile-card__media .avatar");
+  const uploadInput = document.getElementById(
+    "js-profile-upload"
+  ) as HTMLInputElement | null; // 프로필 업로드 입력
+  const avatarEl = document.querySelector<HTMLDivElement>(
+    ".profile-card__media .avatar"
+  );
   if (!uploadInput || !avatarEl) return;
 
-  const removeBtn = document.getElementById("js-profile-remove") as HTMLButtonElement | null;
+  const removeBtn = document.getElementById(
+    "js-profile-remove"
+  ) as HTMLButtonElement | null;
 
+  // 파일 선택 시 미리보기 및 저장
   uploadInput.addEventListener("change", async () => {
     const file = uploadInput.files?.[0];
     if (!file) return;
@@ -89,9 +132,13 @@ export function setupProfileUploader() {
       img.src = dataUrl;
       avatarEl.appendChild(img);
 
-      const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
+      const username =
+        sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
+        localStorage.getItem(auth.LOGIN_USER_KEY);
       if (!username) {
-        console.warn("로그인된 유저를 찾을 수 없습니다. 프로필 저장을 건너뜁니다.");
+        console.warn(
+          "로그인된 유저를 찾을 수 없습니다. 프로필 저장을 건너뜁니다."
+        );
         return;
       }
 
@@ -109,7 +156,9 @@ export function setupProfileUploader() {
       const confirmDelete = confirm("프로필 사진을 정말 삭제하시겠습니까?");
       if (!confirmDelete) return;
 
-      const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
+      const username =
+        sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
+        localStorage.getItem(auth.LOGIN_USER_KEY);
       if (!username) {
         alert("로그인된 사용자가 없습니다.");
         return;
@@ -127,4 +176,14 @@ export function setupProfileUploader() {
       removeBtn.disabled = true;
     });
   }
+}
+
+// 파일을 Data URL로 읽기
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error);
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.readAsDataURL(file);
+  });
 }

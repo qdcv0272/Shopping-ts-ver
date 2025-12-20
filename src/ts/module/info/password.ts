@@ -1,17 +1,20 @@
 import * as auth from "../auth";
-// no migration on password-change logout; we will remove local cart/favorites instead
 import { showToast } from "./toast";
 
 export function setupChangePassword() {
+  // 여러 페이지 혹은 여러 모듈에서 중복 호출 방지
   const modal =
     document.querySelector<HTMLElement>(".info-page .change-password-modal") ||
     document.querySelector<HTMLElement>(".info-page .change-pw-modal") ||
     document.querySelector<HTMLElement>(".change-password-modal") ||
     document.querySelector<HTMLElement>(".change-pw-modal");
+
   const trigger = document.getElementById(
     "js-profile-change-password"
   ) as HTMLButtonElement | null;
+
   if (!modal || !trigger) return;
+  const modalEl = modal as HTMLElement;
 
   if (modal.dataset._changePasswordInit === "true") return;
 
@@ -32,56 +35,61 @@ export function setupChangePassword() {
   );
   const saveBtn = modal.querySelector<HTMLButtonElement>(".js-change-save");
 
-  const open = () => {
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
-    if (!username) {
-      showToast("로그인이 필요합니다. 먼저 로그인해주세요.");
-      return;
-    }
-
-    modal.classList.remove("d-none");
-    requestAnimationFrame(() => modal.classList.add("is-open"));
-    modal.setAttribute("aria-hidden", "false");
-    status && (status.textContent = "현재 비밀번호를 입력하세요.");
-    form?.reset();
-    inputCurrent?.focus();
-  };
-
-  const close = () => {
-    try {
-      const active = document.activeElement as HTMLElement | null;
-      if (active && modal.contains(active)) {
-        if (trigger) trigger.focus();
-        else {
-          const fallback = document.querySelector<HTMLElement>(
-            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          if (fallback) fallback.focus();
-        }
-      }
-    } catch {}
-
-    modal.classList.remove("is-open");
-    const onEnd = () => {
-      modal.classList.add("d-none");
-      modal.setAttribute("aria-hidden", "true");
-      form?.reset();
-      modal.removeEventListener("transitionend", onEnd);
-    };
-    modal.addEventListener("transitionend", onEnd);
-  };
-
   trigger.addEventListener("click", (e) => {
     e.preventDefault();
     open();
   });
 
   closeBtn?.addEventListener("click", close);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) close();
+  modalEl.addEventListener("click", (e) => {
+    if (e.target === modalEl) close();
   });
+
+  function open() {
+    console.log("@@ 내 정보 페이지에서 비밀번호 변경 모달 열기");
+
+    const username =
+      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
+      localStorage.getItem(auth.LOGIN_USER_KEY);
+
+    if (!username) {
+      // 혹시 모를 오류 방지
+      showToast("로그인이 필요합니다. 먼저 로그인해주세요.");
+      return;
+    }
+
+    modalEl.classList.remove("d-none");
+    requestAnimationFrame(() => modalEl.classList.add("is-open"));
+    modalEl.setAttribute("aria-hidden", "false");
+    status && (status.textContent = "현재 비밀번호를 입력하세요.");
+    form?.reset();
+    inputCurrent?.focus();
+  }
+
+  function close() {
+    const active = document.activeElement as HTMLElement | null;
+    if (active && modalEl.contains(active)) {
+      if (trigger) trigger.focus();
+      else {
+        console.warn("@@@@@@@@@@ 리턴 풀어 @@@@@@@@@@");
+      }
+      // else {
+      //   const fallback = document.querySelector<HTMLElement>(
+      //     'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      //   );
+      //   if (fallback) fallback.focus();
+      // }
+    }
+
+    modalEl.classList.remove("is-open");
+    const onEnd = () => {
+      modalEl.classList.add("d-none");
+      modalEl.setAttribute("aria-hidden", "true");
+      form?.reset();
+      modalEl.removeEventListener("transitionend", onEnd);
+    };
+    modalEl.addEventListener("transitionend", onEnd);
+  }
 
   if (
     !form ||
@@ -148,17 +156,14 @@ export function setupChangePassword() {
     status.textContent = "비밀번호가 성공적으로 변경되었습니다.";
     showToast("비밀번호가 변경되었습니다. 곧 자동 로그아웃됩니다.");
 
-    try {
-      alert(
-        "비밀번호가 변경되어 보안을 위해 자동으로 로그아웃됩니다. 다시 로그인해주세요."
-      );
-    } catch (e) {}
+    alert(
+      "비밀번호가 변경되어 보안을 위해 자동으로 로그아웃됩니다. 다시 로그인해주세요."
+    );
 
-    try {
-      localStorage.removeItem("cartItems");
-      localStorage.removeItem("favorites");
-      showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
-    } catch {}
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("favorites");
+    showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
+
     sessionStorage.removeItem(auth.LOGIN_STORAGE_KEY);
     sessionStorage.removeItem(auth.LOGIN_USER_KEY);
     localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
@@ -189,5 +194,5 @@ export function setupChangePassword() {
     setTimeout(() => close(), 300);
   });
 
-  modal.dataset._changePasswordInit = "true";
+  modalEl.dataset._changePasswordInit = "true";
 }

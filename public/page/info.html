@@ -131,11 +131,6 @@
             </div>
           </div>
 
-          <!-- (login-area) 연락처 모달s removed; single modal is placed inside info-page below so it becomes visible when info-page is shown -->
-
-          <!-- 배송지 관리 모달 -->
-          <!-- address-manage-modal moved to the info-page section below so the profile '배송지 관리' button reveals the in-page dialog -->
-
           <!-- 아이디 찾기 모달 -->
           <div class="findid-modal d-none" role="dialog">
             <div class="findid-modal__card">
@@ -160,7 +155,7 @@
               <ul class="findid-modal__results"></ul>
             </div>
           </div>
-          <!-- 비밀번호 찾기 모달 -->
+          <!-- 비밀번호 찾기 모달 required 제거 했음 -->
           <div class="findpw-modal d-none" role="dialog">
             <div class="findpw-modal__card">
               <header class="findpw-modal__header">
@@ -172,13 +167,11 @@
                   type="text"
                   class="js-findpw-username"
                   placeholder="아이디를 입력하세요"
-                  required
                 />
                 <input
                   type="email"
                   class="js-findpw-email"
                   placeholder="등록된 이메일을 입력하세요"
-                  required
                 />
                 <button class="btn btn--primary" type="submit">확인</button>
               </form>
@@ -431,7 +424,6 @@
 
         <section class="page-content info-page d-none" role="main">
           <div class="layout container info-panel">
-            <!-- Profile summary -->
             <section class="profile-card">
               <div class="profile-card__media">
                 <div class="avatar avatar--xl" aria-hidden="true">👤</div>
@@ -482,8 +474,6 @@
               </div>
             </section>
 
-            <!-- Account / contact details -->
-            <!-- In-page contact modal (info page) - single instance used by profile view -->
             <section class="account-details">
               <header class="section-header">
                 <h2 id="account-heading">연락처 & 주소</h2>
@@ -512,8 +502,6 @@
                   </div>
                 </div>
 
-                <!-- Single in-page contact modal used for profile (moved here) -->
-
                 <div class="card address-card">
                   <h3 class="card__title">기본 배송지</h3>
                   <div class="address-card__label">
@@ -539,7 +527,6 @@
               </div>
             </section>
 
-            <!-- Recent orders / activity -->
             <section class="orders">
               <header class="section-header">
                 <h2 id="orders-heading">최근 주문 내역</h2>
@@ -596,30 +583,108 @@
                   ×
                 </button>
               </header>
-              <form class="address-manage-modal__form">
-                <input
-                  type="text"
-                  class="js-address-road"
-                  placeholder="도로명 주소"
-                />
-                <input
-                  type="text"
-                  class="js-address-detail"
-                  placeholder="상세 주소"
-                />
-                <div class="address-manage-modal__actions">
+
+              <div class="address-manage__body">
+                <div class="address-manage__list-header">
+                  <div>
+                    <h3 class="address-manage__title">저장된 배송지</h3>
+                    <p class="address-manage__subtitle">
+                      배송지를 선택하면 기본 배송지로 설정돼 카드에 반영됩니다.
+                    </p>
+                  </div>
+                  <div class="address-manage__actions">
+                    <button class="btn js-address-add" type="button">
+                      + 새 주소
+                    </button>
+                  </div>
+                </div>
+
+                <ul
+                  class="address-manage__list js-address-list"
+                  aria-live="polite"
+                ></ul>
+                <div
+                  class="address-manage-modal__status"
+                  aria-live="polite"
+                ></div>
+              </div>
+
+              <div class="address-manage__editor js-address-editor d-none">
+                <h3 class="address-manage__editor-title js-editor-title">
+                  주소 추가
+                </h3>
+                <div class="address-manage__field">
+                  <label>주소 검색</label>
+                  <div class="address-manage__field-row">
+                    <input
+                      type="text"
+                      class="js-address-keyword"
+                      placeholder="도로명/건물명을 입력"
+                    />
+                    <button class="btn js-address-search" type="button">
+                      검색
+                    </button>
+                  </div>
+                </div>
+
+                <ul
+                  class="address-manage__results js-address-results"
+                  aria-live="polite"
+                ></ul>
+
+                <div class="address-manage__field">
+                  <label>주소 태그</label>
+                  <select class="js-address-tag">
+                    <option value="home">집</option>
+                    <option value="work">회사</option>
+                    <option value="friend">친구집</option>
+                    <option value="other">직접 입력</option>
+                  </select>
+                  <input
+                    type="text"
+                    class="js-address-tag-custom d-none"
+                    placeholder="직접 입력 태그"
+                  />
+                </div>
+
+                <div
+                  class="address-manage__field address-manage__field--inline"
+                >
+                  <label>도로명 주소</label>
+                  <div class="address-manage__field-row">
+                    <input
+                      type="text"
+                      class="js-address-road"
+                      placeholder="도로명 주소"
+                    />
+                  </div>
+                </div>
+
+                <div class="address-manage__field">
+                  <label>상세 주소</label>
+                  <input
+                    type="text"
+                    class="js-address-detail"
+                    placeholder="상세 주소"
+                  />
+                </div>
+                <label class="address-manage__check">
+                  <input type="checkbox" class="js-address-default" />
+                  <span>기본 배송지로 설정</span>
+                </label>
+
+                <div class="address-manage__editor-actions">
                   <button
                     class="btn btn--primary js-address-save"
                     type="button"
                   >
                     저장
                   </button>
+                  <button class="btn js-address-cancel" type="button">
+                    취소
+                  </button>
                 </div>
-                <div
-                  class="address-manage-modal__status"
-                  aria-live="polite"
-                ></div>
-              </form>
+              </div>
             </div>
           </div>
 
