@@ -16,52 +16,44 @@ type Product = {
 };
 type CartItem = { id: string; qty: number };
 
+// get & set 장바구니 항목을 불러오고 저장하는 함수
 function getCartItems(): CartItem[] {
-  try {
-    const raw = storage.getItemPrefer("cartItems");
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (
-      Array.isArray(parsed) &&
-      parsed.length &&
-      typeof parsed[0] === "string"
-    ) {
-      // migrate from string[] (title or id) -> CartItem[]
-      const converted = (parsed as string[])
-        .map((s) => {
-          const p = (products as Product[]).find(
-            (x) => x.id === s || x.title === s
-          );
-          if (p?.id) return { id: p.id, qty: 1 } as CartItem;
-          return { id: s, qty: 1 } as CartItem;
-        })
-        .filter(Boolean);
-      setCartItems(converted);
-      return converted;
-    }
-    return parsed as CartItem[];
-  } catch {
-    return [];
+  const raw = storage.getItemPrefer("cartItems");
+  if (!raw) return [];
+  const parsed = JSON.parse(raw);
+  if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === "string") {
+    const converted = (parsed as string[])
+      .map((s) => {
+        const p = (products as Product[]).find(
+          (x) => x.id === s || x.title === s
+        );
+        if (p?.id) return { id: p.id, qty: 1 } as CartItem;
+        return { id: s, qty: 1 } as CartItem;
+      })
+      .filter(Boolean);
+    setCartItems(converted);
+    return converted;
   }
+  return parsed as CartItem[];
 }
 
 function setCartItems(items: CartItem[]) {
-  try {
-    storage.setItemPrefer("cartItems", JSON.stringify(items));
-    document.dispatchEvent(
-      new CustomEvent("cart:changed", {
-        detail: { count: items.reduce((s, i) => s + i.qty, 0) },
-      })
-    );
-  } catch {}
+  storage.setItemPrefer("cartItems", JSON.stringify(items));
+  document.dispatchEvent(
+    new CustomEvent("cart:changed", {
+      detail: { count: items.reduce((s, i) => s + i.qty, 0) },
+    })
+  );
 }
 
+// 가격 문자열을 숫자로 파싱하는 함수
 function parsePrice(raw?: string) {
   if (!raw) return 0;
   const digits = raw.replace(/[^0-9]/g, "");
   return parseInt(digits || "0", 10);
 }
 
+// 숫자를 가격 문자열로 포맷팅하는 함수
 function formatPriceNumber(n: number) {
   return "₩" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -89,7 +81,6 @@ export function initCart() {
       return;
     }
 
-    // header with count and clear-all
     const header = document.createElement("div");
     header.className = "demo-section";
     header.innerHTML = `<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px\"><div><h2>장바구니 (${found.length})</h2><div style=\"color:#475569;font-size:13px\">담긴 상품을 확인하고 결제하세요.</div></div><div><button class=\"accent-btn clear-cart\">비우기</button></div></div>`;
@@ -130,7 +121,6 @@ export function initCart() {
 
     rootEl.appendChild(list);
 
-    // hook up qty and remove buttons
     rootEl
       .querySelectorAll<HTMLButtonElement>(".qty-increase")
       .forEach((btn, i) => {
@@ -159,7 +149,6 @@ export function initCart() {
             setCartItems(all);
             showToast(`${found[i].product.title} 수량이 감소했습니다`);
           } else {
-            // minimum qty is 1 — do not remove here, use 제거 버튼 instead
             showToast(`${found[i].product.title}의 최소 수량은 1개입니다`);
           }
           render();
@@ -252,7 +241,7 @@ export function initCart() {
       } catch {}
       setCartItems([]);
       showToast("주문이 접수되었습니다. 감사합니다 🙏");
-      // navigate to info page so user can see orders
+
       window.location.href = "../page/info.html";
     });
   }

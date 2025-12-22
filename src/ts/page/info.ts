@@ -70,15 +70,19 @@ function setupInfoLogin() {
   const authedUsername = authedUsernameSession;
 
   if (sessionAuthed && authedUsername) {
+    console.log("로그인 되어 있음@@@@@@@@@@@@@");
     const authedUser = auth.findUserByUsername(authedUsernameSession);
     if (authedUser) {
+      // import
       populateInfoPage(authedUser); // 정보 페이지 채우기
       setupProfileUploader(); // 프로필 업로더 설정
       setupChangePassword(); // 비밀번호 변경 설정
       setupContactModal(); // 연락처 모달 설정
       setupAddressManage(); // 주소 관리 설정
+
+      // info.ts 내부 함수
       revealInfoPage(loginSection, infoPage, signupSection ?? undefined); // 정보 페이지 표시
-      renderOrders(authedUser.username); // 주문 내역 렌더링
+      renderOrders(authedUser.username); // 주문 내역 렌더링 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
       const lastId = sessionStorage.getItem("lastOrderId");
       if (lastId) {
@@ -121,6 +125,7 @@ function setupInfoLogin() {
     sessionStorage.removeItem(auth.LOGIN_STORAGE_KEY);
     sessionStorage.removeItem(auth.LOGIN_USER_KEY);
   } else {
+    console.log("로그인 되어 있지 않음@@@@@@@@@@@@@");
     localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
     localStorage.removeItem(auth.LOGIN_USER_KEY);
   }
@@ -243,124 +248,136 @@ function setupInfoLogin() {
   });
 }
 
-function showMergeSummaryModal(message: string) {
-  const existing = document.getElementById("merge-summary-modal");
-  if (existing) {
-    existing.remove();
-  }
-  const modal = document.createElement("div");
-  modal.id = "merge-summary-modal";
-  modal.className = "product-modal";
-  modal.setAttribute("role", "dialog");
-  modal.setAttribute("aria-hidden", "false");
-  modal.innerHTML = `
-    <div class="product-modal__backdrop" data-dismiss="modal"></div>
-    <div class="product-modal__panel" role="document">
-      <button class="product-modal__close" aria-label="닫기">✕</button>
-      <div class="product-modal__body">
-        <div class="product-modal__info">
-          <h3 class="product-modal__title">로그인으로 병합된 항목</h3>
-          <pre style="white-space:pre-wrap;">${escapeHtml(message)}</pre>
-          <div style="text-align:right;margin-top:12px;"><button class="primary-btn merge-ok">확인</button></div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.classList.remove("d-none");
-  const closeBtn = modal.querySelector(
-    ".product-modal__close"
-  ) as HTMLElement | null;
-  const okBtn = modal.querySelector(".merge-ok") as HTMLElement | null;
-  try {
-    closeBtn?.focus();
-  } catch {}
-  function closeModal() {
-    modal.remove();
-  }
-  closeBtn?.addEventListener("click", closeModal);
-  okBtn?.addEventListener("click", closeModal);
-  modal
-    .querySelectorAll("[data-dismiss=modal]")
-    .forEach((el) => el.addEventListener("click", closeModal));
+// 정보 페이지 표시 함수
+function revealInfoPage(
+  loginSection: HTMLElement,
+  infoPage: HTMLElement,
+  signupSection?: HTMLElement
+) {
+  loginSection.classList.add("d-none"); // 로그인 섹션 숨기기
+  if (signupSection) signupSection.classList.add("d-none"); // 회원가입 섹션 숨기기
+  infoPage.classList.remove("d-none"); // 정보 페이지 표시
 }
 
-function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function formatPrice(n: number) {
-  return "₩" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
+/*
+  주문 목록을 화면에 렌더링하는 함수
+  username이 전달되면 해당 유저 주문,
+  없으면 세션에 저장된 로그인 유저의 주문을 사용
+*/
 function renderOrders(username?: string) {
   const list = document.querySelector<HTMLUListElement>(".orders-list");
   if (!list) return;
 
   list.innerHTML = "";
+
+  /*
+    주문 데이터 가져오기
+    username이 있으면 그것을 사용하고,
+    없으면 sessionStorage에 저장된 로그인 유저 아이디 사용
+  */
   const orders = ordersModule.getOrders(
     username ?? (sessionStorage.getItem(auth.LOGIN_USER_KEY) || undefined)
   );
+
   if (!orders || !orders.length) {
-    list.innerHTML = `<li class="order-item"><div class="order-item__body">주문 내역이 없습니다.</div></li>`;
+    list.innerHTML = `
+      <li class="order-item">
+        <div class="order-item__body">주문 내역이 없습니다.</div>
+      </li>
+    `;
     return;
   }
 
+  // 상품 ID → 상품 정보로 빠르게 찾기 위한 맵 생성
+  // (주문에는 상품 ID만 있으므로 제목/가격 조회용)
   const productMap: Record<string, any> = {};
   (products as any[]).forEach((p) => {
     if (p?.id) productMap[p.id] = p;
   });
+  /*
+const productMap: { [key: string]: any } = {};
 
+(products as any[]).forEach((p) => {
+  if (p?.id) {
+    productMap[p.id] = p;
+  }
+});
+  */
+
+  // 주문 목록 하나씩 화면에 추가
   orders.forEach((o) => {
     const li = document.createElement("li");
     li.className = "order-item";
+
     const date = new Date(o.date);
+
     const first = o.items[0];
     const firstProduct = productMap[first?.id];
-    const title = firstProduct?.title ?? first?.id ?? "상품";
+
+    const title = firstProduct?.title ?? first?.id ?? "상품"; // 첫 번째 아이템 제목
+
     const extra = o.items.length > 1 ? `외 ${o.items.length - 1}개` : ``;
+
+    // 주문 아이템 HTML 구성
     li.innerHTML = `
       <div class="order-item__meta">
         <div class="order-id">${escapeHtml(o.id)}</div>
-        <div class="order-date">${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}</div>
+        <div class="order-date">
+          ${date.getFullYear()}-
+          ${(date.getMonth() + 1).toString().padStart(2, "0")}-
+          ${date.getDate().toString().padStart(2, "0")}
+        </div>
       </div>
-      <div class="order-item__body">${escapeHtml(title)} × ${
-      o.items[0].qty
-    } ${escapeHtml(extra)} — 결제금액 ${formatPrice(o.total)}</div>
-      <div class="order-item__actions"><a href="#" class="link js-order-detail" data-order-id="${escapeHtml(
-        o.id
-      )}">주문상세</a></div>
+
+      <div class="order-item__body">
+        ${escapeHtml(title)} × ${o.items[0].qty}
+        ${escapeHtml(extra)} — 결제금액 ${formatPrice(o.total)}
+      </div>
+
+      <div class="order-item__actions">
+        <a href="#" class="link js-order-detail"
+           data-order-id="${escapeHtml(o.id)}">
+          주문상세
+        </a>
+      </div>
     `;
+
+    // 리스트에 추가
     list.appendChild(li);
   });
 
-  // attach click listeners
   list.querySelectorAll<HTMLAnchorElement>(".js-order-detail").forEach((a) => {
     a.addEventListener("click", (ev) => {
       ev.preventDefault();
+
+      console.log("주문 상세 보기 클릭");
       const id = a.dataset.orderId;
       if (!id) return;
+
       const order = orders.find((x) => x.id === id);
       if (!order) return;
+
       showOrderDetailsModal(order);
     });
   });
 }
 
+// 주문 상세 모달 표시 함수
 function showOrderDetailsModal(order: Order) {
   const existing = document.getElementById("order-details-modal");
   if (existing) existing.remove();
+
   const modal = document.createElement("div");
   modal.id = "order-details-modal";
   modal.className = "product-modal";
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-hidden", "false");
+
   const productMap: Record<string, any> = {};
   (products as any[]).forEach((p) => {
     if (p?.id) productMap[p.id] = p;
   });
+
   const rows = order.items
     .map((it) => {
       const p = productMap[it.id];
@@ -369,6 +386,7 @@ function showOrderDetailsModal(order: Order) {
       )}</li>`;
     })
     .join("");
+
   modal.innerHTML = `
     <div class="product-modal__backdrop" data-dismiss="modal"></div>
     <div class="product-modal__panel" role="document">
@@ -398,21 +416,65 @@ function showOrderDetailsModal(order: Order) {
   modal
     .querySelectorAll("[data-dismiss=modal]")
     .forEach((el) => el.addEventListener("click", dismiss));
-  try {
-    (closeBtn as HTMLElement | null)?.focus();
-  } catch {}
+
+  (closeBtn as HTMLElement | null)?.focus();
 }
 
-function revealInfoPage(
-  loginSection: HTMLElement,
-  infoPage: HTMLElement,
-  signupSection?: HTMLElement
-) {
-  loginSection.classList.add("d-none");
-  if (signupSection) signupSection.classList.add("d-none");
-  infoPage.classList.remove("d-none");
+// 로그인 후 병합된 항목 요약 모달 표시 함수
+function showMergeSummaryModal(message: string) {
+  const existing = document.getElementById("merge-summary-modal");
+  if (existing) {
+    existing.remove();
+  }
+  const modal = document.createElement("div");
+  modal.id = "merge-summary-modal";
+  modal.className = "product-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-hidden", "false");
+  modal.innerHTML = `
+    <div class="product-modal__backdrop" data-dismiss="modal"></div>
+    <div class="product-modal__panel" role="document">
+      <button class="product-modal__close" aria-label="닫기">✕</button>
+      <div class="product-modal__body">
+        <div class="product-modal__info">
+          <h3 class="product-modal__title">로그인으로 병합된 항목</h3>
+          <pre style="white-space:pre-wrap;">${escapeHtml(message)}</pre>
+          <div style="text-align:right;margin-top:12px;"><button class="primary-btn merge-ok">확인</button></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.classList.remove("d-none");
+  const closeBtn = modal.querySelector(
+    ".product-modal__close"
+  ) as HTMLElement | null;
+  const okBtn = modal.querySelector(".merge-ok") as HTMLElement | null;
+
+  closeBtn?.focus();
+
+  function closeModal() {
+    modal.remove();
+  }
+
+  closeBtn?.addEventListener("click", closeModal);
+  okBtn?.addEventListener("click", closeModal);
+  modal
+    .querySelectorAll("[data-dismiss=modal]")
+    .forEach((el) => el.addEventListener("click", closeModal));
 }
 
+// HTML 이스케이프 함수
+function escapeHtml(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// 가격 포맷 함수
+function formatPrice(n: number) {
+  return "₩" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// 피드백 표시 함수
 function showFeedback(target: HTMLElement, message: string, success = false) {
   target.textContent = message;
   target.classList.toggle("is-success", success);

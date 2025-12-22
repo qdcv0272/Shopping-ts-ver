@@ -4,23 +4,27 @@ import products from "../../data/products.json";
 import { showToast } from "../module/info/toast";
 import storage from "../module/storage";
 
-type Product = { id?: string; title: string; price: string; desc: string; thumb?: string };
+type Product = {
+  id?: string;
+  title: string;
+  price: string;
+  desc: string;
+  thumb?: string;
+};
 
+// get & set 즐겨찾기 항목을 불러오고 저장하는 함수
 function getFavorites(): string[] {
-  try {
-    const raw = storage.getItemPrefer("favorites");
-    if (!raw) return [];
-    return JSON.parse(raw) as string[];
-  } catch {
-    return [];
-  }
+  const raw = storage.getItemPrefer("favorites");
+  if (!raw) return [];
+  return JSON.parse(raw) as string[];
 }
 
+// 저장된 즐겨찾기 항목을 업데이트하는 함수
 function setFavorites(items: string[]) {
-  try {
-    storage.setItemPrefer("favorites", JSON.stringify(items));
-    document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { count: items.length } }));
-  } catch {}
+  storage.setItemPrefer("favorites", JSON.stringify(items));
+  document.dispatchEvent(
+    new CustomEvent("favorites:changed", { detail: { count: items.length } })
+  );
 }
 
 export function initFavorites() {
@@ -33,7 +37,10 @@ export function initFavorites() {
   function render() {
     const items = getFavorites();
     const found = items
-      .map((id) => ({ id, product: (products as Product[]).find((p) => p.id === id) }))
+      .map((id) => ({
+        id,
+        product: (products as Product[]).find((p) => p.id === id),
+      }))
       .filter((x) => x.product) as { id: string; product: Product }[];
 
     rootEl.innerHTML = "";
@@ -71,43 +78,50 @@ export function initFavorites() {
 
     rootEl.appendChild(list);
 
-    // hook up un-favorite buttons
-    rootEl.querySelectorAll<HTMLButtonElement>(".btn-unfav").forEach((btn, i) => {
-      btn.addEventListener("click", () => {
-        const items = getFavorites();
-        const toRemove = found[i]?.id;
-        const name = found[i]?.product.title;
-        if (!toRemove) return;
-        const remaining = items.filter((x) => x !== toRemove);
-        setFavorites(remaining);
-        showToast(`${name}이(가) 즐겨찾기에서 제거되었습니다`);
-        render();
+    rootEl
+      .querySelectorAll<HTMLButtonElement>(".btn-unfav")
+      .forEach((btn, i) => {
+        btn.addEventListener("click", () => {
+          const items = getFavorites();
+          const toRemove = found[i]?.id;
+          const name = found[i]?.product.title;
+          if (!toRemove) return;
+          const remaining = items.filter((x) => x !== toRemove);
+          setFavorites(remaining);
+          showToast(`${name}이(가) 즐겨찾기에서 제거되었습니다`);
+          render();
+        });
       });
-    });
-    // hook up move-all button: move all favorites to cart (increase qty if exist)
+
     const moveAll = header.querySelector<HTMLButtonElement>(".move-all");
     moveAll?.addEventListener("click", () => {
       const favIds = getFavorites();
       if (!favIds.length) return;
-      // merge into cart
-      try {
-        const raw = storage.getItemPrefer("cartItems");
-        const cart = raw ? (JSON.parse(raw) as { id: string; qty: number }[]) : [];
-        favIds.forEach((id) => {
-          const found = cart.find((c) => c.id === id);
-          if (found) found.qty = found.qty + 1;
-          else cart.push({ id, qty: 1 });
-        });
-        storage.setItemPrefer("cartItems", JSON.stringify(cart));
-        document.dispatchEvent(new CustomEvent("cart:changed", { detail: { count: cart.reduce((s, i) => s + i.qty, 0) } }));
-        // clear moved favorites
-        setFavorites([]);
-        document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { moved: favIds.length } }));
-        showToast(`즐겨찾기 항목을 모두 장바구니로 옮겼습니다`);
-        render();
-      } catch {
-        // noop
-      }
+
+      const raw = storage.getItemPrefer("cartItems");
+      const cart = raw
+        ? (JSON.parse(raw) as { id: string; qty: number }[])
+        : [];
+      favIds.forEach((id) => {
+        const found = cart.find((c) => c.id === id);
+        if (found) found.qty = found.qty + 1;
+        else cart.push({ id, qty: 1 });
+      });
+      storage.setItemPrefer("cartItems", JSON.stringify(cart));
+      document.dispatchEvent(
+        new CustomEvent("cart:changed", {
+          detail: { count: cart.reduce((s, i) => s + i.qty, 0) },
+        })
+      );
+      // clear moved favorites
+      setFavorites([]);
+      document.dispatchEvent(
+        new CustomEvent("favorites:changed", {
+          detail: { moved: favIds.length },
+        })
+      );
+      showToast(`즐겨찾기 항목을 모두 장바구니로 옮겼습니다`);
+      render();
     });
   }
 

@@ -5,6 +5,7 @@ import { showToast } from "./toast";
 
 type AddressEntry = auth.AddressEntry;
 
+// 주소 태그 정보
 const ADDRESS_TAGS: { value: string; label: string; badge: string }[] = [
   { value: "home", label: "집", badge: "badge--home" },
   { value: "work", label: "회사", badge: "badge--work" },
@@ -16,9 +17,11 @@ export function setupAddressManage() {
   const modal =
     document.querySelector<HTMLElement>(".info-page .address-manage-modal") ||
     document.querySelector<HTMLElement>(".address-manage-modal");
+
   const trigger = document.getElementById(
     "js-address-manage"
   ) as HTMLButtonElement | null;
+
   if (!modal || !trigger) return;
   const modalEl = modal as HTMLElement;
 
@@ -73,22 +76,21 @@ export function setupAddressManage() {
   )
     return;
 
-  const list = listEl as HTMLUListElement;
-  const statusEl = status as HTMLElement;
-  const editorEl = editor as HTMLElement;
-  const tagSelectEl = tagSelect as HTMLSelectElement;
-  const tagCustomEl = tagCustomInput as HTMLInputElement | null;
-  const searchInputEl = searchInput as HTMLInputElement;
-  const resultsListEl = resultsList as HTMLUListElement;
-  const inputRoadEl = inputRoad as HTMLInputElement;
-  const inputDetailEl = inputDetail as HTMLInputElement;
-  const inputDefaultEl = inputDefault as HTMLInputElement;
-  const searchBtnEl = searchBtn as HTMLButtonElement;
-  const addBtnEl = addBtn as HTMLButtonElement;
-  const saveBtnEl = saveBtn as HTMLButtonElement;
-  const cancelBtnEl = cancelBtn as HTMLButtonElement;
+  const list = listEl as HTMLUListElement; // 주소 목록
+  const statusEl = status as HTMLElement; // 상태 표시 영역
+  const editorEl = editor as HTMLElement; // 편집기 영역
+  const tagSelectEl = tagSelect as HTMLSelectElement; // 태그 선택 셀렉트
+  const tagCustomEl = tagCustomInput as HTMLInputElement | null; // 사용자 지정 태그 입력
+  const searchInputEl = searchInput as HTMLInputElement; // 주소 검색 입력
+  const resultsListEl = resultsList as HTMLUListElement; // 주소 검색 결과 목록
+  const inputRoadEl = inputRoad as HTMLInputElement; // 도로명 주소 입력
+  const inputDetailEl = inputDetail as HTMLInputElement; // 상세 주소 입력
+  const inputDefaultEl = inputDefault as HTMLInputElement; // 기본 주소 체크박스
+  const searchBtnEl = searchBtn as HTMLButtonElement; // 주소 검색 버튼
+  const addBtnEl = addBtn as HTMLButtonElement; // 새 주소 추가 버튼
+  const saveBtnEl = saveBtn as HTMLButtonElement; // 저장 버튼
+  const cancelBtnEl = cancelBtn as HTMLButtonElement; // 취소 버튼
 
-  // lock manual editing of road address; only search results can fill it
   inputRoadEl.readOnly = true;
   inputRoadEl.tabIndex = -1;
   inputRoadEl.addEventListener("mousedown", (e) => {
@@ -96,7 +98,6 @@ export function setupAddressManage() {
     searchInputEl.focus();
   });
 
-  // ephemeral state
   let addresses: AddressEntry[] = [];
   let editingId: string | null = null;
 
@@ -138,36 +139,11 @@ export function setupAddressManage() {
     saveCurrent();
   });
 
-  function normalize(list: AddressEntry[]): AddressEntry[] {
-    const seen = new Set<string>();
-    const normalized = list
-      .map((a) => {
-        const id = a.id || cryptoId();
-        if (seen.has(id)) return { ...a, id: cryptoId() };
-        seen.add(id);
-        return { ...a, id };
-      })
-      .filter((a) => a.road && a.road.trim());
-    if (!normalized.length) return [];
-    const hasDefault = normalized.some((a) => a.isDefault);
-    if (!hasDefault) normalized[0].isDefault = true;
-    else {
-      let defaultFound = false;
-      normalized.forEach((a) => {
-        if (a.isDefault && !defaultFound) {
-          defaultFound = true;
-          return;
-        }
-        if (a.isDefault && defaultFound) a.isDefault = false;
-      });
-    }
-    return normalized;
-  }
-
   function open() {
     const username =
       sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
       localStorage.getItem(auth.LOGIN_USER_KEY);
+
     if (!username) {
       showToast("로그인이 필요합니다. 먼저 로그인해주세요.");
       return;
@@ -191,50 +167,87 @@ export function setupAddressManage() {
       : "새 주소를 추가해주세요.";
   }
 
-  function close() {
-    try {
-      const active = document.activeElement as HTMLElement | null;
-      if (active && modalEl.contains(active)) {
-        if (trigger) trigger.focus();
-        else {
-          const fallback = document.querySelector<HTMLElement>(
-            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          if (fallback) fallback.focus();
+  function normalize(list: AddressEntry[]): AddressEntry[] {
+    // 이미 사용된 id를 기록해서 중복을 막기 위한 Set
+    const seen = new Set<string>();
+
+    // 주소 목록을 순회하며 id 보정 + 유효하지 않은 주소 제거
+    const normalized = list
+      .map((a) => {
+        // id가 없으면 새로 생성
+        const id = a.id || cryptoId();
+
+        // 이미 사용된 id라면 새 id로 교체
+        if (seen.has(id)) return { ...a, id: cryptoId() };
+
+        // 처음 등장한 id라면 Set에 기록
+        seen.add(id);
+
+        // id가 보장된 주소 객체 반환
+        return { ...a, id };
+      })
+      // 도로명 주소가 없거나 공백이면 제거
+      .filter((a) => a.road && a.road.trim());
+
+    // 유효한 주소가 하나도 없으면 빈 배열 반환
+    if (!normalized.length) return [];
+
+    // 기본 배송지(isDefault)가 하나라도 있는지 확인
+    const hasDefault = normalized.some((a) => a.isDefault);
+
+    // 기본 배송지가 하나도 없으면 첫 번째 주소를 기본으로 설정
+    if (!hasDefault) normalized[0].isDefault = true;
+    else {
+      // 첫 번째 기본 배송지만 유지하기 위한 플래그
+      let defaultFound = false;
+
+      // 기본 배송지가 여러 개일 경우 하나만 남기고 나머지 해제
+      normalized.forEach((a) => {
+        // 첫 번째 기본 배송지는 유지
+        if (a.isDefault && !defaultFound) {
+          defaultFound = true;
+          return;
         }
-      }
-    } catch {}
+        // 두 번째 이후 기본 배송지는 해제
+        if (a.isDefault && defaultFound) a.isDefault = false;
+      });
+    }
 
-    modalEl.classList.remove("is-open");
-    const onEnd = () => {
-      modalEl.classList.add("d-none");
-      modalEl.setAttribute("aria-hidden", "true");
-      modalEl.removeEventListener("transitionend", onEnd);
-    };
-    modalEl.addEventListener("transitionend", onEnd);
+    return normalized;
   }
 
-  function openEditor(entry?: AddressEntry) {
-    editingId = entry?.id ?? null;
-    editorTitle &&
-      (editorTitle.textContent = entry ? "주소 수정" : "새 주소 추가");
+  function cryptoId() {
+    // 전역 crypto 객체가 존재하고
+    // randomUUID 함수가 지원되는 환경인지 확인
+    if (
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+    ) {
+      // 브라우저 내장 UUID 생성기 사용 (충돌 가능성 거의 없음)
+      return crypto.randomUUID();
+    }
 
-    tagSelectEl.value = entry?.tag || "home";
-    tagSelectEl.dispatchEvent(new Event("change"));
-    if (tagCustomEl) tagCustomEl.value = entry?.tag || "";
-    inputRoadEl.value = entry?.road || "";
-    inputDetailEl.value = entry?.detail || "";
-    inputDefaultEl.checked = Boolean(entry?.isDefault || !addresses.length);
-
-    resultsListEl.innerHTML = "";
-
-    editorEl.classList.remove("d-none");
+    // crypto.randomUUID를 지원하지 않는 구형 환경 대비용
+    // 랜덤 문자열을 생성해 id로 사용
+    return `addr-${Math.random().toString(36).slice(2, 10)}`;
   }
 
-  function hideEditor() {
-    editorEl.classList.add("d-none");
-    editingId = null;
-    resultsListEl.innerHTML = "";
+  function legacyToAddresses(user?: auth.StoredUser | null): AddressEntry[] {
+    console.log("@@@@@@ 기존 배송지 다 삭제 후 변환 처리 @@@@@@");
+    if (!user) return [];
+    const road = user.roadAddress?.trim() || user.address?.trim() || "";
+    const detail = user.addressDetail?.trim() || "";
+    if (!road) return [];
+    return [
+      {
+        id: cryptoId(),
+        tag: "home",
+        label: "기본 배송지",
+        road,
+        detail: detail || undefined,
+        isDefault: true,
+      },
+    ];
   }
 
   function renderList() {
@@ -254,12 +267,14 @@ export function setupAddressManage() {
       }`;
       li.dataset.id = addr.id;
 
+      // 태그 배지 생성
       const badgeInfo =
-        ADDRESS_TAGS.find((t) => t.value === addr.tag) || ADDRESS_TAGS[3];
+        ADDRESS_TAGS.find((t) => t.value === addr.tag) || ADDRESS_TAGS[3]; // 'other' 태그 정보
       const badge = document.createElement("span");
       badge.className = `badge ${badgeInfo.badge}`;
       badge.textContent = badgeInfo.label;
 
+      // 주소 본문 생성
       const body = document.createElement("div");
       body.className = "address-manage__item-body";
       const title = document.createElement("div");
@@ -271,11 +286,13 @@ export function setupAddressManage() {
       body.appendChild(title);
       body.appendChild(addrLine);
 
+      // 메인 영역 생성
       const main = document.createElement("div");
       main.className = "address-manage__item-main";
       main.appendChild(badge);
       main.appendChild(body);
 
+      // 액션 버튼 영역 생성
       const actions = document.createElement("div");
       actions.className = "address-manage__item-actions";
       const setBtn = document.createElement("button");
@@ -284,11 +301,13 @@ export function setupAddressManage() {
       setBtn.textContent = addr.isDefault ? "기본 배송지" : "기본 설정";
       setBtn.disabled = !!addr.isDefault;
 
+      // 수정, 삭제 버튼 생성
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "btn";
       editBtn.textContent = "수정";
 
+      // 삭제 버튼 생성
       const delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.className = "btn";
@@ -303,8 +322,10 @@ export function setupAddressManage() {
         if (
           event.target instanceof HTMLElement &&
           actions.contains(event.target)
-        )
+        ) {
           return;
+        }
+
         setDefault(addr.id);
       });
 
@@ -330,11 +351,60 @@ export function setupAddressManage() {
     hideEditor();
   }
 
+  function hideEditor() {
+    editorEl.classList.add("d-none");
+    editingId = null;
+    resultsListEl.innerHTML = "";
+  }
+
+  function openEditor(entry?: AddressEntry) {
+    console.log("@@@@@@ 주소 수정 열기 @@@@@@");
+    editingId = entry?.id ?? null;
+    editorTitle &&
+      (editorTitle.textContent = entry ? "주소 수정" : "새 주소 추가");
+
+    tagSelectEl.value = entry?.tag || "home";
+    tagSelectEl.dispatchEvent(new Event("change"));
+    if (tagCustomEl) tagCustomEl.value = entry?.tag || "";
+
+    inputRoadEl.value = entry?.road || "";
+
+    inputDetailEl.value = entry?.detail || "";
+    inputDefaultEl.checked = Boolean(entry?.isDefault || !addresses.length);
+
+    resultsListEl.innerHTML = "";
+
+    editorEl.classList.remove("d-none");
+  }
+
   function deleteAddress(id: string) {
     addresses = addresses.filter((a) => a.id !== id);
     addresses = normalize(addresses);
     persist("배송지가 삭제되었습니다.");
     hideEditor();
+  }
+
+  function close() {
+    try {
+      const active = document.activeElement as HTMLElement | null;
+      if (active && modalEl.contains(active)) {
+        if (trigger) trigger.focus();
+        else {
+          const fallback = document.querySelector<HTMLElement>(
+            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (fallback) fallback.focus();
+        }
+      }
+    } catch {}
+
+    modalEl.classList.remove("is-open");
+    const onEnd = () => {
+      modalEl.classList.add("d-none");
+      modalEl.setAttribute("aria-hidden", "true");
+      modalEl.removeEventListener("transitionend", onEnd);
+    };
+    modalEl.addEventListener("transitionend", onEnd);
   }
 
   function saveCurrent() {
@@ -370,6 +440,40 @@ export function setupAddressManage() {
       editingId ? "배송지가 수정되었습니다." : "배송지가 추가되었습니다."
     );
     hideEditor();
+  }
+
+  function persist(message: string) {
+    const username =
+      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
+      localStorage.getItem(auth.LOGIN_USER_KEY);
+    if (!username) {
+      statusEl.textContent = "로그인이 필요합니다.";
+      return;
+    }
+
+    const normalized = normalize(addresses);
+    addresses = normalized;
+    const primary = normalized[0];
+    const fullAddress = primary
+      ? `${primary.road} ${primary.detail ?? ""}`.trim()
+      : "";
+
+    const ok = auth.updateUser(username, {
+      addresses: normalized,
+      roadAddress: primary?.road,
+      addressDetail: primary?.detail,
+      address: fullAddress,
+    });
+    if (!ok) {
+      statusEl.textContent = "저장 중 오류가 발생했습니다.";
+      return;
+    }
+
+    const updated = auth.findUserByUsername(username);
+    if (updated) populateInfoPage(updated);
+    renderList();
+    statusEl.textContent = message;
+    showToast(message);
   }
 
   async function runAddressSearch(keyword: string) {
@@ -411,68 +515,25 @@ export function setupAddressManage() {
     }
   }
 
-  function persist(message: string) {
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
-    if (!username) {
-      statusEl.textContent = "로그인이 필요합니다.";
-      return;
-    }
-
-    const normalized = normalize(addresses);
-    addresses = normalized;
-    const primary = normalized[0];
-    const fullAddress = primary
-      ? `${primary.road} ${primary.detail ?? ""}`.trim()
-      : "";
-
-    const ok = auth.updateUser(username, {
-      addresses: normalized,
-      roadAddress: primary?.road,
-      addressDetail: primary?.detail,
-      address: fullAddress,
-    });
-    if (!ok) {
-      statusEl.textContent = "저장 중 오류가 발생했습니다.";
-      return;
-    }
-
-    const updated = auth.findUserByUsername(username);
-    if (updated) populateInfoPage(updated);
-    renderList();
-    statusEl.textContent = message;
-    showToast(message);
-  }
-
-  function legacyToAddresses(user?: auth.StoredUser | null): AddressEntry[] {
-    if (!user) return [];
-    const road = user.roadAddress?.trim() || user.address?.trim() || "";
-    const detail = user.addressDetail?.trim() || "";
-    if (!road) return [];
-    return [
-      {
-        id: cryptoId(),
-        tag: "home",
-        label: "기본 배송지",
-        road,
-        detail: detail || undefined,
-        isDefault: true,
-      },
-    ];
-  }
-
-  function cryptoId() {
-    try {
-      if (
-        typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID === "function"
-      ) {
-        return crypto.randomUUID();
-      }
-    } catch {}
-    return `addr-${Math.random().toString(36).slice(2, 10)}`;
-  }
+  /*
+  주소 검색 API 연동 흐름도
+  
+  검색 버튼 클릭
+     ↓
+  상태: 검색 중
+     ↓
+  주소 API 호출
+     ↓
+  결과 없음 → 메시지 + 종료
+     ↓
+  결과 있음
+     ↓
+  주소 목록 렌더링
+     ↓
+  주소 클릭
+     ↓
+  도로명 입력 + 상세주소 포커스 
+  */
 
   modalEl.dataset._addressInit = "true";
 }

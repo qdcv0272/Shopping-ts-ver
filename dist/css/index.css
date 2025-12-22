@@ -838,13 +838,36 @@ a {
 
 /* -- list layout (one item per row) to match screenshot #1 -- */
 .products-grid--list {
-  grid-template-columns: 1fr; /* single column rows */
+  grid-template-columns: 1fr !important; /* single column rows — force it */
   gap: 12px;
+  /* ensure the list keeps its vertical scrolling behavior even when other
+     page-specific rules attempt to force multi-column layouts */
+  max-height: 54vh !important;
+  overflow: auto !important;
+  padding-right: 22px !important; /* room between last card and scrollbar */
+}
+
+/* OverlayScrollbars wraps the grid content in .os-viewport / .os-content.
+   Some browsers/third-party CSS can end up making the inner container a flex
+   row which causes horizontal layout — force these inner wrappers to use a
+   single-column grid when the list mode is active so vertical scrolling
+   always works as expected. */
+.products-grid.products-grid--list,
+.products-grid.products-grid--list .os-viewport,
+.products-grid.products-grid--list .os-content {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+}
+
+/* stronger enforcement inside the app container: ensure any .products-grid in #app that has
+   the --list class uses single column even if other page styles are more specific */
+.page-shell #app .products-grid.products-grid--list {
+  grid-template-columns: 1fr !important;
 }
 
 /* -- card/grid layout (multiple compact cards) to match screenshot #2 -- */
 .products-grid--card {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
   gap: 12px;
 }
 
@@ -2239,13 +2262,29 @@ body > .os-scrollbar {
 /* main white panel that holds page content */
 .info-login {
   padding: 70px 18px 32px;
-  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent),
-    linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
+  background: radial-gradient(
+      1200px 400px at 10% 0%,
+      rgba(132, 94, 247, 0.16),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      rgba(248, 249, 255, 1) 0%,
+      rgba(241, 245, 255, 0.96) 80%
+    );
 }
 .info-signup {
   padding: 70px 18px 32px;
-  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent),
-    linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
+  background: radial-gradient(
+      1200px 400px at 10% 0%,
+      rgba(132, 94, 247, 0.16),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      rgba(248, 249, 255, 1) 0%,
+      rgba(241, 245, 255, 0.96) 80%
+    );
 }
 
 .info-login__card {
@@ -2589,9 +2628,9 @@ body > .os-scrollbar {
   background: rgba(15, 23, 42, 0.02);
 }
 
-.findid-modal__confirm {
+/* .findid-modal__confirm {
   background: linear-gradient(180deg, #6b8cff, #845ef7);
-}
+} */
 .findpw-modal__confirm {
   background: linear-gradient(180deg, #6b8cff, #845ef7);
 }
@@ -2611,7 +2650,8 @@ body > .os-scrollbar {
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #fbfdff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease,
+    transform 150ms ease;
 }
 .findid-modal__search input:focus,
 .findpw-modal__search input:focus {
@@ -2928,7 +2968,8 @@ body > .os-scrollbar {
   padding: 14px 16px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease,
+    transform 140ms ease;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
@@ -2987,7 +3028,11 @@ body > .os-scrollbar {
   inset: auto auto 18px 18px;
   width: 140px;
   height: 140px;
-  background: radial-gradient(circle, rgba(132, 94, 247, 0.18), transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(132, 94, 247, 0.18),
+    transparent 70%
+  );
   filter: blur(10px);
 }
 
@@ -3019,7 +3064,11 @@ body > .os-scrollbar {
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  background: linear-gradient(135deg, rgba(125, 86, 255, 0.12), rgba(46, 91, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    rgba(125, 86, 255, 0.12),
+    rgba(46, 91, 255, 0.06)
+  );
   border: 1px solid rgba(46, 91, 255, 0.08);
   color: rgba(46, 91, 255, 0.9);
   box-shadow: 0 10px 26px rgba(46, 91, 255, 0.05);
@@ -3137,7 +3186,8 @@ body > .os-scrollbar {
   font-weight: 700;
   font-size: 14px;
   gap: 6px;
-  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease,
+    color 150ms ease;
 }
 .btn--primary {
   background: linear-gradient(90deg, #2e5bff, #845ef7);
@@ -3196,7 +3246,8 @@ body > .os-scrollbar {
   border-radius: 16px;
   padding: 20px 22px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  transition: transform 220ms ease, box-shadow 220ms ease,
+    border-color 220ms ease;
 }
 .card__title {
   margin: 0 0 10px;
@@ -3327,10 +3378,328 @@ body > .os-scrollbar {
   color: rgba(15, 23, 42, 0.6);
 }
 
+.badge--friend {
+  background: rgba(236, 72, 153, 0.16);
+  color: #be185d;
+}
+
+.badge--other {
+  background: rgba(99, 102, 241, 0.12);
+  color: #4338ca;
+}
+
+.address-manage-modal__card {
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 18%, #ffffff 100%);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
+}
+
+.address-manage__body {
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  flex: 1;
+  overflow: auto;
+  background: linear-gradient(180deg, rgba(46, 91, 255, 0.02), transparent 26%);
+}
+
+.address-manage__list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.address-manage__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.address-manage__subtitle {
+  margin: 4px 0 0;
+  color: rgba(15, 23, 42, 0.6);
+  font-size: 13px;
+}
+
+.address-manage__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 10px;
+  scrollbar-gutter: stable both-edges;
+}
+
+.address-manage__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.address-manage__item.is-default {
+  border-color: #2e5bff;
+  box-shadow: 0 8px 18px rgba(46, 91, 255, 0.08);
+}
+
+.address-manage__item:hover {
+  border-color: rgba(46, 91, 255, 0.35);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.address-manage__item-main {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.address-manage__item-body {
+  display: grid;
+  gap: 6px;
+}
+
+.address-manage__item-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.address-manage__item-address {
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.address-manage__item-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.address-manage__item-actions .btn,
+.address-manage__item-actions button {
+  font-size: 12px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.address-manage__editor {
+  padding: 16px;
+  background: #f9fafb;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.address-manage__editor-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.address-manage__field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.address-manage__field label {
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.8);
+}
+
+.address-manage__field-row {
+  display: flex;
+  gap: 8px;
+}
+
+.address-manage__field-row input {
+  flex: 1;
+}
+
+/* Address editor form polish */
+.address-manage__editor {
+  background: #f9fafb;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.address-manage__editor input,
+.address-manage__editor select {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  background: #fff;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+
+.address-manage__editor input:focus,
+.address-manage__editor select:focus {
+  outline: none;
+  border-color: rgba(46, 91, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(46, 91, 255, 0.12);
+}
+
+.address-manage__editor .address-manage__field-row button {
+  border-radius: 10px;
+}
+
+.address-manage__check {
+  padding: 10px 12px;
+  border: 1px dashed rgba(15, 23, 42, 0.14);
+  border-radius: 10px;
+  background: rgba(46, 91, 255, 0.04);
+}
+
+.address-manage__editor-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.address-manage__editor-actions .btn {
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+
+.address-manage__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.address-manage__editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.address-manage__results {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+  padding-right: 16px;
+  scroll-padding-right: 10px;
+  scrollbar-gutter: stable;
+}
+
+/* Wide layout: split list (left) and editor (right) */
+@media (min-width: 1024px) {
+  .address-manage-modal__card {
+    width: min(1100px, 96vw);
+    max-height: 86vh;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "header header"
+      "list editor";
+    column-gap: 18px;
+    row-gap: 12px;
+    padding: 20px 22px 18px;
+  }
+
+  .address-manage-modal__header {
+    grid-area: header;
+    margin-bottom: 4px;
+  }
+
+  .address-manage__body {
+    grid-area: list;
+    border-bottom: none;
+    padding: 14px 12px 10px;
+    background: transparent;
+    overflow: auto;
+    min-height: 0;
+  }
+
+  .address-manage__editor {
+    grid-area: editor;
+    margin-top: 0;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .address-manage__list {
+    max-height: none;
+    padding-right: 6px;
+    gap: 12px;
+  }
+
+  .address-manage__item {
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
+
+  .address-manage__editor-actions {
+    margin-top: 12px;
+  }
+}
+
+.address-manage__result-card {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.address-manage__result-card:hover {
+  border-color: #2e5bff;
+  box-shadow: 0 8px 18px rgba(46, 91, 255, 0.08);
+}
+
+.address-manage__result-road {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.address-manage__result-meta {
+  color: rgba(15, 23, 42, 0.7);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .address-manage__item {
+    flex-direction: column;
+  }
+
+  .address-manage__item-actions {
+    justify-content: flex-end;
+  }
+}
+
 .divider {
   height: 1px;
   margin: 28px 0;
-  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.12), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(15, 23, 42, 0.12),
+    transparent
+  );
 }
 
 /* small screens tweaks */

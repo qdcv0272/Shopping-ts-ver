@@ -18,40 +18,30 @@ function getKeyForUser(username?: string) {
 }
 
 export function getOrders(username?: string): Order[] {
-  try {
-    if (username) {
-      const raw = localStorage.getItem(getKeyForUser(username));
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? (parsed as Order[]) : [];
-    }
-    // guest: sessionStorage
-    const raw = sessionStorage.getItem(getKeyForUser(undefined));
+  if (username) {
+    const raw = localStorage.getItem(getKeyForUser(username));
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as Order[]) : [];
-  } catch {
-    return [];
   }
+
+  const raw = sessionStorage.getItem(getKeyForUser(undefined));
+  if (!raw) return [];
+  const parsed = JSON.parse(raw);
+  return Array.isArray(parsed) ? (parsed as Order[]) : [];
 }
 
 export function setOrders(orders: Order[], username?: string) {
-  try {
-    if (username) {
-      localStorage.setItem(getKeyForUser(username), JSON.stringify(orders));
-    } else {
-      sessionStorage.setItem(getKeyForUser(undefined), JSON.stringify(orders));
-    }
-  } catch {}
+  username
+    ? localStorage.setItem(getKeyForUser(username), JSON.stringify(orders))
+    : sessionStorage.setItem(getKeyForUser(undefined), JSON.stringify(orders));
 }
 
 export function addOrder(order: Order) {
-  try {
-    const username = order.username;
-    const existing = getOrders(username);
-    existing.unshift(order);
-    setOrders(existing, username);
-  } catch {}
+  const username = order.username;
+  const existing = getOrders(username);
+  existing.unshift(order);
+  setOrders(existing, username);
 }
 
 export function generateOrderId(): string {
@@ -65,7 +55,6 @@ export function generateOrderId(): string {
 }
 
 export function getPreferredOrders(): Order[] {
-  // if authed, get orders for authed username; else guest orders
   const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || undefined;
   if (username) return getOrders(username);
   return getOrders(undefined);

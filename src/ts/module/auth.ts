@@ -4,8 +4,8 @@ export const USERS_STORAGE_KEY = "shoppingts-info-users"; // 사용자 목록 �
 
 export type AddressEntry = {
   id: string;
-  tag: string; // e.g., home, work, friend, custom
-  label: string; // user-visible label
+  tag: string;
+  label: string;
   road: string;
   detail?: string;
   isDefault?: boolean;
@@ -17,11 +17,11 @@ export type StoredUser = {
   email: string;
   password: string;
   phone: string;
-  address: string; // legacy full address
+  address: string;
   profileImage?: string;
-  roadAddress?: string; // legacy road address
-  addressDetail?: string; // legacy detail
-  addresses?: AddressEntry[]; // new multi-address list
+  roadAddress?: string;
+  addressDetail?: string;
+  addresses?: AddressEntry[];
 };
 
 type ValidationResult = { ok: boolean; message?: string };
@@ -176,7 +176,6 @@ export function loadUsers(): StoredUser[] {
         typeof user.addressDetail === "string" ? user.addressDetail : undefined;
       const legacyFull = typeof user.address === "string" ? user.address : "";
 
-      // normalize addresses list (new schema)
       let addresses: AddressEntry[] | undefined;
       if (Array.isArray(user.addresses)) {
         addresses = user.addresses
@@ -200,7 +199,6 @@ export function loadUsers(): StoredUser[] {
           .filter((a: AddressEntry | null): a is AddressEntry => Boolean(a));
       }
 
-      // migrate legacy single address into addresses list when none exists
       if (!addresses || !addresses.length) {
         if (legacyRoad || legacyFull) {
           addresses = [
