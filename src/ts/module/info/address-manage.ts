@@ -14,67 +14,33 @@ const ADDRESS_TAGS: { value: string; label: string; badge: string }[] = [
 ];
 
 export function setupAddressManage() {
-  const modal =
-    document.querySelector<HTMLElement>(".info-page .address-manage-modal") ||
-    document.querySelector<HTMLElement>(".address-manage-modal");
+  const modal = document.querySelector<HTMLElement>(".info-page .address-manage-modal") || document.querySelector<HTMLElement>(".address-manage-modal");
 
-  const trigger = document.getElementById(
-    "js-address-manage"
-  ) as HTMLButtonElement | null;
+  const trigger = document.getElementById("js-address-manage") as HTMLButtonElement | null;
 
   if (!modal || !trigger) return;
   const modalEl = modal as HTMLElement;
 
   if (modalEl.dataset._addressInit === "true") return;
 
-  const closeBtn = modal.querySelector<HTMLButtonElement>(
-    ".address-manage-modal__close"
-  );
+  const closeBtn = modal.querySelector<HTMLButtonElement>(".address-manage-modal__close");
   const listEl = modal.querySelector<HTMLUListElement>(".js-address-list");
-  const status = modal.querySelector<HTMLElement>(
-    ".address-manage-modal__status"
-  );
+  const status = modal.querySelector<HTMLElement>(".address-manage-modal__status");
   const editor = modal.querySelector<HTMLElement>(".js-address-editor");
   const editorTitle = modal.querySelector<HTMLElement>(".js-editor-title");
   const tagSelect = modal.querySelector<HTMLSelectElement>(".js-address-tag");
-  const tagCustomInput = modal.querySelector<HTMLInputElement>(
-    ".js-address-tag-custom"
-  );
-  const searchInput = modal.querySelector<HTMLInputElement>(
-    ".js-address-keyword"
-  );
-  const resultsList = modal.querySelector<HTMLUListElement>(
-    ".js-address-results"
-  );
+  const tagCustomInput = modal.querySelector<HTMLInputElement>(".js-address-tag-custom");
+  const searchInput = modal.querySelector<HTMLInputElement>(".js-address-keyword");
+  const resultsList = modal.querySelector<HTMLUListElement>(".js-address-results");
   const inputRoad = modal.querySelector<HTMLInputElement>(".js-address-road");
-  const inputDetail =
-    modal.querySelector<HTMLInputElement>(".js-address-detail");
-  const inputDefault = modal.querySelector<HTMLInputElement>(
-    ".js-address-default"
-  );
-  const searchBtn =
-    modal.querySelector<HTMLButtonElement>(".js-address-search");
+  const inputDetail = modal.querySelector<HTMLInputElement>(".js-address-detail");
+  const inputDefault = modal.querySelector<HTMLInputElement>(".js-address-default");
+  const searchBtn = modal.querySelector<HTMLButtonElement>(".js-address-search");
   const addBtn = modal.querySelector<HTMLButtonElement>(".js-address-add");
   const saveBtn = modal.querySelector<HTMLButtonElement>(".js-address-save");
-  const cancelBtn =
-    modal.querySelector<HTMLButtonElement>(".js-address-cancel");
+  const cancelBtn = modal.querySelector<HTMLButtonElement>(".js-address-cancel");
 
-  if (
-    !listEl ||
-    !status ||
-    !editor ||
-    !tagSelect ||
-    !searchInput ||
-    !resultsList ||
-    !inputRoad ||
-    !inputDetail ||
-    !inputDefault ||
-    !searchBtn ||
-    !addBtn ||
-    !saveBtn ||
-    !cancelBtn
-  )
-    return;
+  if (!listEl || !status || !editor || !tagSelect || !searchInput || !resultsList || !inputRoad || !inputDetail || !inputDefault || !searchBtn || !addBtn || !saveBtn || !cancelBtn) return;
 
   const list = listEl as HTMLUListElement; // 주소 목록
   const statusEl = status as HTMLElement; // 상태 표시 영역
@@ -140,9 +106,7 @@ export function setupAddressManage() {
   });
 
   function open() {
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
 
     if (!username) {
       showToast("로그인이 필요합니다. 먼저 로그인해주세요.");
@@ -150,11 +114,7 @@ export function setupAddressManage() {
     }
 
     const user = auth.findUserByUsername(username);
-    addresses = normalize(
-      Array.isArray(user?.addresses) && user?.addresses.length
-        ? [...(user?.addresses as AddressEntry[])]
-        : legacyToAddresses(user)
-    );
+    addresses = normalize(Array.isArray(user?.addresses) && user?.addresses.length ? [...(user?.addresses as AddressEntry[])] : legacyToAddresses(user));
 
     renderList();
     hideEditor();
@@ -162,9 +122,7 @@ export function setupAddressManage() {
     modalEl.classList.remove("d-none");
     requestAnimationFrame(() => modalEl.classList.add("is-open"));
     modalEl.setAttribute("aria-hidden", "false");
-    statusEl.textContent = addresses.length
-      ? "주소를 선택하거나 새로 추가할 수 있습니다."
-      : "새 주소를 추가해주세요.";
+    statusEl.textContent = addresses.length ? "주소를 선택하거나 새로 추가할 수 있습니다." : "새 주소를 추가해주세요.";
   }
 
   function normalize(list: AddressEntry[]): AddressEntry[] {
@@ -219,10 +177,7 @@ export function setupAddressManage() {
   function cryptoId() {
     // 전역 crypto 객체가 존재하고
     // randomUUID 함수가 지원되는 환경인지 확인
-    if (
-      typeof crypto !== "undefined" &&
-      typeof crypto.randomUUID === "function"
-    ) {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
       // 브라우저 내장 UUID 생성기 사용 (충돌 가능성 거의 없음)
       return crypto.randomUUID();
     }
@@ -262,14 +217,11 @@ export function setupAddressManage() {
 
     addresses.forEach((addr) => {
       const li = document.createElement("li");
-      li.className = `address-manage__item${
-        addr.isDefault ? " is-default" : ""
-      }`;
+      li.className = `address-manage__item${addr.isDefault ? " is-default" : ""}`;
       li.dataset.id = addr.id;
 
       // 태그 배지 생성
-      const badgeInfo =
-        ADDRESS_TAGS.find((t) => t.value === addr.tag) || ADDRESS_TAGS[3]; // 'other' 태그 정보
+      const badgeInfo = ADDRESS_TAGS.find((t) => t.value === addr.tag) || ADDRESS_TAGS[3]; // 'other' 태그 정보
       const badge = document.createElement("span");
       badge.className = `badge ${badgeInfo.badge}`;
       badge.textContent = badgeInfo.label;
@@ -319,10 +271,7 @@ export function setupAddressManage() {
       li.appendChild(actions);
 
       li.addEventListener("click", (event) => {
-        if (
-          event.target instanceof HTMLElement &&
-          actions.contains(event.target)
-        ) {
+        if (event.target instanceof HTMLElement && actions.contains(event.target)) {
           return;
         }
 
@@ -344,9 +293,7 @@ export function setupAddressManage() {
   }
 
   function setDefault(id: string) {
-    addresses = normalize(
-      addresses.map((a) => ({ ...a, isDefault: a.id === id }))
-    );
+    addresses = normalize(addresses.map((a) => ({ ...a, isDefault: a.id === id })));
     persist("기본 배송지가 설정되었습니다.");
     hideEditor();
   }
@@ -360,8 +307,7 @@ export function setupAddressManage() {
   function openEditor(entry?: AddressEntry) {
     console.log("@@@@@@ 주소 수정 열기 @@@@@@");
     editingId = entry?.id ?? null;
-    editorTitle &&
-      (editorTitle.textContent = entry ? "주소 수정" : "새 주소 추가");
+    editorTitle && (editorTitle.textContent = entry ? "주소 수정" : "새 주소 추가");
 
     tagSelectEl.value = entry?.tag || "home";
     tagSelectEl.dispatchEvent(new Event("change"));
@@ -385,18 +331,14 @@ export function setupAddressManage() {
   }
 
   function close() {
-    try {
-      const active = document.activeElement as HTMLElement | null;
-      if (active && modalEl.contains(active)) {
-        if (trigger) trigger.focus();
-        else {
-          const fallback = document.querySelector<HTMLElement>(
-            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          if (fallback) fallback.focus();
-        }
+    const active = document.activeElement as HTMLElement | null;
+    if (active && modalEl.contains(active)) {
+      if (trigger) trigger.focus();
+      else {
+        const fallback = document.querySelector<HTMLElement>('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (fallback) fallback.focus();
       }
-    } catch {}
+    }
 
     modalEl.classList.remove("is-open");
     const onEnd = () => {
@@ -411,10 +353,7 @@ export function setupAddressManage() {
     const road = (inputRoadEl.value || "").trim();
     const detail = (inputDetailEl.value || "").trim();
     const tagValue = tagSelectEl.value || "home";
-    const label =
-      tagValue === "other"
-        ? tagCustomEl?.value.trim() || "사용자 지정"
-        : ADDRESS_TAGS.find((t) => t.value === tagValue)?.label || "배송지";
+    const label = tagValue === "other" ? tagCustomEl?.value.trim() || "사용자 지정" : ADDRESS_TAGS.find((t) => t.value === tagValue)?.label || "배송지";
 
     if (!road) {
       statusEl.textContent = "도로명 주소를 선택하거나 입력해주세요.";
@@ -431,21 +370,16 @@ export function setupAddressManage() {
     };
 
     const existingIndex = addresses.findIndex((a) => a.id === next.id);
-    if (existingIndex >= 0)
-      addresses[existingIndex] = { ...addresses[existingIndex], ...next };
+    if (existingIndex >= 0) addresses[existingIndex] = { ...addresses[existingIndex], ...next };
     else addresses.push(next);
 
     addresses = normalize(addresses);
-    persist(
-      editingId ? "배송지가 수정되었습니다." : "배송지가 추가되었습니다."
-    );
+    persist(editingId ? "배송지가 수정되었습니다." : "배송지가 추가되었습니다.");
     hideEditor();
   }
 
   function persist(message: string) {
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
     if (!username) {
       statusEl.textContent = "로그인이 필요합니다.";
       return;
@@ -454,9 +388,7 @@ export function setupAddressManage() {
     const normalized = normalize(addresses);
     addresses = normalized;
     const primary = normalized[0];
-    const fullAddress = primary
-      ? `${primary.road} ${primary.detail ?? ""}`.trim()
-      : "";
+    const fullAddress = primary ? `${primary.road} ${primary.detail ?? ""}`.trim() : "";
 
     const ok = auth.updateUser(username, {
       addresses: normalized,
@@ -506,10 +438,7 @@ export function setupAddressManage() {
       });
     } catch (err) {
       console.error(err);
-      const message =
-        err instanceof Error
-          ? err.message || "주소 검색 중 문제가 발생했습니다."
-          : "주소 검색에 실패했습니다. 잠시 후 다시 시도해주세요.";
+      const message = err instanceof Error ? err.message || "주소 검색 중 문제가 발생했습니다." : "주소 검색에 실패했습니다. 잠시 후 다시 시도해주세요.";
       statusEl.textContent = message;
       alert(message);
     }

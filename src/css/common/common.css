@@ -6,7 +6,7 @@ body {
   margin: 0;
   font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
   background: linear-gradient(135deg, #f7f8fc, #dde3ff);
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .page-shell {
@@ -68,14 +68,14 @@ a {
 
 .main-header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 100%) auto;
   gap: 20px;
   align-items: center;
   padding: 20px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   box-shadow: 0 15px 40px rgba(24, 48, 96, 0.12);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
 }
 
 .main-header__logo {
@@ -159,7 +159,9 @@ a {
   cursor: pointer;
   font-weight: 600;
   color: #14223d;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .header-action:hover {
@@ -202,7 +204,7 @@ a {
 
 @media (max-width: 768px) {
   .main-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     text-align: center;
   }
 
@@ -293,7 +295,9 @@ a {
   width: 8px;
   height: 8px;
   margin: 0 4px;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transition:
+    transform 120ms ease,
+    opacity 120ms ease;
 }
 
 .swiper-test .swiper-pagination-bullet-active {

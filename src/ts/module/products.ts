@@ -11,65 +11,90 @@ export type Product = {
   category?: string; // 카테고리
 };
 
-const CATEGORIES = [
-  "tv-audio",
-  "laptop",
-  "mobile",
-  "pc",
-  "gaming",
-  "home",
-  "kitchen",
-  "accessory",
-  "deal",
-];
+const CATEGORIES = ["tv-audio", "laptop", "mobile", "pc"];
 
 export function initProducts(): void {
   if (typeof window === "undefined") return;
 
-  const grids = Array.from(
-    document.querySelectorAll<HTMLElement>(".products-grid")
-  );
+  const grids = Array.from(document.querySelectorAll<HTMLElement>(".products-grid"));
   if (!grids.length) return;
+
+  // 성능 최적화: Intersection Observer로 보이는 섹션만 렌더링
+  const renderQueue = new Map<HTMLElement, { source: Product[]; selectEl: HTMLSelectElement | null }>();
 
   grids.forEach((grid) => {
     const section = grid.closest("section");
-    const matchedCategory = section
-      ? CATEGORIES.find((c) => section.classList.contains(c)) ?? null
-      : null;
+    const matchedCategory = section ? (CATEGORIES.find((c) => section.classList.contains(c)) ?? null) : null;
 
     applyGridListStyle(grid);
-    grid.innerHTML = "";
 
     // 필터링
-    const source = matchedCategory
-      ? (products as Product[]).filter((x) => x.category === matchedCategory)
-      : (products as Product[]);
+    const source = matchedCategory ? (products as Product[]).filter((x) => x.category === matchedCategory) : (products as Product[]);
 
-    const selectEl = section?.querySelector<HTMLSelectElement>(".shop-sort"); // 정렬 select 엘리먼트
-    const initialMode = selectEl?.value ?? "popular";
-    renderList(grid, sortProducts(source, initialMode));
+    const selectEl = section?.querySelector<HTMLSelectElement>(".shop-sort") ?? null;
+
+    // 섹션이 보이지 않으면 렌더링 지연
+    if (section?.classList.contains("d-none")) {
+      renderQueue.set(grid, { source, selectEl });
+    } else {
+      // 보이는 섹션만 즉시 렌더링
+      const initialMode = selectEl?.value ?? "popular";
+      renderList(grid, sortProducts(source, initialMode));
+    }
 
     if (selectEl) {
-      selectEl.addEventListener("change", () => {
-        const mode = selectEl.value;
-        renderList(grid, sortProducts(source, mode));
-      });
+      selectEl.addEventListener(
+        "change",
+        () => {
+          const mode = selectEl.value;
+          renderList(grid, sortProducts(source, mode));
+        },
+        { passive: true },
+      );
     }
   });
+
+  // Intersection Observer로 섹션이 보일 때 렌더링
+  if (renderQueue.size > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const section = entry.target as HTMLElement;
+            const grid = section.querySelector<HTMLElement>(".products-grid");
+            if (grid && renderQueue.has(grid)) {
+              const { source, selectEl } = renderQueue.get(grid)!;
+              const initialMode = selectEl?.value ?? "popular";
+              renderList(grid, sortProducts(source, initialMode));
+              renderQueue.delete(grid);
+              observer.unobserve(section);
+            }
+          }
+        });
+      },
+      { rootMargin: "100px" },
+    );
+
+    document.querySelectorAll("section.demo-section").forEach((section) => {
+      observer.observe(section);
+    });
+  }
 }
 
 function applyGridListStyle(grid: HTMLElement) {
-  // grid.classList.remove("products-grid--card");
   grid.classList.add("products-grid--list");
   grid.style.setProperty("display", "grid", "important");
   grid.style.setProperty("grid-template-columns", "1fr", "important");
-  grid.style.setProperty("max-height", "54vh", "important");
-  grid.style.setProperty("overflow", "auto", "important");
+  // 성능 최적화: 스크롤바 제거, 높이 자동
+  grid.style.removeProperty("max-height");
+  grid.style.removeProperty("overflow");
 }
 
 function renderList(grid: HTMLElement, list: Product[]) {
   applyGridListStyle(grid);
-  grid.innerHTML = "";
+
+  // 성능 최적화: innerHTML 대신 기존 노드 재사용
+  const existingCards = Array.from(grid.querySelectorAll(".product-card"));
   const frag = document.createDocumentFragment();
   list.forEach((p) => {
     const article = createEl("article", "product-card");
@@ -80,7 +105,7 @@ function renderList(grid: HTMLElement, list: Product[]) {
     if (p.desc) article.dataset.desc = p.desc;
     if (p.thumb) article.dataset.thumb = p.thumb;
 
-    // tag, className, text
+    // 태그, 클래스명, 텍스트
     const thumb = createEl("div", "product-thumb", p.thumb ?? "📦");
     thumb.setAttribute("aria-hidden", "true");
 
@@ -91,11 +116,7 @@ function renderList(grid: HTMLElement, list: Product[]) {
 
     const bottom = createEl("div", "product-bottom");
     const price = createEl("div", "price", p.price);
-    const btn = createEl(
-      "button",
-      "primary-btn quick-view",
-      "상세보기"
-    ) as HTMLButtonElement;
+    const btn = createEl("button", "primary-btn quick-view", "상세보기") as HTMLButtonElement;
     btn.type = "button";
 
     bottom.appendChild(price);
@@ -111,6 +132,10 @@ function renderList(grid: HTMLElement, list: Product[]) {
     frag.appendChild(article);
   });
 
+  // 기존 카드 제거 후 새 카드 추가 (리플로우 최소화)
+  if (existingCards.length > 0) {
+    existingCards.forEach((card) => card.remove());
+  }
   grid.appendChild(frag);
   /*
     <div class="products-grid products-grid--list">
@@ -155,10 +180,8 @@ function sortProducts(list: Product[], mode?: string): Product[] {
       return tb - ta;
     });
   }
-  if (mode === "price-asc")
-    return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-  if (mode === "price-desc")
-    return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  if (mode === "price-asc") return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  if (mode === "price-desc") return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
   return items;
 }
 
@@ -169,11 +192,7 @@ function parsePrice(raw?: string): number {
 }
 
 // 간단한 엘리먼트 생성 유틸 함수
-function createEl<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className?: string,
-  text?: string
-) {
+function createEl<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string) {
   const el = document.createElement(tag);
   if (className) el.className = className;
   if (text !== undefined) el.textContent = text;

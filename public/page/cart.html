@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
@@ -12,29 +12,77 @@
           <span class="logo-emblem">TS</span>
         </a>
         <div class="main-header__search" role="search">
-          <input
-            type="search"
-            placeholder="상품, 브랜드, 키워드를 검색하세요"
-          />
+          <input type="search" placeholder="상품, 브랜드, 키워드를 검색하세요" />
           <button type="button">🔍</button>
         </div>
         <div class="main-header__actions">
-          <a href="info.html" class="header-action"
-            >👤 <span class="header-action__label">내정보</span></a
-          >
-          <a href="favorites.html" class="header-action"
-            >⭐ <span class="header-action__label">즐겨찾기</span></a
-          >
-          <a href="cart.html" class="header-action"
-            >🛒 <span class="header-action__label">장바구니</span></a
-          >
-          <a href="bootstrap.html" class="header-action"
-            >⚙️ <span class="header-action__label">부트스트랩</span></a
-          >
+          <a href="info.html" class="header-action">👤 <span class="header-action__label">내정보</span></a>
+          <a href="favorites.html" class="header-action">⭐ <span class="header-action__label">즐겨찾기</span></a>
+          <a href="cart.html" class="header-action">🛒 <span class="header-action__label">장바구니</span></a>
         </div>
       </header>
 
-      <div id="app" data-page="cart"></div>
+      <div id="app" data-page="cart">
+        <template id="tpl-cart-empty">
+          <div class="demo-section cart-empty">
+            <h2>장바구니가 비어있습니다</h2>
+            <p>상품을 둘러보고 장바구니에 담아보세요.</p>
+          </div>
+        </template>
+
+        <template id="tpl-cart-header">
+          <div class="demo-section cart-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+              <div>
+                <h2 class="cart-header__title">장바구니</h2>
+                <div class="cart-header__sub" style="color: #475569; font-size: 13px">담긴 상품을 확인하고 결제하세요.</div>
+              </div>
+              <div>
+                <button class="accent-btn clear-cart" type="button">비우기</button>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template id="tpl-cart-list">
+          <div class="products-grid cart-list"></div>
+        </template>
+
+        <template id="tpl-cart-item">
+          <article class="product-card">
+            <div class="product-thumb" aria-hidden="true">📦</div>
+            <div class="product-meta">
+              <div class="product-title"></div>
+              <div class="product-desc"></div>
+              <div class="product-bottom">
+                <div class="price"></div>
+                <div class="qty-controls">
+                  <button class="circle-btn qty-decrease" type="button" aria-label="수량 감소">−</button>
+                  <span class="qty-value" aria-live="polite"></span>
+                  <button class="circle-btn qty-increase" type="button" aria-label="수량 증가">＋</button>
+                  <button class="danger-btn btn-remove" type="button" aria-label="항목 제거">제거</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </template>
+
+        <template id="tpl-cart-total">
+          <div class="demo-section cart-total">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px">
+              <div style="font-size: 18px; font-weight: 800">총 합계: <span class="cart-total__value"></span></div>
+            </div>
+          </div>
+        </template>
+
+        <template id="tpl-cart-order">
+          <div class="demo-section cart-order">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px">
+              <button class="primary-btn order-btn" type="button">주문하기</button>
+            </div>
+          </div>
+        </template>
+      </div>
 
       <!-- <button class="category-fab" type="button" aria-controls="category-sheet" aria-expanded="false">
         <span class="category-fab__icon">📂</span>

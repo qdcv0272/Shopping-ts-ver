@@ -1,5 +1,4 @@
 import gsap from "gsap";
-import { OverlayScrollbars } from "overlayscrollbars";
 
 export function initCategoryNavToggle(): void {
   console.log("initCategoryNavToggle");
@@ -7,14 +6,10 @@ export function initCategoryNavToggle(): void {
 
   const fab = document.querySelector<HTMLButtonElement>(".category-fab"); // 카테고리 버튼
   const sheet = document.getElementById("category-sheet"); // 카테고리 시트
-  const closeButton = sheet?.querySelector<HTMLButtonElement>(
-    ".category-sheet__close"
-  );
+  const closeButton = sheet?.querySelector<HTMLButtonElement>(".category-sheet__close");
   // 카테고리 클로즈 버튼
 
-  const chips = Array.from(
-    sheet?.querySelectorAll<HTMLAnchorElement>(".category-chip") ?? []
-  );
+  const chips = Array.from(sheet?.querySelectorAll<HTMLAnchorElement>(".category-chip") ?? []);
   // 카테고리 칩s
 
   if (!fab || !sheet || !closeButton) return;
@@ -53,15 +48,20 @@ export function initCategoryNavToggle(): void {
   setAria(false);
 
   // 오픈 되지 않았을때 열어 주기
-  fabEl.addEventListener("click", () => {
-    if (!isOpen) openSheet();
-  });
+  fabEl.addEventListener(
+    "click",
+    () => {
+      if (!isOpen) openSheet();
+    },
+    { passive: true },
+  );
 
   function openSheet(): void {
     if (isAnimating || isOpen) return;
     isAnimating = true;
     lockInteraction(true);
     sheetEl.classList.add("is-open");
+    sheetEl.classList.add("is-animating");
     gsap.killTweensOf(sheetEl);
 
     gsap.set(sheetEl, { autoAlpha: 0, scale: 0.96, y: 12 });
@@ -72,11 +72,13 @@ export function initCategoryNavToggle(): void {
       y: 0,
       duration: ANIM.openDuration,
       ease: ANIM.openEase,
+      force3D: true,
       onComplete: () => {
         isAnimating = false;
         isOpen = true;
         lockInteraction(false);
         setAria(true);
+        sheetEl.classList.remove("is-animating");
       },
     });
   }
@@ -86,6 +88,7 @@ export function initCategoryNavToggle(): void {
     isAnimating = true;
     lockInteraction(true);
     sheetEl.classList.remove("is-open");
+    sheetEl.classList.add("is-animating");
     gsap.killTweensOf(sheetEl);
 
     gsap.set(sheetEl, { autoAlpha: 1, scale: 1, y: 0 });
@@ -96,151 +99,75 @@ export function initCategoryNavToggle(): void {
       y: 12,
       duration: ANIM.closeDuration,
       ease: ANIM.closeEase,
+      force3D: true,
       onComplete: () => {
         isAnimating = false;
         isOpen = false;
         lockInteraction(false);
         setAria(false);
+        sheetEl.classList.remove("is-animating");
         fabEl.focus({ preventScroll: true }); // 포커스 복귀 스크롤 방지
       },
     });
   }
 
-  closeButtonEl.addEventListener("click", closeSheet); // 닫기 버튼
+  closeButtonEl.addEventListener("click", closeSheet, { passive: true }); // 닫기 버튼
 
-  // a 태그들 을 이용해서 section 태그 들을 처리
-  const categoryNames = chips
-    .map((c) => c.getAttribute("href") || "") // href 속성들
-    .filter((h) => h.startsWith("#") && h.length > 1) // #으로 시작하는 것들
-    .map((h) => h.slice(1)); // # 제거한 카테고리 이름들
-
+  // 카테고리 칩 클릭 이벤트
   chips.forEach((chip) => {
     chip.addEventListener("click", (ev) => {
       ev.preventDefault();
+      ev.stopPropagation();
 
       const href = chip.getAttribute("href") || "";
       if (href.startsWith("#") && href.length > 1) {
-        const name = href.slice(1); // # 제거한 카테고리 이름, 선택된 색션
+        const name = href.slice(1);
 
-        /*
-          1. 모든 섹션 태그들 숨기기
-          2. 선택된 섹션 태그들 보이기
-          3. 오버레일 스크롤바 초기화
-          4. 기존 오버레일 인스턴스 제거
-          5. 새로운 오버레일 인스턴스 생성
-        */
-        categoryNames.forEach((cat) => {
-          try {
-            // 혹시 몰라 에러 방지
-            const els = Array.from(
-              // 섹션태그들
-              document.querySelectorAll<HTMLElement>(`.${cat}`)
-            );
+        // 성능 최적화: querySelectorAll 한 번만 호출
+        const allSections = document.querySelectorAll<HTMLElement>("section.demo-section");
 
-            els.forEach((el) => {
-              el.classList.add("d-none");
-
-              const grid = el.querySelector<HTMLElement>(".products-grid");
-              const inst = (grid as any)?.__osInstance; // 오버레일 인스턴스
-
-              if (inst && typeof inst.destroy === "function") {
-                try {
-                  inst.destroy(); // 오버레일 스크롤바 제거
-                } catch (e) {
-                  /* ignore */
-                }
-                (grid as any).__osInstance = undefined;
-              }
-            });
-          } catch (err) {
-            /* ignore */
-          }
+        // 성능 최적화: 배치 DOM 업데이트
+        allSections.forEach((section) => {
+          const shouldShow = section.classList.contains(name);
+          section.classList.toggle("d-none", !shouldShow);
         });
 
-        // 선택된 섹션 태그들 보이기
-        try {
-          const selected = Array.from(
-            document.querySelectorAll<HTMLElement>(`.${name}`)
-          );
-
-          if (selected.length) {
-            selected.forEach((t) => t.classList.remove("d-none"));
-          }
-          // 오버레일 스크롤바 초기화
-          if (typeof OverlayScrollbars !== "undefined") {
-            selected.forEach((section) => {
-              const grid = section.querySelector<HTMLElement>(".products-grid");
-              if (!grid) return;
-
-              // grid.classList.remove("products-grid--card");
-              grid.classList.add("products-grid--list");
-
-              grid.style.setProperty("display", "grid", "important");
-              grid.style.setProperty(
-                "grid-template-columns",
-                "1fr",
-                "important"
-              );
-              const maxHeightPx = `${Math.round(window.innerHeight * 0.54)}px`;
-              grid.style.setProperty("max-height", maxHeightPx, "important");
-              grid.style.setProperty("overflow", "auto", "important");
-
-              // 기존 인스턴스가 있으면 업데이트
-              const existing = (grid as any).__osInstance as any | undefined;
-
-              if (existing && typeof existing.update === "function") {
-                try {
-                  existing.update();
-                  return;
-                } catch (e) {}
-              }
-
-              // 새로운 인스턴스 생성
-              const instance = (OverlayScrollbars as any)(grid, {
-                theme: "os-theme-dark",
-                resize: "none",
-                sizeAutoCapable: true,
-
-                scrollbars: {
-                  autoHide: "never",
-                  autoHideDelay: 600,
-                  clickScroll: true,
-                },
-              } as any);
-
-              (grid as any).__osInstance = instance; // 인스턴스 저장
-            });
-          }
-        } catch (err) {}
+        console.log("카테고리 선택:", name);
+        // 성능 최적화: OverlayScrollbars 제거 (네이티브 스크롤 사용)
       }
 
-      console.log("클립 클릭됨, 카테고리 시트 닫기");
       closeSheet();
     });
   });
 
-  // 시트 외부 클릭 시 닫기
-  document.addEventListener("pointerdown", (e) => {
-    if (!isOpen || isAnimating) return;
+  // 성능 최적화: capture phase로 이벤트 캡처
+  document.addEventListener(
+    "pointerdown",
+    (e) => {
+      if (!isOpen || isAnimating) return;
 
-    const target = e.target as Node | null;
-    if (!target) return;
+      const target = e.target as Node | null;
+      if (!target) return;
 
-    const insideSheet = sheetEl.contains(target);
-    const onFab = fabEl.contains(target);
+      const insideSheet = sheetEl.contains(target);
+      const onFab = fabEl.contains(target);
 
-    if (!insideSheet && !onFab) {
-      console.log("시트 외부 클릭, 카테고리 시트 닫기");
-      closeSheet();
-    }
-  });
+      if (!insideSheet && !onFab) {
+        closeSheet();
+      }
+    },
+    { capture: true, passive: true },
+  );
 
   // ESC 키 눌렀을 때 닫기
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      console.log("ESC 키 눌림, 카테고리 시트 닫기");
-      closeSheet();
-    }
-  });
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape" && isOpen) {
+        closeSheet();
+      }
+    },
+    { passive: true },
+  );
 }
 export default initCategoryNavToggle;

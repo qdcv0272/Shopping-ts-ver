@@ -16,7 +16,7 @@ export function showToast(message: string, duration = 2500) {
       () => {
         el.remove();
       },
-      { once: true }
+      { once: true },
     );
   }, duration);
 }

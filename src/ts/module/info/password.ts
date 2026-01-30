@@ -9,30 +9,19 @@ export function setupChangePassword() {
     document.querySelector<HTMLElement>(".change-password-modal") ||
     document.querySelector<HTMLElement>(".change-pw-modal");
 
-  const trigger = document.getElementById(
-    "js-profile-change-password"
-  ) as HTMLButtonElement | null;
+  const trigger = document.getElementById("js-profile-change-password") as HTMLButtonElement | null;
 
   if (!modal || !trigger) return;
   const modalEl = modal as HTMLElement;
 
   if (modal.dataset._changePasswordInit === "true") return;
 
-  const closeBtn = modal.querySelector<HTMLButtonElement>(
-    ".change-password-modal__close"
-  );
-  const form = modal.querySelector<HTMLFormElement>(
-    ".change-password-modal__form"
-  );
-  const inputCurrent =
-    modal.querySelector<HTMLInputElement>(".js-change-current");
+  const closeBtn = modal.querySelector<HTMLButtonElement>(".change-password-modal__close");
+  const form = modal.querySelector<HTMLFormElement>(".change-password-modal__form");
+  const inputCurrent = modal.querySelector<HTMLInputElement>(".js-change-current");
   const inputNew = modal.querySelector<HTMLInputElement>(".js-change-new");
-  const inputNewConfirm = modal.querySelector<HTMLInputElement>(
-    ".js-change-new-confirm"
-  );
-  const status = modal.querySelector<HTMLElement>(
-    ".change-password-modal__status"
-  );
+  const inputNewConfirm = modal.querySelector<HTMLInputElement>(".js-change-new-confirm");
+  const status = modal.querySelector<HTMLElement>(".change-password-modal__status");
   const saveBtn = modal.querySelector<HTMLButtonElement>(".js-change-save");
 
   trigger.addEventListener("click", (e) => {
@@ -48,9 +37,7 @@ export function setupChangePassword() {
   function open() {
     console.log("@@ 내 정보 페이지에서 비밀번호 변경 모달 열기");
 
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
 
     if (!username) {
       // 혹시 모를 오류 방지
@@ -91,24 +78,14 @@ export function setupChangePassword() {
     modalEl.addEventListener("transitionend", onEnd);
   }
 
-  if (
-    !form ||
-    !inputCurrent ||
-    !inputNew ||
-    !inputNewConfirm ||
-    !status ||
-    !saveBtn
-  )
-    return;
+  if (!form || !inputCurrent || !inputNew || !inputNewConfirm || !status || !saveBtn) return;
 
   saveBtn.addEventListener("click", () => {
     const current = (inputCurrent.value || "").trim();
     const next = (inputNew.value || "").trim();
     const confirm = (inputNewConfirm.value || "").trim();
 
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
     if (!username) {
       status.textContent = "로그인 상태가 아닙니다.";
       return;
@@ -136,8 +113,7 @@ export function setupChangePassword() {
     }
 
     if (next === current) {
-      status.textContent =
-        "새 비밀번호가 현재 비밀번호와 동일합니다. 다른 비밀번호를 입력하세요.";
+      status.textContent = "새 비밀번호가 현재 비밀번호와 동일합니다. 다른 비밀번호를 입력하세요.";
       return;
     }
 
@@ -156,9 +132,7 @@ export function setupChangePassword() {
     status.textContent = "비밀번호가 성공적으로 변경되었습니다.";
     showToast("비밀번호가 변경되었습니다. 곧 자동 로그아웃됩니다.");
 
-    alert(
-      "비밀번호가 변경되어 보안을 위해 자동으로 로그아웃됩니다. 다시 로그인해주세요."
-    );
+    alert("비밀번호가 변경되어 보안을 위해 자동으로 로그아웃됩니다. 다시 로그인해주세요.");
 
     localStorage.removeItem("cartItems");
     localStorage.removeItem("favorites");
@@ -171,19 +145,14 @@ export function setupChangePassword() {
 
     const loginSection = document.querySelector<HTMLElement>(".info-login");
     const infoPage = document.querySelector<HTMLElement>(".info-page");
-    const feedback = document.querySelector<HTMLElement>(
-      "#info-login-form .info-login__feedback"
-    );
-    const submitButton = document.querySelector<HTMLButtonElement>(
-      "#info-login-form .info-login__submit"
-    );
+    const feedback = document.querySelector<HTMLElement>("#info-login-form .info-login__feedback");
+    const submitButton = document.querySelector<HTMLButtonElement>("#info-login-form .info-login__submit");
 
     if (loginSection) loginSection.classList.remove("d-none");
     if (infoPage) infoPage.classList.add("d-none");
 
     if (feedback) {
-      feedback.textContent =
-        "비밀번호가 변경되어 자동 로그아웃되었습니다. 다시 로그인해주세요.";
+      feedback.textContent = "비밀번호가 변경되어 자동 로그아웃되었습니다. 다시 로그인해주세요.";
       feedback.classList.add("is-success");
     }
     if (submitButton) {

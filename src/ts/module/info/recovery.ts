@@ -3,21 +3,16 @@ import { showToast } from "./toast";
 
 export function setupFindUsername() {
   const modal = document.querySelector<HTMLElement>(".findid-modal");
-  const trigger = document.querySelector<HTMLButtonElement>(
-    ".js-info-find-username"
-  );
+  const trigger = document.querySelector<HTMLButtonElement>(".js-info-find-username");
   if (!modal || !trigger) return;
   const modalEl = modal as HTMLElement;
 
-  const closeBtn = modalEl.querySelector<HTMLButtonElement>(
-    ".findid-modal__close"
-  );
+  const closeBtn = modalEl.querySelector<HTMLButtonElement>(".findid-modal__close");
   const form = modalEl.querySelector<HTMLFormElement>(".findid-modal__search");
   const input = modalEl.querySelector<HTMLInputElement>(".js-findid-email");
   const status = modalEl.querySelector<HTMLElement>(".findid-modal__status");
-  const results = modalEl.querySelector<HTMLUListElement>(
-    ".findid-modal__results"
-  );
+  const results = modalEl.querySelector<HTMLUListElement>(".findid-modal__results");
+  const tplResult = document.getElementById("tpl-findid-result") as HTMLTemplateElement | null;
 
   trigger.addEventListener("click", (e) => {
     e.preventDefault();
@@ -69,7 +64,9 @@ export function setupFindUsername() {
     form?.reset();
   }
 
-  if (!form || !input || !results || !status) return;
+  if (!form || !input || !results || !status || !tplResult) return;
+
+  const tplResultEl = tplResult;
 
   // const confirmBtn = modalEl.querySelector<HTMLButtonElement>(
   //   ".findid-modal__confirm"
@@ -95,8 +92,7 @@ export function setupFindUsername() {
 
     const validation = auth.validateEmail(email); // 이메일 유효성 검사
     if (!validation.ok) {
-      status.textContent =
-        validation.message ?? "유효한 이메일을 입력해주세요.";
+      status.textContent = validation.message ?? "유효한 이메일을 입력해주세요.";
       return;
     }
 
@@ -104,19 +100,16 @@ export function setupFindUsername() {
 
     results.innerHTML = "";
     if (found) {
-      const li = document.createElement("li");
-      li.className = "findid-modal__result";
+      const itemFrag = tplResultEl.content.cloneNode(true) as DocumentFragment;
+      const li = itemFrag.querySelector<HTMLLIElement>(".findid-modal__result");
+      if (!li) return;
 
-      const textWrap = document.createElement("div");
-      textWrap.className = "findid-modal__result-textwrap";
-      textWrap.innerHTML = `등록된 아이디: <div class="findid-modal__username">${found.username}</div>`;
+      const usernameEl = li.querySelector<HTMLElement>(".findid-modal__username");
+      if (usernameEl) usernameEl.textContent = found.username;
 
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "btn btn--ghost findid-modal__copy";
-      copyBtn.type = "button";
+      const copyBtn = li.querySelector<HTMLButtonElement>(".findid-modal__copy");
+      if (!copyBtn) return;
       copyBtn.dataset.username = found.username;
-      copyBtn.setAttribute("aria-label", "아이디 복사");
-      copyBtn.textContent = "복사";
 
       copyBtn.addEventListener("click", async () => {
         const text = copyBtn.dataset.username ?? "";
@@ -142,9 +135,7 @@ export function setupFindUsername() {
         // }
       });
 
-      li.appendChild(textWrap);
-      li.appendChild(copyBtn);
-      results.appendChild(li);
+      results.appendChild(itemFrag);
       status.textContent = "아이디를 찾았습니다.";
       showToast("아이디를 찾았습니다.");
     } else {
@@ -155,29 +146,20 @@ export function setupFindUsername() {
 
 export function setupFindPassword() {
   const modal = document.querySelector<HTMLElement>(".findpw-modal"); // 비밀번호 찾기 모달
-  const trigger = document.querySelector<HTMLButtonElement>(
-    ".js-info-find-password"
-  ); // 비밀번호 찾기 트리거 버튼
+  const trigger = document.querySelector<HTMLButtonElement>(".js-info-find-password"); // 비밀번호 찾기 트리거 버튼
 
   if (!modal || !trigger) return;
 
   const modalEl = modal as HTMLElement;
 
-  const closeBtn = modalEl.querySelector<HTMLButtonElement>(
-    ".findpw-modal__close"
-  );
+  const closeBtn = modalEl.querySelector<HTMLButtonElement>(".findpw-modal__close");
   const form = modalEl.querySelector<HTMLFormElement>(".findpw-modal__search");
-  const inputUsername = modalEl.querySelector<HTMLInputElement>(
-    ".js-findpw-username"
-  );
-  const inputEmail =
-    modalEl.querySelector<HTMLInputElement>(".js-findpw-email");
+  const inputUsername = modalEl.querySelector<HTMLInputElement>(".js-findpw-username");
+  const inputEmail = modalEl.querySelector<HTMLInputElement>(".js-findpw-email");
   const status = modalEl.querySelector<HTMLElement>(".findpw-modal__status");
   const resetBox = modalEl.querySelector<HTMLElement>(".findpw-modal__reset");
   const newPass = modalEl.querySelector<HTMLInputElement>(".js-findpw-newpass");
-  const newPassConfirm = modalEl.querySelector<HTMLInputElement>(
-    ".js-findpw-newpass-confirm"
-  );
+  const newPassConfirm = modalEl.querySelector<HTMLInputElement>(".js-findpw-newpass-confirm");
   const resetBtn = modalEl.querySelector<HTMLButtonElement>(".js-findpw-reset");
 
   trigger.addEventListener("click", (e) => {
@@ -230,17 +212,7 @@ export function setupFindPassword() {
     modalEl.addEventListener("transitionend", onEnd);
   }
 
-  if (
-    !form ||
-    !inputUsername ||
-    !inputEmail ||
-    !status ||
-    !resetBox ||
-    !newPass ||
-    !newPassConfirm ||
-    !resetBtn
-  )
-    return;
+  if (!form || !inputUsername || !inputEmail || !status || !resetBox || !newPass || !newPassConfirm || !resetBtn) return;
 
   // const confirmPw = modalEl.querySelector<HTMLButtonElement>(
   //   ".findpw-modal__confirm"
@@ -270,8 +242,7 @@ export function setupFindPassword() {
       return;
     }
     if (user.email.toLowerCase() !== email.toLowerCase()) {
-      status.textContent =
-        "입력한 이메일이 등록된 계정의 이메일과 일치하지 않습니다.";
+      status.textContent = "입력한 이메일이 등록된 계정의 이메일과 일치하지 않습니다.";
       return;
     }
 
@@ -295,20 +266,17 @@ export function setupFindPassword() {
 
     const validation = auth.validatePassword(pass);
     if (!validation.ok) {
-      status.textContent =
-        validation.message ?? "유효한 비밀번호를 입력해주세요.";
+      status.textContent = validation.message ?? "유효한 비밀번호를 입력해주세요.";
       return;
     }
 
     const ok = auth.updateUser(username, { password: pass });
     if (!ok) {
-      status.textContent =
-        "비밀번호 재설정에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+      status.textContent = "비밀번호 재설정에 실패했습니다. 잠시 후 다시 시도해 주세요.";
       return;
     }
 
-    status.textContent =
-      "비밀번호가 변경되었습니다. 로그인 화면에서 새 비밀번호로 로그인하세요.";
+    status.textContent = "비밀번호가 변경되었습니다. 로그인 화면에서 새 비밀번호로 로그인하세요.";
     resetBox.classList.add("d-none");
     showToast("비밀번호가 변경되었습니다.");
     setTimeout(() => close(), 1200);

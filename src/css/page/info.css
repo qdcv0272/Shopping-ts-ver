@@ -4,32 +4,13 @@
   padding: 0 16px;
 }
 
-/* main white panel that holds page content */
 .info-login {
   padding: 70px 18px 32px;
-  background: radial-gradient(
-      1200px 400px at 10% 0%,
-      rgba(132, 94, 247, 0.16),
-      transparent
-    ),
-    linear-gradient(
-      180deg,
-      rgba(248, 249, 255, 1) 0%,
-      rgba(241, 245, 255, 0.96) 80%
-    );
+  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent), linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
 }
 .info-signup {
   padding: 70px 18px 32px;
-  background: radial-gradient(
-      1200px 400px at 10% 0%,
-      rgba(132, 94, 247, 0.16),
-      transparent
-    ),
-    linear-gradient(
-      180deg,
-      rgba(248, 249, 255, 1) 0%,
-      rgba(241, 245, 255, 0.96) 80%
-    );
+  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent), linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
 }
 
 .info-login__card {
@@ -40,7 +21,7 @@
   border-radius: 24px;
   padding: 42px 40px;
   box-shadow: 0 30px 70px rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
 }
 
 .info-login__hero {
@@ -88,7 +69,9 @@
   border: 1px solid rgba(15, 23, 42, 0.15);
   padding: 12px 14px;
   font-size: 15px;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .info-login__field textarea {
@@ -126,12 +109,12 @@
 
 .info-login__actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 100%));
   gap: 10px;
 }
 .info-signup__actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 100%));
   gap: 12px;
   margin-top: 4px;
 }
@@ -142,7 +125,7 @@
 
 .info-field-control {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 100% auto;
   gap: 10px;
   align-items: center;
 }
@@ -216,7 +199,7 @@
 
 .address-modal__search {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 100% auto;
   gap: 10px;
 }
 
@@ -251,17 +234,17 @@
   scrollbar-gutter: stable both-edges;
 }
 
-/* 아이디 찾기 모달 — address-modal과 동일한 레이아웃을 사용 */
 .findid-modal {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   z-index: 999;
+  will-change: opacity;
 }
 .findid-modal__card {
   width: min(520px, 100%);
@@ -269,6 +252,8 @@
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 .findid-modal__header {
   display: flex;
@@ -290,7 +275,7 @@
 }
 .findid-modal__search {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 100% auto;
   gap: 10px;
 }
 .findid-modal__search input {
@@ -331,7 +316,6 @@
   gap: 12px;
 }
 
-/* 오른쪽 세로형 확인 버튼 공통 */
 .modal-confirm {
   position: absolute;
   right: -18px;
@@ -349,9 +333,8 @@
   box-shadow: 0 8px 30px rgba(46, 91, 255, 0.14);
   color: #fff;
   font-weight: 700;
-  background: linear-gradient(180deg, #6b8cff, #845ef7); /* default gradient */
-  /* icons now used instead of vertical text */
-  /* ensure text is horizontal */
+  background: linear-gradient(180deg, #6b8cff, #845ef7);
+
   writing-mode: horizontal-tb;
   text-orientation: initial;
   font-size: 14px;
@@ -361,7 +344,6 @@
   transform: translateY(-50%) scale(0.98);
 }
 
-/* close button small round style */
 .findid-modal__close,
 .findpw-modal__close {
   width: 36px;
@@ -373,14 +355,10 @@
   background: rgba(15, 23, 42, 0.02);
 }
 
-/* .findid-modal__confirm {
-  background: linear-gradient(180deg, #6b8cff, #845ef7);
-} */
 .findpw-modal__confirm {
   background: linear-gradient(180deg, #6b8cff, #845ef7);
 }
 
-/* 카드 스타일 섬세화 */
 .findid-modal__card,
 .findpw-modal__card {
   border-radius: 18px;
@@ -389,13 +367,14 @@
   overflow: visible;
 }
 
-/* Inputs — 좀 더 부드러운 느낌 */
 .findid-modal__search input,
 .findpw-modal__search input {
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #fbfdff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: border-color 150ms ease, box-shadow 150ms ease,
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
     transform 150ms ease;
 }
 .findid-modal__search input:focus,
@@ -406,7 +385,6 @@
   transform: translateY(-2px);
 }
 
-/* 맞춰진 가로 정렬, 입력 높이 */
 .findid-modal__search input,
 .findpw-modal__search input {
   height: 46px;
@@ -414,12 +392,10 @@
   border-radius: 24px;
 }
 
-/* find-id modal shows a subtle purple outline by default to match design */
 .findid-modal__search input {
   border-color: rgba(133, 94, 247, 0.32);
 }
 
-/* search/confirm buttons inside the modal form */
 .findid-modal__search button,
 .findpw-modal__search > button {
   border-radius: 999px;
@@ -434,13 +410,11 @@
   box-shadow: 0 8px 20px rgba(46, 91, 255, 0.14);
 }
 
-/* 힌트 텍스트 살짝 더 연하게 */
 .findid-modal__hint,
 .findpw-modal__hint {
   color: rgba(15, 23, 42, 0.55);
 }
 
-/* 결과 카드 강조 */
 .findid-modal__result strong {
   color: #111827;
   font-weight: 700;
@@ -470,17 +444,17 @@
   transform: translateY(1px);
 }
 
-/* 비밀번호 찾기 모달 스타일 */
 .findpw-modal {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   z-index: 999;
+  will-change: opacity;
 }
 .findpw-modal__card {
   width: min(520px, 100%);
@@ -488,12 +462,15 @@
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
-/* Modal open/close animation */
 .findid-modal .findid-modal__card,
 .findpw-modal .findpw-modal__card {
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease;
   transform: translateY(12px);
   opacity: 0;
 }
@@ -514,9 +491,7 @@
   pointer-events: auto;
 }
 
-/* toast */
 .app-toast {
-  /* center the toast in the viewport */
   position: fixed;
   left: 50%;
   top: 50%;
@@ -528,7 +503,9 @@
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
   opacity: 0;
-  transition: opacity 260ms ease, transform 260ms ease;
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
   z-index: 1200;
 }
 .app-toast.is-visible {
@@ -551,12 +528,12 @@
 }
 .findpw-modal__search {
   display: grid;
-  grid-template-columns: 1fr; /* stack inputs vertically */
+  grid-template-columns: 100%;
   gap: 10px;
   align-items: stretch;
 }
 .findpw-modal__search > button {
-  justify-self: end; /* keep the internal confirm button to the right */
+  justify-self: end;
 }
 .findpw-modal__search input {
   border-radius: 12px;
@@ -581,7 +558,7 @@
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* more breathing room */
+  gap: 12px;
 }
 .findpw-modal__reset input {
   border-radius: 12px;
@@ -592,7 +569,6 @@
   min-height: 46px;
 }
 
-/* align label text + inputs consistently */
 .findpw-modal__reset label {
   display: flex;
   align-items: center;
@@ -616,7 +592,6 @@
   display: none;
 }
 
-/* --- profile/password/contact/address modals reuse styles --- */
 .change-password-modal,
 .contact-modal,
 .address-manage-modal {
@@ -628,7 +603,8 @@
   justify-content: center;
   padding: 24px;
   z-index: 999;
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
+  will-change: opacity;
 }
 .change-password-modal__card,
 .contact-modal__card,
@@ -638,9 +614,12 @@
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease;
   transform: translateY(12px);
   opacity: 0;
+  will-change: transform, opacity;
 }
 .change-password-modal.is-open .change-password-modal__card,
 .contact-modal.is-open .contact-modal__card,
@@ -713,7 +692,9 @@
   padding: 14px 16px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease,
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
     transform 140ms ease;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
 }
@@ -756,7 +737,7 @@
   border: 1px solid rgba(16, 24, 40, 0.07);
   box-shadow: 0 40px 90px rgba(15, 23, 42, 0.12);
   overflow: hidden;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
 }
 .info-panel::before,
 .info-panel::after {
@@ -773,19 +754,14 @@
   inset: auto auto 18px 18px;
   width: 140px;
   height: 140px;
-  background: radial-gradient(
-    circle,
-    rgba(132, 94, 247, 0.18),
-    transparent 70%
-  );
-  filter: blur(10px);
+  background: radial-gradient(circle, rgba(132, 94, 247, 0.18), transparent 70%);
+  filter: none;
 }
 
 .info-panel > * {
   position: relative;
 }
 
-/* profile */
 .profile-card {
   display: flex;
   align-items: center;
@@ -809,11 +785,7 @@
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  background: linear-gradient(
-    135deg,
-    rgba(125, 86, 255, 0.12),
-    rgba(46, 91, 255, 0.06)
-  );
+  background: linear-gradient(135deg, rgba(125, 86, 255, 0.12), rgba(46, 91, 255, 0.06));
   border: 1px solid rgba(46, 91, 255, 0.08);
   color: rgba(46, 91, 255, 0.9);
   box-shadow: 0 10px 26px rgba(46, 91, 255, 0.05);
@@ -858,13 +830,13 @@
 }
 .profile-card__remove {
   position: absolute;
-  left: -6px; /* avatar 왼쪽 하단에 배치 */
+  left: -6px;
   bottom: -6px;
   padding: 6px 10px;
   font-size: 13px;
   border-radius: 999px;
   background: #fff;
-  color: #d9534f; /* red for delete */
+  color: #d9534f;
   border: 1px solid rgba(16, 24, 40, 0.06);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
   cursor: pointer;
@@ -874,12 +846,11 @@
   transform: translateY(-1px);
 }
 
-/* upload right-bottom (slightly smaller visual on avatar) */
 .profile-card__upload {
   padding: 6px 8px;
-  font-size: 16px; /* camera emoji size */
+  font-size: 16px;
   right: -6px;
-  bottom: -6px; /* ensure consistent with remove */
+  bottom: -6px;
   line-height: 1;
 }
 .profile-card__body {
@@ -931,7 +902,10 @@
   font-weight: 700;
   font-size: 14px;
   gap: 6px;
-  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease,
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
     color 150ms ease;
 }
 .btn--primary {
@@ -956,7 +930,6 @@
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
 }
 
-/* section header */
 .section-header {
   margin: 20px 0 12px;
 }
@@ -972,17 +945,16 @@
   font-size: 13px;
 }
 
-/* grid */
 .grid {
   display: grid;
   gap: 16px;
 }
 .grid--2 {
-  grid-template-columns: 1fr;
+  grid-template-columns: 100%;
 }
 @media (min-width: 900px) {
   .grid--2 {
-    grid-template-columns: 1.2fr 0.9fr;
+    grid-template-columns: 57.1% 42.9%;
   }
 }
 .card {
@@ -991,7 +963,9 @@
   border-radius: 16px;
   padding: 20px 22px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  transition: transform 220ms ease, box-shadow 220ms ease,
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
     border-color 220ms ease;
 }
 .card__title {
@@ -1018,7 +992,6 @@
   color: #222;
 }
 
-/* orders */
 .orders-list {
   list-style: none;
   padding: 0;
@@ -1029,7 +1002,7 @@
 }
 .order-item {
   display: grid;
-  grid-template-columns: minmax(190px, 240px) 1fr auto;
+  grid-template-columns: minmax(190px, 240px) 100% auto;
   align-items: center;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -1134,19 +1107,41 @@
 }
 
 .address-manage-modal__card {
-  max-height: 82vh;
-  display: flex;
-  flex-direction: column;
+  width: min(860px, 96%);
+  max-height: 86%;
+  display: grid;
+  grid-template-columns: 52.5% 47.5%;
+  grid-template-rows: auto 100%;
+  grid-template-areas:
+    "header header"
+    "list editor";
+  column-gap: 18px;
+  row-gap: 12px;
+  padding: 20px 22px 18px;
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 18%, #ffffff 100%);
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
 }
 
+.address-manage-modal__header {
+  grid-area: header;
+}
+
 .address-manage__body {
-  padding: 16px 16px 8px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  grid-area: list;
+  padding: 14px 12px 10px;
+  border-bottom: none;
   flex: 1;
   overflow: auto;
-  background: linear-gradient(180deg, rgba(46, 91, 255, 0.02), transparent 26%);
+  background: transparent;
+  min-height: 0;
+}
+
+.address-manage__editor {
+  grid-area: editor;
+  margin-top: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .address-manage__list-header {
@@ -1191,7 +1186,10 @@
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 14px;
   background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
 }
 
 .address-manage__item.is-default {
@@ -1273,7 +1271,6 @@
   flex: 1;
 }
 
-/* Address editor form polish */
 .address-manage__editor {
   background: #f9fafb;
   border-top: 1px solid rgba(15, 23, 42, 0.06);
@@ -1288,7 +1285,10 @@
   padding: 12px 14px;
   font-size: 14px;
   background: #fff;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
 }
 
 .address-manage__editor input:focus,
@@ -1346,20 +1346,34 @@
   scrollbar-gutter: stable;
 }
 
-/* Wide layout: split list (left) and editor (right) */
+@media (max-width: 900px) {
+  .address-manage-modal__card {
+    max-height: 82%;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+  }
+
+  .address-manage-modal__header {
+    margin-bottom: 14px;
+  }
+
+  .address-manage__body {
+    padding: 16px 16px 8px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: linear-gradient(180deg, rgba(46, 91, 255, 0.02), transparent 26%);
+  }
+
+  .address-manage__editor {
+    height: auto;
+    overflow: visible;
+  }
+}
+
 @media (min-width: 1024px) {
   .address-manage-modal__card {
-    width: min(1100px, 96vw);
-    max-height: 86vh;
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-      "header header"
-      "list editor";
-    column-gap: 18px;
-    row-gap: 12px;
-    padding: 20px 22px 18px;
+    width: min(1100px, 96%);
+    max-height: 86%;
   }
 
   .address-manage-modal__header {
@@ -1408,7 +1422,9 @@
   border-radius: 10px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .address-manage__result-card:hover {
@@ -1439,15 +1455,9 @@
 .divider {
   height: 1px;
   margin: 28px 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(15, 23, 42, 0.12),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.12), transparent);
 }
 
-/* small screens tweaks */
 @media (max-width: 520px) {
   .info-login {
     padding: 32px 16px 20px;
@@ -1475,7 +1485,7 @@
     font-size: 26px;
   }
   .order-item {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     column-gap: 0;
     row-gap: 10px;
   }

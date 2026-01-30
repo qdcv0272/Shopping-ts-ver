@@ -12,72 +12,88 @@
 
 ---
 
-## 주요 기능 ✅
+## 핵심 기능 ✅
 
-- 상품 목록 렌더링 (카테고리 필터링 포함)
+- JSON 데이터 기반 상품 목록 렌더링
 
 ```ts
 // src/ts/index.ts
 import { initProducts } from "./module/products";
+
 initProducts();
 ```
 
-- 정렬 옵션: 인기순 / 신규순 / 가격 오름/내림
+- 카테고리 필터 및 정렬(인기순/신규/가격)
 
 ```ts
-// src/ts/module/products.ts - sortProducts (요약)
+// src/ts/module/products.ts
 function sortProducts(list: Product[], mode?: string): Product[] {
   const items = [...list];
-  if (!mode || mode === "popular")
-    return items.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
-  if (mode === "new")
-    return items.sort(
-      (a, b) =>
-        new Date(b.createdAt ?? 0).getTime() -
-        new Date(a.createdAt ?? 0).getTime(),
-    );
-  if (mode === "price-asc")
-    return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-  if (mode === "price-desc")
-    return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  if (!mode || mode === "popular") return items.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+  if (mode === "new") return items.sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
+  if (mode === "price-asc") return items.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  if (mode === "price-desc") return items.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
   return items;
 }
 ```
 
-- 상품 퀵뷰 (상세보기 모달)
+- 상품 퀵뷰 모달 및 인터랙션
 
 ```ts
-// src/ts/module/product.ts - 퀵뷰 열기 (요약)
-document.addEventListener("click", (e) => {
-  const el = e.target as HTMLElement;
-  if (el.closest(".quick-view")) {
-    const card = el.closest(".product-card") as HTMLElement;
-    const data = {
-      id: card.dataset.id,
-      title: card.dataset.title,
-      desc: card.dataset.desc,
-      price: card.dataset.price,
-    };
-    open(data); // 모달을 연다
-  }
-});
+// src/ts/module/product.ts
+if (el.closest(".quick-view")) {
+  const card = el.closest(".product-card") as HTMLElement;
+  const data = {
+    id: card.dataset.id,
+    title: card.dataset.title,
+    desc: card.dataset.desc,
+    price: card.dataset.price,
+    thumb: card.dataset.thumb,
+  };
+  currentData = data;
+  open(data);
+}
 ```
 
-- 즐겨찾기, 장바구니 페이지 구조(로컬 스토리지 기반으로 확장 가능)
+- 즐겨찾기/장바구니 상태 관리(로컬 스토리지)
 
 ```ts
-// src/ts/module/product.ts (요약)
+// src/ts/module/product.ts
 function setFavorites(items: string[]) {
   storage.setItemPrefer("favorites", JSON.stringify(items));
 }
 
 function getCartItems(): CartItem[] {
   const raw = storage.getItemPrefer("cartItems");
-  return raw ? JSON.parse(raw) : [];
+  return raw ? (JSON.parse(raw) as CartItem[]) : [];
 }
 ```
 
-- 반응형 레이아웃, 사용자 인터랙션(스와이퍼, 오버레이 스크롤바 등)
+- 내정보 페이지: 로그인/회원가입, 연락처/비밀번호/배송지 관리
+
+```ts
+// src/ts/page/info.ts
+export function initInfo() {
+  setupInfoLogin();
+  setupChangePassword();
+  setupContactModal();
+  setupAddressManage();
+}
+```
+
+- 반응형 레이아웃 및 UI 피드백(토스트/모달)
+
+```ts
+// src/ts/module/info/toast.ts
+export function showToast(message: string, duration = 2500) {
+  const el = document.createElement("div");
+  el.className = "app-toast";
+  el.textContent = message;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("is-visible"));
+  setTimeout(() => el.remove(), duration);
+}
+```
 
 ## 사용 기술 🔧
 
@@ -107,15 +123,13 @@ function getCartItems(): CartItem[] {
 
 ## 개선하고 싶은 점 / TODO ⚠️
 
-- 실제 API 연동 및 백엔드 연동 테스트 추가
-- 유닛/통합 테스트 (Jest, Playwright 등) 도입
-- 접근성(ARIA) 및 반응형 세부 튜닝
-- ESLint/Prettier, CI (GitHub Actions) 추가
+- 로컬,섹션 스토리지 -> firebase
+- 코드 최적화
 
 ---
 
 ## 마무리 ✨
 
-이 프로젝트로 **TypeScript + 모듈화 + 번들링** 기본기를 다졌습니다. 채용 과정에서 기술 면접이나 포트폴리오로 보여주기 좋게 정리해 두었고, 피드백이나 같이 개선해볼 분은 PR/Issue 언제나 환영합니다.
+이 프로젝트로 **TypeScript + 모듈화 + 번들링** 기본기를 다졌습니다. 포트폴리오로 보여주기 좋게 정리해 두었습니다.
 
 감사합니다 🙏

@@ -1,10 +1,9 @@
-/* cart page styles */
 .page-shell #app {
   padding: 10px 0;
 }
 
 .page-shell #app .products-grid {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 100%));
   gap: 14px;
 }
 
@@ -12,7 +11,7 @@
   border-radius: 999px;
   padding: 8px 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  /* keep compatibility but prefer accent styling via accent-btn */
+
   cursor: pointer;
 }
 
@@ -28,7 +27,6 @@
   border-radius: 12px;
 }
 
-/* disabled ghost buttons (qty decrease) */
 .accent-btn[disabled],
 .accent-btn:disabled,
 .ghost-btn[disabled],
@@ -39,7 +37,6 @@
   filter: grayscale(20%);
 }
 
-/* accent (colored) button for cart controls */
 .accent-btn {
   border-radius: 999px;
   padding: 8px 12px;
@@ -55,7 +52,6 @@
   transform: translateY(1px);
 }
 
-/* qty control layout */
 .qty-controls {
   display: flex;
   flex-direction: column;
@@ -70,7 +66,6 @@
   color: #0b1220;
 }
 
-/* small round circle buttons for qty +/- */
 .circle-btn {
   width: 36px;
   height: 36px;
@@ -94,7 +89,6 @@
   pointer-events: none;
 }
 
-/* danger button for remove — purple */
 .danger-btn {
   padding: 8px 12px;
   border-radius: 999px;

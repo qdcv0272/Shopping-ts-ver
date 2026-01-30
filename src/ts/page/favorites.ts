@@ -22,9 +22,7 @@ function getFavorites(): string[] {
 // 저장된 즐겨찾기 항목을 업데이트하는 함수
 function setFavorites(items: string[]) {
   storage.setItemPrefer("favorites", JSON.stringify(items));
-  document.dispatchEvent(
-    new CustomEvent("favorites:changed", { detail: { count: items.length } })
-  );
+  document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { count: items.length } }));
 }
 
 export function initFavorites() {
@@ -33,6 +31,18 @@ export function initFavorites() {
   const root = document.getElementById("app");
   if (!root) return;
   const rootEl = root as HTMLElement;
+
+  const tplEmpty = document.getElementById("tpl-fav-empty") as HTMLTemplateElement | null;
+  const tplHeader = document.getElementById("tpl-fav-header") as HTMLTemplateElement | null;
+  const tplList = document.getElementById("tpl-fav-list") as HTMLTemplateElement | null;
+  const tplItem = document.getElementById("tpl-fav-item") as HTMLTemplateElement | null;
+
+  if (!tplEmpty || !tplHeader || !tplList || !tplItem) return;
+
+  const tplEmptyEl = tplEmpty;
+  const tplHeaderEl = tplHeader;
+  const tplListEl = tplList;
+  const tplItemEl = tplItem;
 
   function render() {
     const items = getFavorites();
@@ -46,62 +56,61 @@ export function initFavorites() {
     rootEl.innerHTML = "";
 
     if (!found.length) {
-      rootEl.innerHTML = `<div class="demo-section"><h2>즐겨찾기가 비어있습니다</h2><p>마음에 드는 상품을 즐겨찾기에 추가해보세요.</p></div>`;
+      rootEl.appendChild(tplEmptyEl.content.cloneNode(true));
       return;
     }
 
-    const header = document.createElement("div");
-    header.className = "demo-section";
-    header.innerHTML = `<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px\"><div><h2>즐겨찾기 (${found.length})</h2><div style=\"color:#475569;font-size:13px\">저장한 상품을 관리하세요.</div></div><div><button class=\"primary-btn move-all\">모두 장바구니로 담기</button></div></div>`;
-    rootEl.appendChild(header);
+    const headerFrag = tplHeaderEl.content.cloneNode(true) as DocumentFragment;
+    const headerTitle = headerFrag.querySelector<HTMLElement>(".fav-header__title");
+    if (headerTitle) headerTitle.textContent = `즐겨찾기 (${found.length})`;
+    rootEl.appendChild(headerFrag);
 
-    const list = document.createElement("div");
-    list.className = "products-grid";
+    const listFrag = tplListEl.content.cloneNode(true) as DocumentFragment;
+    const list = listFrag.querySelector<HTMLElement>(".fav-list");
+    if (!list) return;
 
     found.forEach(({ product: p }) => {
-      const card = document.createElement("article");
-      card.className = "product-card";
+      const cardFrag = tplItemEl.content.cloneNode(true) as DocumentFragment;
+      const cardEl = cardFrag.querySelector<HTMLElement>(".product-card");
+      if (!cardEl) return;
 
-      card.innerHTML = `
-        <div class="product-thumb" aria-hidden="true">${p.thumb ?? "📦"}</div>
-        <div class="product-meta">
-          <div class="product-title">${p.title}</div>
-          <div class="product-desc">${p.desc}</div>
-          <div class="product-bottom"><div class="price">${
-            p.price ?? "₩0"
-          }</div><div><button class=\"ghost-btn btn-unfav\">즐겨찾기 해제</button></div></div>
-        </div>
-      `;
+      const thumb = cardEl.querySelector<HTMLElement>(".product-thumb");
+      if (thumb) thumb.textContent = p.thumb ?? "📦";
 
-      list.appendChild(card);
+      const title = cardEl.querySelector<HTMLElement>(".product-title");
+      if (title) title.textContent = p.title;
+
+      const desc = cardEl.querySelector<HTMLElement>(".product-desc");
+      if (desc) desc.textContent = p.desc;
+
+      const price = cardEl.querySelector<HTMLElement>(".price");
+      if (price) price.textContent = p.price ?? "₩0";
+
+      list.appendChild(cardFrag);
     });
 
-    rootEl.appendChild(list);
+    rootEl.appendChild(listFrag);
 
-    rootEl
-      .querySelectorAll<HTMLButtonElement>(".btn-unfav")
-      .forEach((btn, i) => {
-        btn.addEventListener("click", () => {
-          const items = getFavorites();
-          const toRemove = found[i]?.id;
-          const name = found[i]?.product.title;
-          if (!toRemove) return;
-          const remaining = items.filter((x) => x !== toRemove);
-          setFavorites(remaining);
-          showToast(`${name}이(가) 즐겨찾기에서 제거되었습니다`);
-          render();
-        });
+    rootEl.querySelectorAll<HTMLButtonElement>(".btn-unfav").forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const items = getFavorites();
+        const toRemove = found[i]?.id;
+        const name = found[i]?.product.title;
+        if (!toRemove) return;
+        const remaining = items.filter((x) => x !== toRemove);
+        setFavorites(remaining);
+        showToast(`${name}이(가) 즐겨찾기에서 제거되었습니다`);
+        render();
       });
+    });
 
-    const moveAll = header.querySelector<HTMLButtonElement>(".move-all");
+    const moveAll = rootEl.querySelector<HTMLButtonElement>(".move-all");
     moveAll?.addEventListener("click", () => {
       const favIds = getFavorites();
       if (!favIds.length) return;
 
       const raw = storage.getItemPrefer("cartItems");
-      const cart = raw
-        ? (JSON.parse(raw) as { id: string; qty: number }[])
-        : [];
+      const cart = raw ? (JSON.parse(raw) as { id: string; qty: number }[]) : [];
       favIds.forEach((id) => {
         const found = cart.find((c) => c.id === id);
         if (found) found.qty = found.qty + 1;
@@ -111,14 +120,14 @@ export function initFavorites() {
       document.dispatchEvent(
         new CustomEvent("cart:changed", {
           detail: { count: cart.reduce((s, i) => s + i.qty, 0) },
-        })
+        }),
       );
-      // clear moved favorites
+      // 옮겨진 즐겨찾기 초기화
       setFavorites([]);
       document.dispatchEvent(
         new CustomEvent("favorites:changed", {
           detail: { moved: favIds.length },
-        })
+        }),
       );
       showToast(`즐겨찾기 항목을 모두 장바구니로 옮겼습니다`);
       render();

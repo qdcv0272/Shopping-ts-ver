@@ -1,20 +1,14 @@
 import * as auth from "../auth";
 import { setupAddressModal } from "../address";
 
-export function showSignup(
-  loginSection: HTMLElement,
-  signupSection: HTMLElement
-) {
+export function showSignup(loginSection: HTMLElement, signupSection: HTMLElement) {
   loginSection.classList.add("d-none");
   signupSection.classList.remove("d-none");
   const firstField = signupSection.querySelector<HTMLInputElement>("input");
   firstField?.focus();
 }
 
-export function hideSignup(
-  loginSection: HTMLElement,
-  signupSection: HTMLElement
-) {
+export function hideSignup(loginSection: HTMLElement, signupSection: HTMLElement) {
   signupSection.classList.add("d-none");
   loginSection.classList.remove("d-none");
   resetSignupUI(signupSection);
@@ -22,65 +16,30 @@ export function hideSignup(
   firstField?.focus();
 }
 
-export function setupSignup(
-  signupSection: HTMLElement | null,
-  loginSection: HTMLElement
-) {
+export function setupSignup(signupSection: HTMLElement | null, loginSection: HTMLElement) {
   if (!signupSection) return;
 
-  const signupForm = document.getElementById(
-    "info-signup-form"
-  ) as HTMLFormElement | null;
+  const signupForm = document.getElementById("info-signup-form") as HTMLFormElement | null;
   if (!signupForm) return;
 
-  const usernameInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-username"
-  ) as HTMLInputElement | null;
-  const emailInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-email"
-  ) as HTMLInputElement | null;
-  const nameInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-name"
-  ) as HTMLInputElement | null;
-  const roadAddressInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-road-address"
-  ) as HTMLInputElement | null;
-  const addressDetailInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-address-detail"
-  ) as HTMLInputElement | null;
-  const phoneInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-phone"
-  ) as HTMLInputElement | null;
-  const passwordInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-password"
-  ) as HTMLInputElement | null;
-  const passwordConfirmInput = signupForm.querySelector<HTMLInputElement>(
-    ".js-signup-password-confirm"
-  ) as HTMLInputElement | null;
-  const signupFeedback = signupForm.querySelector<HTMLElement>(
-    ".info-signup__feedback"
-  );
+  const usernameInput = signupForm.querySelector<HTMLInputElement>(".js-signup-username") as HTMLInputElement | null;
+  const emailInput = signupForm.querySelector<HTMLInputElement>(".js-signup-email") as HTMLInputElement | null;
+  const nameInput = signupForm.querySelector<HTMLInputElement>(".js-signup-name") as HTMLInputElement | null;
+  const roadAddressInput = signupForm.querySelector<HTMLInputElement>(".js-signup-road-address") as HTMLInputElement | null;
+  const addressDetailInput = signupForm.querySelector<HTMLInputElement>(".js-signup-address-detail") as HTMLInputElement | null;
+  const phoneInput = signupForm.querySelector<HTMLInputElement>(".js-signup-phone") as HTMLInputElement | null;
+  const passwordInput = signupForm.querySelector<HTMLInputElement>(".js-signup-password") as HTMLInputElement | null;
+  const passwordConfirmInput = signupForm.querySelector<HTMLInputElement>(".js-signup-password-confirm") as HTMLInputElement | null;
+  const signupFeedback = signupForm.querySelector<HTMLElement>(".info-signup__feedback");
 
-  if (
-    !usernameInput ||
-    !emailInput ||
-    !nameInput ||
-    !roadAddressInput ||
-    !addressDetailInput ||
-    !phoneInput ||
-    !passwordInput ||
-    !passwordConfirmInput
-  )
-    return;
+  if (!usernameInput || !emailInput || !nameInput || !roadAddressInput || !addressDetailInput || !phoneInput || !passwordInput || !passwordConfirmInput) return;
 
   const hintMap = new Map<string, HTMLElement>();
 
-  signupForm
-    .querySelectorAll<HTMLElement>(".info-field-hint")
-    .forEach((hint) => {
-      const key = hint.dataset.hintTarget;
-      if (key) hintMap.set(key, hint);
-    });
+  signupForm.querySelectorAll<HTMLElement>(".info-field-hint").forEach((hint) => {
+    const key = hint.dataset.hintTarget;
+    if (key) hintMap.set(key, hint);
+  });
 
   setupAddressModal({
     signupSection,
@@ -89,14 +48,10 @@ export function setupSignup(
     hint: hintMap.get("road-address"),
   });
 
-  const duplicateButtons =
-    signupForm.querySelectorAll<HTMLButtonElement>(".js-field-check");
+  const duplicateButtons = signupForm.querySelectorAll<HTMLButtonElement>(".js-field-check");
   duplicateButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const target = button.dataset.checkTarget as
-        | "username"
-        | "email"
-        | undefined;
+      const target = button.dataset.checkTarget as "username" | "email" | undefined;
       if (!target) return;
       if (target === "username") {
         auth.runDuplicateCheck({
@@ -130,27 +85,20 @@ export function setupSignup(
     }
   };
 
-  usernameInput.addEventListener("input", () =>
-    resetDuplicateFlag(usernameInput, "username")
-  );
-  emailInput.addEventListener("input", () =>
-    resetDuplicateFlag(emailInput, "email")
-  );
+  usernameInput.addEventListener("input", () => resetDuplicateFlag(usernameInput, "username"));
+  emailInput.addEventListener("input", () => resetDuplicateFlag(emailInput, "email"));
   nameInput.addEventListener("input", () => {
     const hint = hintMap.get("name");
-    if (hint)
-      auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
+    if (hint) auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
   });
   roadAddressInput.addEventListener("input", () => {
     delete roadAddressInput.dataset.selected;
     const hint = hintMap.get("road-address");
-    if (hint)
-      auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
+    if (hint) auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
   });
   addressDetailInput.addEventListener("input", () => {
     const hint = hintMap.get("address-detail");
-    if (hint)
-      auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
+    if (hint) auth.setHintState(hint, hint.dataset.hintDefault ?? "", "default");
   });
 
   signupForm.addEventListener("submit", (event) => {
@@ -167,35 +115,19 @@ export function setupSignup(
 
     const passwordValidation = auth.validatePassword(password);
     if (!passwordValidation.ok) {
-      auth.setHintState(
-        hintMap.get("password"),
-        passwordValidation.message ?? "비밀번호를 확인해주세요.",
-        "error"
-      );
+      auth.setHintState(hintMap.get("password"), passwordValidation.message ?? "비밀번호를 확인해주세요.", "error");
       passwordInput.focus();
       return;
     }
 
     if (password !== passwordConfirm) {
-      auth.setHintState(
-        hintMap.get("password-confirm"),
-        "비밀번호가 일치하지 않습니다.",
-        "error"
-      );
+      auth.setHintState(hintMap.get("password-confirm"), "비밀번호가 일치하지 않습니다.", "error");
       passwordConfirmInput.focus();
       return;
     }
 
-    auth.setHintState(
-      hintMap.get("password"),
-      "안전한 비밀번호입니다.",
-      "success"
-    );
-    auth.setHintState(
-      hintMap.get("password-confirm"),
-      "비밀번호가 일치합니다.",
-      "success"
-    );
+    auth.setHintState(hintMap.get("password"), "안전한 비밀번호입니다.", "success");
+    auth.setHintState(hintMap.get("password-confirm"), "비밀번호가 일치합니다.", "success");
 
     const fullAddress = `${roadAddress} ${addressDetail}`.trim();
     const users = auth.loadUsers();
@@ -222,8 +154,7 @@ export function setupSignup(
     auth.saveUsers(users);
 
     if (signupFeedback) {
-      signupFeedback.textContent =
-        "가입이 완료되었습니다! 새 계정으로 로그인해주세요.";
+      signupFeedback.textContent = "가입이 완료되었습니다! 새 계정으로 로그인해주세요.";
       signupFeedback.classList.add("is-success");
     }
 
@@ -234,23 +165,18 @@ export function setupSignup(
 }
 
 function resetSignupUI(signupSection: HTMLElement) {
-  const signupForm =
-    signupSection.querySelector<HTMLFormElement>("#info-signup-form");
+  const signupForm = signupSection.querySelector<HTMLFormElement>("#info-signup-form");
   if (!signupForm) return;
   signupForm.reset();
   signupForm.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
     delete input.dataset.duplicate;
     delete input.dataset.selected;
   });
-  signupForm
-    .querySelectorAll<HTMLElement>(".info-field-hint")
-    .forEach((hint) => {
-      const defaultMsg = hint.dataset.hintDefault ?? "";
-      auth.setHintState(hint, defaultMsg, "default");
-    });
-  const feedback = signupForm.querySelector<HTMLElement>(
-    ".info-signup__feedback"
-  );
+  signupForm.querySelectorAll<HTMLElement>(".info-field-hint").forEach((hint) => {
+    const defaultMsg = hint.dataset.hintDefault ?? "";
+    auth.setHintState(hint, defaultMsg, "default");
+  });
+  const feedback = signupForm.querySelector<HTMLElement>(".info-signup__feedback");
   if (feedback) {
     feedback.textContent = "";
     feedback.classList.remove("is-success");
@@ -258,13 +184,9 @@ function resetSignupUI(signupSection: HTMLElement) {
 }
 
 function cryptoId() {
-  try {
-    if (
-      typeof crypto !== "undefined" &&
-      typeof crypto.randomUUID === "function"
-    ) {
-      return crypto.randomUUID();
-    }
-  } catch {}
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
   return `addr-${Math.random().toString(36).slice(2, 10)}`;
 }

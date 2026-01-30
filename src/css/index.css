@@ -1,4 +1,3 @@
-/* Hero area: swiper on top, floating category sheet trigger */
 .hero-block {
   display: flex;
   flex-direction: column;
@@ -9,7 +8,7 @@
   position: fixed;
   right: 32px;
   bottom: 32px;
-  /* make sure FAB sits above other page elements (modals / page-specific stacking) */
+
   z-index: 1500;
   display: inline-flex;
   align-items: center;
@@ -22,7 +21,13 @@
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32);
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .category-fab:hover {
@@ -43,22 +48,27 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  width: min(480px, 92vw);
-  max-height: calc(100vh - 120px);
+  width: min(480px, 92%);
+  max-height: calc(100% - 120px);
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 100%;
   padding: 18px;
   gap: 12px;
   border-radius: 20px;
   background: linear-gradient(165deg, rgba(17, 25, 43, 0.96), rgba(11, 16, 30, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 28px 56px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(12px);
-  transform: translate(-50%, -50%) scale(0.96);
+  backdrop-filter: blur(6px);
+  transform: translate(-50%, -50%) scale(0.96) translateZ(0);
+  will-change: transform, opacity;
   opacity: 0;
   pointer-events: none;
   z-index: 85;
   overflow: hidden;
+}
+
+.category-sheet.is-animating {
+  backdrop-filter: none;
 }
 
 .category-sheet.is-open {
@@ -95,7 +105,7 @@
 
 .category-sheet__chips {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 100%));
   gap: 10px;
 }
 
@@ -111,7 +121,11 @@
   font-weight: 700;
   text-decoration: none;
   gap: 8px;
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
 }
 
 .category-chip:hover {
@@ -135,14 +149,15 @@
   background: rgba(255, 255, 255, 0.96);
   color: #172034;
   box-shadow: 0 8px 30px rgba(20, 34, 61, 0.06);
+  content-visibility: auto;
+  contain-intrinsic-size: 240px 600px;
 }
 
-/* shop area */
 .shop-area {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  /* give the shop section some extra breathing room below the grid */
+
   margin-bottom: 28px;
 }
 .shop-header {
@@ -165,38 +180,34 @@
   align-items: center;
 }
 .shop-sort {
-  /* refined pill-shaped select matching mock
-     - shorter height, centered label, subtle border
-     - custom caret inside a small circle on the right
-  */
   height: 30px;
   min-width: 64px;
-  padding: 0 18px 0 8px; /* tightened horizontal padding */
-  border-radius: 6px; /* small radius so menu appears visually attached */
+  padding: 0 18px 0 8px;
+  border-radius: 6px;
   border: 1px solid rgba(20, 34, 61, 0.08);
   background: #fff;
-  /* center the displayed selected value (works across modern browsers) */
+
   text-align: center;
-  text-align-last: center; /* centers selected value for many browsers */
-  -moz-text-align-last: center; /* Firefox */
+  text-align-last: center;
+  -moz-text-align-last: center;
   font-weight: 600;
   display: inline-block;
-  line-height: 30px; /* vertically center text in the select */
-  text-align: center; /* center displayed selected value */
-  text-align-last: center; /* ensure selected value is centered in some browsers */
+  line-height: 30px;
+  text-align: center;
+  text-align-last: center;
   cursor: pointer;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  box-shadow: none; /* remove floaty shadow so dropdown menu appears flush */
+  box-shadow: none;
   position: relative;
-  transition: transform 140ms ease, box-shadow 140ms ease;
-  /* caret will be drawn via pseudo-elements to avoid interfering with native dropdown rendering */
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
-/* dropdown option styling (limited by browser natives, but keep it compact and clean) */
 .shop-sort option {
-  padding: 2px 8px; /* ultra-tight spacing */
+  padding: 2px 8px;
   background: #ffffff;
   color: #0b1220;
   font-weight: 700;
@@ -206,29 +217,28 @@
 }
 
 .shop-sort option:hover {
-  background: #eef4ff; /* pale accent on hover */
+  background: #eef4ff;
   color: #0b1220;
 }
 
-/* selected option inside the native menu (works in many browsers) */
 .shop-sort option:checked {
-  background: #2e5bff !important; /* strong accent for selected */
+  background: #2e5bff !important;
   color: #fff !important;
 }
 
-/* reduce default focus outline noise on some browsers */
 .shop-sort:-moz-focusring {
   color: transparent;
   text-shadow: 0 0 0 #0b1220;
 }
 
-/* draw small circular caret area (background/box) with caret triangle above it */
 .shop-sort::after {
   content: "";
   position: absolute;
   right: 8px;
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -244,7 +254,9 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
   width: 0;
   height: 0;
   border-left: 4px solid transparent;
@@ -283,6 +295,9 @@
   border-radius: 10px;
   padding: 10px;
   border: 1px solid rgba(20, 34, 61, 0.06);
+  contain: layout paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 120px 100px;
 }
 .product-thumb {
   width: 72px;
@@ -322,54 +337,25 @@
 
 .products-grid {
   display: grid;
-  /* default to a single-column vertical list with internal scrolling */
-  grid-template-columns: 1fr;
+
+  grid-template-columns: 100%;
   gap: 12px;
   margin-top: 12px;
-  /* give extra bottom padding so items don't butt right up against following content */
-  padding-bottom: 40px;
-  max-height: 54vh;
-  overflow: auto;
-  padding-right: 22px; /* room between last card and scrollbar */
-  scrollbar-gutter: stable both-edges;
+  padding-bottom: 20px;
+
+  contain: layout paint;
 }
 
-/* -- list layout (one item per row) to match screenshot #1 -- */
 .products-grid--list {
-  grid-template-columns: 1fr !important; /* single column rows — force it */
+  grid-template-columns: 100% !important;
   gap: 12px;
-  /* ensure the list keeps its vertical scrolling behavior even when other
-     page-specific rules attempt to force multi-column layouts */
-  max-height: 54vh !important;
-  overflow: auto !important;
-  padding-right: 22px !important; /* room between last card and scrollbar */
 }
 
-/* OverlayScrollbars wraps the grid content in .os-viewport / .os-content.
-   Some browsers/third-party CSS can end up making the inner container a flex
-   row which causes horizontal layout — force these inner wrappers to use a
-   single-column grid when the list mode is active so vertical scrolling
-   always works as expected. */
-.products-grid.products-grid--list,
-.products-grid.products-grid--list .os-viewport,
-.products-grid.products-grid--list .os-content {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-}
-
-/* stronger enforcement inside the app container: ensure any .products-grid in #app that has
-   the --list class uses single column even if other page styles are more specific */
-.page-shell #app .products-grid.products-grid--list {
-  grid-template-columns: 1fr !important;
-}
-
-/* -- card/grid layout (multiple compact cards) to match screenshot #2 -- */
 .products-grid--card {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 100%)) !important;
   gap: 12px;
 }
 
-/* When in card mode, change product-card to vertical card layout */
 .products-grid--card .product-card {
   display: flex;
   flex-direction: column;
@@ -415,10 +401,15 @@
   border-radius: 8px;
 }
 .products-grid {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
-/* product quick-view modal */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
 .product-modal {
   position: fixed;
   inset: 0;
@@ -430,16 +421,19 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
+  will-change: opacity;
 }
 .product-modal__panel {
   position: relative;
-  width: min(920px, 96vw);
+  width: min(920px, 96%);
   max-width: 920px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 30px 80px rgba(2, 6, 23, 0.36);
   padding: 20px;
   z-index: 1;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 .product-modal__close {
   position: absolute;
@@ -490,7 +484,6 @@
   align-items: center;
 }
 
-/* modal-specific button styles */
 .product-modal__actions .primary-btn {
   background: linear-gradient(90deg, #2e5bff, #845ef7);
   color: #fff;
@@ -503,7 +496,6 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-/* favorite button inside modal */
 .product-modal__actions .product-modal__fav {
   background: linear-gradient(90deg, #ff8c8c, #ffb26c);
   color: #fff;
@@ -555,12 +547,12 @@
   }
 
   .category-sheet {
-    width: min(360px, 94vw);
-    max-height: calc(100vh - 80px);
+    width: min(360px, 94%);
+    max-height: calc(100% - 80px);
   }
 
   .category-sheet__chips {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 100%));
   }
 }
 
@@ -569,7 +561,7 @@
   border-radius: 18px;
   padding: 14px;
   box-shadow: 0 12px 36px rgba(20, 34, 61, 0.15);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
   display: flex;
   min-width: 0;
   height: 300px;

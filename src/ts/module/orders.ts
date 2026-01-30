@@ -8,7 +8,7 @@ export type Order = {
   username?: string;
   items: CartItem[];
   total: number;
-  date: string; // ISO
+  date: string; // ISO 형식
   status?: string;
 };
 
@@ -32,9 +32,7 @@ export function getOrders(username?: string): Order[] {
 }
 
 export function setOrders(orders: Order[], username?: string) {
-  username
-    ? localStorage.setItem(getKeyForUser(username), JSON.stringify(orders))
-    : sessionStorage.setItem(getKeyForUser(undefined), JSON.stringify(orders));
+  username ? localStorage.setItem(getKeyForUser(username), JSON.stringify(orders)) : sessionStorage.setItem(getKeyForUser(undefined), JSON.stringify(orders));
 }
 
 export function addOrder(order: Order) {
@@ -45,7 +43,7 @@ export function addOrder(order: Order) {
 }
 
 export function generateOrderId(): string {
-  // yyyyMMdd + random 4 digits
+  // yyyyMMdd + 랜덤 4자리
   const d = new Date();
   const yyyy = d.getFullYear().toString();
   const MM = (d.getMonth() + 1).toString().padStart(2, "0");

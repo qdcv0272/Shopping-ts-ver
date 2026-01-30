@@ -4,20 +4,14 @@ import { showToast } from "./toast";
 
 export function setupContactModal() {
   const modal =
-    document.querySelector<HTMLElement>(".info-page .contact-modal") ||
-    document.querySelector<HTMLElement>(".info-page .info-contact-modal") ||
-    document.querySelector<HTMLElement>(".contact-modal");
-  const trigger = document.getElementById(
-    "js-contact-edit"
-  ) as HTMLButtonElement | null;
+    document.querySelector<HTMLElement>(".info-page .contact-modal") || document.querySelector<HTMLElement>(".info-page .info-contact-modal") || document.querySelector<HTMLElement>(".contact-modal");
+  const trigger = document.getElementById("js-contact-edit") as HTMLButtonElement | null;
   if (!modal || !trigger) return;
   const modalEl = modal as HTMLElement;
 
   if (modalEl.dataset._contactInit === "true") return;
 
-  const closeBtn = modal.querySelector<HTMLButtonElement>(
-    ".contact-modal__close"
-  );
+  const closeBtn = modal.querySelector<HTMLButtonElement>(".contact-modal__close");
   const form = modal.querySelector<HTMLFormElement>(".contact-modal__form");
   const inputEmail = modal.querySelector<HTMLInputElement>(".js-contact-email");
   const inputPhone = modal.querySelector<HTMLInputElement>(".js-contact-phone");
@@ -37,9 +31,7 @@ export function setupContactModal() {
   });
 
   function open() {
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
 
     if (!username) {
       // 혹시 모를 오류 방지
@@ -94,9 +86,7 @@ export function setupContactModal() {
   saveBtn.addEventListener("click", () => {
     const email = (inputEmail.value || "").trim();
     const phone = (inputPhone.value || "").trim();
-    const username =
-      sessionStorage.getItem(auth.LOGIN_USER_KEY) ||
-      localStorage.getItem(auth.LOGIN_USER_KEY);
+    const username = sessionStorage.getItem(auth.LOGIN_USER_KEY) || localStorage.getItem(auth.LOGIN_USER_KEY);
 
     if (!username) {
       // 혹시 모를 오류 방지

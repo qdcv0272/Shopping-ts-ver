@@ -16,12 +16,8 @@ export function initProductQuickView(): void {
   const priceEl = modalEl.querySelector<HTMLElement>(".product-modal__price"); // 가격
   const thumbEl = modalEl.querySelector<HTMLElement>(".product-modal__thumb"); // 썸네일
   const closeBtn = modalEl.querySelector<HTMLElement>(".product-modal__close"); // 닫기 버튼
-  const addBtn = modalEl.querySelector<HTMLButtonElement>(
-    ".product-modal__add"
-  ); // 장바구니 추가 버튼
-  const favBtn = modalEl.querySelector<HTMLButtonElement>(
-    ".product-modal__fav"
-  ); // 즐겨찾기 버튼
+  const addBtn = modalEl.querySelector<HTMLButtonElement>(".product-modal__add"); // 장바구니 추가 버튼
+  const favBtn = modalEl.querySelector<HTMLButtonElement>(".product-modal__fav"); // 즐겨찾기 버튼
 
   let isOpen = false; // 열고 닫기
   let isAnimating = false; // 애니메이션 중복 방지
@@ -39,7 +35,10 @@ export function initProductQuickView(): void {
 
   type CartItem = { id: string; qty: number }; // 장바구니 아이템 타입
 
-  document.addEventListener("click", (e) => {
+  // 성능 최적화: 이벤트 위임으로 변경 (passive 옵션 추가)
+  document.addEventListener("click", handleGlobalClick, { passive: false });
+
+  function handleGlobalClick(e: MouseEvent) {
     const el = e.target as HTMLElement;
 
     // 퀵뷰 열기
@@ -62,9 +61,7 @@ export function initProductQuickView(): void {
 
       const qty = getCartQty(data.id);
 
-      qty > 0
-        ? addBtn?.classList.add("is-added")
-        : addBtn?.classList.remove("is-added");
+      qty > 0 ? addBtn?.classList.add("is-added") : addBtn?.classList.remove("is-added");
 
       // 즐겨찾기 여부는 ID를 우선 확인하고, ID가 없으면 title로도 확인합니다.
       const fav = isFavorited(data.id ?? data.title);
@@ -80,10 +77,7 @@ export function initProductQuickView(): void {
       return;
     }
 
-    if (
-      el.matches("[data-dismiss=modal]") ||
-      el.closest("[data-dismiss=modal]")
-    ) {
+    if (el.matches("[data-dismiss=modal]") || el.closest("[data-dismiss=modal]")) {
       close();
     }
 
@@ -94,14 +88,12 @@ export function initProductQuickView(): void {
       const items = getCartItems();
       const found = items.find((x) => x.id === id);
 
-      found
-        ? (found.qty = Math.max(1, found.qty + 1))
-        : items.push({ id, qty: 1 });
+      found ? (found.qty = Math.max(1, found.qty + 1)) : items.push({ id, qty: 1 });
 
       setCartItems(items);
 
       document.dispatchEvent(
-        new CustomEvent("cart:changed", { detail: { id } }) // 장바구니 변경 이벤트
+        new CustomEvent("cart:changed", { detail: { id } }), // 장바구니 변경 이벤트
       );
 
       showToast(`${title}이(가) 장바구니에 추가되었습니다`);
@@ -118,33 +110,23 @@ export function initProductQuickView(): void {
       if (favs.includes(id)) {
         const remaining = favs.filter((x) => x !== id);
         setFavorites(remaining);
-        document.dispatchEvent(
-          new CustomEvent("favorites:changed", { detail: { id } })
-        );
+        document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { id } }));
         showToast(`${title}이(가) 즐겨찾기에서 제거되었습니다`);
         favBtn?.classList.remove("is-favorited");
         if (favBtn) favBtn.textContent = "즐겨찾기";
       } else {
         favs.push(id);
         setFavorites(favs);
-        document.dispatchEvent(
-          new CustomEvent("favorites:changed", { detail: { id } })
-        );
+        document.dispatchEvent(new CustomEvent("favorites:changed", { detail: { id } }));
         showToast(`${title}이(가) 즐겨찾기에 추가되었습니다`);
         favBtn?.classList.add("is-favorited");
         if (favBtn) favBtn.textContent = "즐겨찾기 해제";
       }
       return;
     }
-  });
+  }
 
-  function open(data: {
-    id?: string;
-    title?: string;
-    desc?: string;
-    price?: string;
-    thumb?: string;
-  }) {
+  function open(data: { id?: string; title?: string; desc?: string; price?: string; thumb?: string }) {
     if (isOpen || isAnimating) return;
     isAnimating = true;
 
@@ -166,6 +148,7 @@ export function initProductQuickView(): void {
         y: 0,
         duration: 0.32,
         ease: "power2.out",
+        force3D: true,
         onComplete: () => {
           isAnimating = false;
           isOpen = true;
@@ -191,24 +174,18 @@ export function initProductQuickView(): void {
     return !!(p && favs.includes(p.id));
   }
 
-  // get & set 즐겨찾기 아이템
+  // 즐겨찾기 아이템 조회/저장
   function getFavorites(): string[] {
     const raw = storage.getItemPrefer("favorites");
     if (!raw) return [];
     const parsed = JSON.parse(raw);
 
     // 이전 버전 호환성: 문자열 id 또는 title 배열 처리
-    if (
-      Array.isArray(parsed) &&
-      parsed.length &&
-      typeof parsed[0] === "string"
-    ) {
-      // legacy: 문자열 id 또는 title 배열을 id 배열로 정규화
+    if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === "string") {
+      // 이전 형식: 문자열 id 또는 title 배열을 id 배열로 정규화
       const mapped = (parsed as string[])
         .map((s) => {
-          const p = (products as any[]).find(
-            (x) => x.id === s || x.title === s
-          );
+          const p = (products as any[]).find((x) => x.id === s || x.title === s);
           return p?.id ?? null;
         })
         .filter(Boolean) as string[];
@@ -234,6 +211,7 @@ export function initProductQuickView(): void {
         y: 10,
         duration: 0.24,
         ease: "power2.in",
+        force3D: true,
         onComplete: finishClose,
       });
     } else {
@@ -258,22 +236,16 @@ export function initProductQuickView(): void {
     isOpen = false;
   }
 
-  // get & set 장바구니 아이템
+  // 장바구니 아이템 조회/저장
   function getCartItems(): CartItem[] {
     const raw = storage.getItemPrefer("cartItems");
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (
-      Array.isArray(parsed) &&
-      parsed.length &&
-      typeof parsed[0] === "string"
-    ) {
-      // legacy: 문자열 id 또는 title 배열을 최신 형태로 변환
+    if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === "string") {
+      // 이전 형식: 문자열 id 또는 title 배열을 최신 형태로 변환
       const converted: CartItem[] = (parsed as string[])
         .map((s) => {
-          const p = (products as any[]).find(
-            (x) => x.id === s || x.title === s
-          );
+          const p = (products as any[]).find((x) => x.id === s || x.title === s);
           return p && p.id ? { id: p.id, qty: 1 } : { id: s, qty: 1 };
         })
         .filter(Boolean);

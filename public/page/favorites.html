@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
@@ -12,29 +12,58 @@
           <span class="logo-emblem">TS</span>
         </a>
         <div class="main-header__search" role="search">
-          <input
-            type="search"
-            placeholder="상품, 브랜드, 키워드를 검색하세요"
-          />
+          <input type="search" placeholder="상품, 브랜드, 키워드를 검색하세요" />
           <button type="button">🔍</button>
         </div>
         <div class="main-header__actions">
-          <a href="info.html" class="header-action"
-            >👤 <span class="header-action__label">내정보</span></a
-          >
-          <a href="favorites.html" class="header-action"
-            >⭐ <span class="header-action__label">즐겨찾기</span></a
-          >
-          <a href="cart.html" class="header-action"
-            >🛒 <span class="header-action__label">장바구니</span></a
-          >
-          <a href="bootstrap.html" class="header-action"
-            >⚙️ <span class="header-action__label">부트스트랩</span></a
-          >
+          <a href="info.html" class="header-action">👤 <span class="header-action__label">내정보</span></a>
+          <a href="favorites.html" class="header-action">⭐ <span class="header-action__label">즐겨찾기</span></a>
+          <a href="cart.html" class="header-action">🛒 <span class="header-action__label">장바구니</span></a>
         </div>
       </header>
 
-      <div id="app" data-page="favorites"></div>
+      <div id="app" data-page="favorites">
+        <template id="tpl-fav-empty">
+          <div class="demo-section fav-empty">
+            <h2>즐겨찾기가 비어있습니다</h2>
+            <p>마음에 드는 상품을 즐겨찾기에 추가해보세요.</p>
+          </div>
+        </template>
+
+        <template id="tpl-fav-header">
+          <div class="demo-section fav-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+              <div>
+                <h2 class="fav-header__title">즐겨찾기</h2>
+                <div class="fav-header__sub" style="color: #475569; font-size: 13px">저장한 상품을 관리하세요.</div>
+              </div>
+              <div>
+                <button class="primary-btn move-all" type="button">모두 장바구니로 담기</button>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template id="tpl-fav-list">
+          <div class="products-grid fav-list"></div>
+        </template>
+
+        <template id="tpl-fav-item">
+          <article class="product-card">
+            <div class="product-thumb" aria-hidden="true">📦</div>
+            <div class="product-meta">
+              <div class="product-title"></div>
+              <div class="product-desc"></div>
+              <div class="product-bottom">
+                <div class="price"></div>
+                <div>
+                  <button class="ghost-btn btn-unfav" type="button">즐겨찾기 해제</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
 
       <!-- <button class="category-fab" type="button" aria-controls="category-sheet" aria-expanded="false">
         <span class="category-fab__icon">📂</span>

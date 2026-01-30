@@ -26,54 +26,50 @@ function setupInfoLogin() {
   const signupSection = document.querySelector<HTMLElement>(".info-signup"); // 회원가입 섹션
   const infoPage = document.querySelector<HTMLElement>(".info-page"); // 정보 페이지 섹션
 
-  const form = document.querySelector(
-    "#info-login-form"
-  ) as HTMLFormElement | null; // 로그인 폼
+  const form = document.querySelector("#info-login-form") as HTMLFormElement | null; // 로그인 폼
 
   if (!loginSection || !infoPage || !form) return;
 
   const feedback = form.querySelector<HTMLElement>(".info-login__feedback"); // 피드백 영역
 
-  const submitButton = form.querySelector<HTMLButtonElement>(
-    ".info-login__submit"
-  ); // 제출 버튼
-  const signupTrigger = document.querySelector<HTMLButtonElement>(
-    ".js-info-open-signup"
-  ); // 회원가입 열기 버튼
+  const submitButton = form.querySelector<HTMLButtonElement>(".info-login__submit"); // 제출 버튼
+  const signupTrigger = document.querySelector<HTMLButtonElement>(".js-info-open-signup"); // 회원가입 열기 버튼
 
-  const signupBackButton = signupSection?.querySelector<HTMLButtonElement>(
-    '[data-action="back"]'
-  ); // 회원가입 뒤로가기 버튼
+  const signupBackButton = signupSection?.querySelector<HTMLButtonElement>('[data-action="back"]'); // 회원가입 뒤로가기 버튼
 
   if (signupTrigger && signupSection) {
-    signupTrigger.addEventListener("click", () => {
-      console.log("회원가입 열기");
-      showSignup(loginSection, signupSection);
-    });
+    signupTrigger.addEventListener(
+      "click",
+      () => {
+        showSignup(loginSection, signupSection);
+      },
+      { passive: true },
+    );
   }
 
   if (signupBackButton && signupSection) {
-    signupBackButton.addEventListener("click", () => {
-      console.log("뒤로가기 클릭");
-      hideSignup(loginSection, signupSection);
-    });
+    signupBackButton.addEventListener(
+      "click",
+      () => {
+        hideSignup(loginSection, signupSection);
+      },
+      { passive: true },
+    );
   }
 
   setupFindUsername(); // 아이디 찾기
   setupFindPassword(); // 비밀번호 찾기
 
   // 자동 로그인 처리
-  const sessionAuthed =
-    sessionStorage.getItem(auth.LOGIN_STORAGE_KEY) === "true";
+  const sessionAuthed = sessionStorage.getItem(auth.LOGIN_STORAGE_KEY) === "true";
   const authedUsernameSession = sessionStorage.getItem(auth.LOGIN_USER_KEY);
 
   const authedUsername = authedUsernameSession;
 
   if (sessionAuthed && authedUsername) {
-    console.log("로그인 되어 있음@@@@@@@@@@@@@");
     const authedUser = auth.findUserByUsername(authedUsernameSession);
     if (authedUser) {
-      // import
+      // 가져오기
       populateInfoPage(authedUser); // 정보 페이지 채우기
       setupProfileUploader(); // 프로필 업로더 설정
       setupChangePassword(); // 비밀번호 변경 설정
@@ -92,21 +88,22 @@ function setupInfoLogin() {
         if (target) showOrderDetailsModal(target);
       }
 
-      const logoutBtnRestored = document.getElementById(
-        "js-info-logout"
-      ) as HTMLButtonElement | null;
-      logoutBtnRestored?.addEventListener("click", () => {
+      const logoutBtnRestored = document.getElementById("js-info-logout") as HTMLButtonElement | null;
+      // 성능 최적화: 기존 리스너 제거 후 새로 등록
+      const newLogoutBtn = logoutBtnRestored?.cloneNode(true) as HTMLButtonElement | null;
+      if (newLogoutBtn && logoutBtnRestored?.parentNode) {
+        logoutBtnRestored.parentNode.replaceChild(newLogoutBtn, logoutBtnRestored);
+      }
+      newLogoutBtn?.addEventListener("click", () => {
         sessionStorage.removeItem(auth.LOGIN_STORAGE_KEY);
         sessionStorage.removeItem(auth.LOGIN_USER_KEY);
         localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
         localStorage.removeItem(auth.LOGIN_USER_KEY);
-        try {
-          localStorage.removeItem("cartItems");
-          localStorage.removeItem("favorites");
-        } catch {}
-        try {
-          showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
-        } catch {}
+
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("favorites");
+
+        showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
 
         if (feedback) {
           feedback.textContent = "로그아웃 버튼으로 로그아웃 성공";
@@ -125,7 +122,6 @@ function setupInfoLogin() {
     sessionStorage.removeItem(auth.LOGIN_STORAGE_KEY);
     sessionStorage.removeItem(auth.LOGIN_USER_KEY);
   } else {
-    console.log("로그인 되어 있지 않음@@@@@@@@@@@@@");
     localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
     localStorage.removeItem(auth.LOGIN_USER_KEY);
   }
@@ -135,12 +131,8 @@ function setupInfoLogin() {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const usernameInput = form.querySelector<HTMLInputElement>(
-      ".js-login-username"
-    ) as HTMLInputElement | null;
-    const passwordInput = form.querySelector<HTMLInputElement>(
-      ".js-login-password"
-    ) as HTMLInputElement | null;
+    const usernameInput = form.querySelector<HTMLInputElement>(".js-login-username") as HTMLInputElement | null;
+    const passwordInput = form.querySelector<HTMLInputElement>(".js-login-password") as HTMLInputElement | null;
 
     if (!usernameInput || !passwordInput || !feedback) return;
 
@@ -154,10 +146,7 @@ function setupInfoLogin() {
 
     const matchedUser = auth.findUserByUsername(username);
     if (!matchedUser || matchedUser.password !== password) {
-      showFeedback(
-        feedback,
-        "계정 정보가 일치하지 않습니다. 다시 확인해주세요."
-      );
+      showFeedback(feedback, "계정 정보가 일치하지 않습니다. 다시 확인해주세요.");
       return;
     }
 
@@ -181,57 +170,55 @@ function setupInfoLogin() {
     form.reset();
     revealInfoPage(loginSection, infoPage, signupSection ?? undefined);
 
-    try {
-      const summary = migrateSessionToLocal();
-      const productMap: Record<string, string> = {};
-      (products as any[]).forEach((p) => {
-        if (p?.id && p?.title) productMap[p.id] = p.title;
-      });
-      const lines: string[] = [];
-      if (summary.cart && summary.cart.length) {
-        lines.push("장바구니에 병합된 항목:");
-        summary.cart.forEach((c) => {
-          const title = productMap[c.id] ?? c.id;
-          lines.push(`- ${title}: 기존 ${c.prev} → ${c.now} (추가 ${c.added})`);
-        });
-      }
-      if (summary.favorites && summary.favorites.length) {
-        lines.push("즐겨찾기에서 병합된 항목:");
-        summary.favorites.forEach((id) => {
-          const title = productMap[id] ?? id;
-          lines.push(`- ${title}`);
-        });
-      }
-      if (lines.length) {
-        showMergeSummaryModal(lines.join("\n"));
-      }
-    } catch (err) {
-      // ignore errors
-    }
-    try {
-      const r = sessionStorage.getItem("postLoginReturnTo");
-      if (r === "cart") {
-        sessionStorage.removeItem("postLoginReturnTo");
-        window.location.href = "../page/cart.html";
-        return;
-      }
-    } catch {}
+    const summary = migrateSessionToLocal();
+    // 성능 최적화: 필요한 제품만 조회
+    const productMap = new Map<string, string>();
+    const neededIds = new Set<string>();
+    summary.cart?.forEach((c) => neededIds.add(c.id));
+    summary.favorites?.forEach((id) => neededIds.add(id));
 
-    const logoutBtn = document.getElementById(
-      "js-info-logout"
-    ) as HTMLButtonElement | null;
+    (products as any[]).forEach((p) => {
+      if (p?.id && p?.title && neededIds.has(p.id)) {
+        productMap.set(p.id, p.title);
+      }
+    });
+    const lines: string[] = [];
+    if (summary.cart && summary.cart.length) {
+      lines.push("장바구니에 병합된 항목:");
+      summary.cart.forEach((c) => {
+        const title = productMap.get(c.id) ?? c.id;
+        lines.push(`- ${title}: 기존 ${c.prev} → ${c.now} (추가 ${c.added})`);
+      });
+    }
+    if (summary.favorites && summary.favorites.length) {
+      lines.push("즐겨찾기에서 병합된 항목:");
+      summary.favorites.forEach((id) => {
+        const title = productMap.get(id) ?? id;
+        lines.push(`- ${title}`);
+      });
+    }
+    if (lines.length) {
+      showMergeSummaryModal(lines.join("\n"));
+    }
+
+    const r = sessionStorage.getItem("postLoginReturnTo");
+    if (r === "cart") {
+      sessionStorage.removeItem("postLoginReturnTo");
+      window.location.href = "../page/cart.html";
+      return;
+    }
+
+    const logoutBtn = document.getElementById("js-info-logout") as HTMLButtonElement | null;
     logoutBtn?.addEventListener("click", () => {
       sessionStorage.removeItem(auth.LOGIN_STORAGE_KEY);
       sessionStorage.removeItem(auth.LOGIN_USER_KEY);
       localStorage.removeItem(auth.LOGIN_STORAGE_KEY);
       localStorage.removeItem(auth.LOGIN_USER_KEY);
-      try {
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("favorites");
-      } catch {}
-      try {
-        showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
-      } catch {}
+
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("favorites");
+
+      showToast("로그아웃되어 로컬 데이터가 삭제되었습니다.");
 
       if (feedback) {
         feedback.textContent = "로그아웃 성공";
@@ -249,11 +236,7 @@ function setupInfoLogin() {
 }
 
 // 정보 페이지 표시 함수
-function revealInfoPage(
-  loginSection: HTMLElement,
-  infoPage: HTMLElement,
-  signupSection?: HTMLElement
-) {
+function revealInfoPage(loginSection: HTMLElement, infoPage: HTMLElement, signupSection?: HTMLElement) {
   loginSection.classList.add("d-none"); // 로그인 섹션 숨기기
   if (signupSection) signupSection.classList.add("d-none"); // 회원가입 섹션 숨기기
   infoPage.classList.remove("d-none"); // 정보 페이지 표시
@@ -268,23 +251,27 @@ function renderOrders(username?: string) {
   const list = document.querySelector<HTMLUListElement>(".orders-list");
   if (!list) return;
 
-  list.innerHTML = "";
+  const tplOrderEmpty = document.getElementById("tpl-order-empty") as HTMLTemplateElement | null;
+  const tplOrderItem = document.getElementById("tpl-order-item") as HTMLTemplateElement | null;
+  if (!tplOrderEmpty || !tplOrderItem) return;
+
+  const tplOrderEmptyEl = tplOrderEmpty;
+  const tplOrderItemEl = tplOrderItem;
+
+  list.textContent = "";
 
   /*
     주문 데이터 가져오기
     username이 있으면 그것을 사용하고,
     없으면 sessionStorage에 저장된 로그인 유저 아이디 사용
   */
-  const orders = ordersModule.getOrders(
-    username ?? (sessionStorage.getItem(auth.LOGIN_USER_KEY) || undefined)
-  );
+  const orders = ordersModule.getOrders(username ?? (sessionStorage.getItem(auth.LOGIN_USER_KEY) || undefined));
 
   if (!orders || !orders.length) {
-    list.innerHTML = `
-      <li class="order-item">
-        <div class="order-item__body">주문 내역이 없습니다.</div>
-      </li>
-    `;
+    const emptyFrag = tplOrderEmptyEl.content.cloneNode(true) as DocumentFragment;
+    const emptyBody = emptyFrag.querySelector<HTMLElement>(".order-item__body");
+    if (emptyBody) emptyBody.textContent = "주문 내역이 없습니다.";
+    list.appendChild(emptyFrag);
     return;
   }
 
@@ -306,8 +293,9 @@ const productMap: { [key: string]: any } = {};
 
   // 주문 목록 하나씩 화면에 추가
   orders.forEach((o) => {
-    const li = document.createElement("li");
-    li.className = "order-item";
+    const itemFrag = tplOrderItemEl.content.cloneNode(true) as DocumentFragment;
+    const li = itemFrag.querySelector<HTMLElement>(".order-item");
+    if (!li) return;
 
     const date = new Date(o.date);
 
@@ -318,32 +306,25 @@ const productMap: { [key: string]: any } = {};
 
     const extra = o.items.length > 1 ? `외 ${o.items.length - 1}개` : ``;
 
-    // 주문 아이템 HTML 구성
-    li.innerHTML = `
-      <div class="order-item__meta">
-        <div class="order-id">${escapeHtml(o.id)}</div>
-        <div class="order-date">
-          ${date.getFullYear()}-
-          ${(date.getMonth() + 1).toString().padStart(2, "0")}-
-          ${date.getDate().toString().padStart(2, "0")}
-        </div>
-      </div>
+    const orderId = li.querySelector<HTMLElement>(".order-id");
+    if (orderId) orderId.textContent = o.id;
 
-      <div class="order-item__body">
-        ${escapeHtml(title)} × ${o.items[0].qty}
-        ${escapeHtml(extra)} — 결제금액 ${formatPrice(o.total)}
-      </div>
+    const orderDate = li.querySelector<HTMLElement>(".order-date");
+    if (orderDate) {
+      const dateText = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+      orderDate.textContent = dateText;
+    }
 
-      <div class="order-item__actions">
-        <a href="#" class="link js-order-detail"
-           data-order-id="${escapeHtml(o.id)}">
-          주문상세
-        </a>
-      </div>
-    `;
+    const body = li.querySelector<HTMLElement>(".order-item__body");
+    if (body) {
+      body.textContent = `${title} × ${o.items[0].qty} ${extra} — 결제금액 ${formatPrice(o.total)}`.trim();
+    }
+
+    const detailLink = li.querySelector<HTMLAnchorElement>(".js-order-detail");
+    if (detailLink) detailLink.dataset.orderId = o.id;
 
     // 리스트에 추가
-    list.appendChild(li);
+    list.appendChild(itemFrag);
   });
 
   list.querySelectorAll<HTMLAnchorElement>(".js-order-detail").forEach((a) => {
@@ -367,55 +348,44 @@ function showOrderDetailsModal(order: Order) {
   const existing = document.getElementById("order-details-modal");
   if (existing) existing.remove();
 
-  const modal = document.createElement("div");
+  const tplOrderDetails = document.getElementById("tpl-order-details-modal") as HTMLTemplateElement | null;
+  if (!tplOrderDetails) return;
+
+  const modalFrag = tplOrderDetails.content.cloneNode(true) as DocumentFragment;
+  const modal = modalFrag.querySelector<HTMLElement>(".order-details-modal");
+  if (!modal) return;
   modal.id = "order-details-modal";
-  modal.className = "product-modal";
-  modal.setAttribute("role", "dialog");
-  modal.setAttribute("aria-hidden", "false");
 
   const productMap: Record<string, any> = {};
   (products as any[]).forEach((p) => {
     if (p?.id) productMap[p.id] = p;
   });
 
-  const rows = order.items
-    .map((it) => {
-      const p = productMap[it.id];
-      return `<li>${escapeHtml(p?.title ?? it.id)} × ${it.qty} — ${formatPrice(
-        (parseInt((p?.price || "0").replace(/[^0-9]/g, ""), 10) || 0) * it.qty
-      )}</li>`;
-    })
-    .join("");
+  const titleEl = modal.querySelector<HTMLElement>(".product-modal__title");
+  if (titleEl) titleEl.textContent = `주문 상세: ${order.id}`;
 
-  modal.innerHTML = `
-    <div class="product-modal__backdrop" data-dismiss="modal"></div>
-    <div class="product-modal__panel" role="document">
-      <button class="product-modal__close" aria-label="닫기">✕</button>
-      <div class="product-modal__body">
-        <div class="product-modal__info">
-          <h3 class="product-modal__title">주문 상세: ${escapeHtml(
-            order.id
-          )}</h3>
-          <div class="product-modal__desc">주문일: ${new Date(
-            order.date
-          ).toLocaleString()}</div>
-          <ul>${rows}</ul>
-          <div style="text-align:right;margin-top:12px;">총 합계: <strong>${formatPrice(
-            order.total
-          )}</strong></div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  const closeBtn = modal.querySelector<HTMLButtonElement>(
-    ".product-modal__close"
-  ) as HTMLButtonElement | null;
+  const descEl = modal.querySelector<HTMLElement>(".product-modal__desc");
+  if (descEl) descEl.textContent = `주문일: ${new Date(order.date).toLocaleString()}`;
+
+  const listEl = modal.querySelector<HTMLUListElement>(".order-details__list");
+  if (!listEl) return;
+  listEl.textContent = "";
+  order.items.forEach((it) => {
+    const p = productMap[it.id];
+    const li = document.createElement("li");
+    const itemTotal = (parseInt((p?.price || "0").replace(/[^0-9]/g, ""), 10) || 0) * it.qty;
+    li.textContent = `${p?.title ?? it.id} × ${it.qty} — ${formatPrice(itemTotal)}`;
+    listEl.appendChild(li);
+  });
+
+  const totalEl = modal.querySelector<HTMLElement>(".order-details__total-value");
+  if (totalEl) totalEl.textContent = formatPrice(order.total);
+
+  document.body.appendChild(modalFrag);
+  const closeBtn = modal.querySelector<HTMLButtonElement>(".product-modal__close") as HTMLButtonElement | null;
   const dismiss = () => modal.remove();
   closeBtn?.addEventListener("click", dismiss);
-  modal
-    .querySelectorAll("[data-dismiss=modal]")
-    .forEach((el) => el.addEventListener("click", dismiss));
+  modal.querySelectorAll("[data-dismiss=modal]").forEach((el) => el.addEventListener("click", dismiss));
 
   (closeBtn as HTMLElement | null)?.focus();
 }
@@ -426,42 +396,31 @@ function showMergeSummaryModal(message: string) {
   if (existing) {
     existing.remove();
   }
-  const modal = document.createElement("div");
-  modal.id = "merge-summary-modal";
-  modal.className = "product-modal";
-  modal.setAttribute("role", "dialog");
-  modal.setAttribute("aria-hidden", "false");
-  modal.innerHTML = `
-    <div class="product-modal__backdrop" data-dismiss="modal"></div>
-    <div class="product-modal__panel" role="document">
-      <button class="product-modal__close" aria-label="닫기">✕</button>
-      <div class="product-modal__body">
-        <div class="product-modal__info">
-          <h3 class="product-modal__title">로그인으로 병합된 항목</h3>
-          <pre style="white-space:pre-wrap;">${escapeHtml(message)}</pre>
-          <div style="text-align:right;margin-top:12px;"><button class="primary-btn merge-ok">확인</button></div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.classList.remove("d-none");
-  const closeBtn = modal.querySelector(
-    ".product-modal__close"
-  ) as HTMLElement | null;
-  const okBtn = modal.querySelector(".merge-ok") as HTMLElement | null;
+  const tplMerge = document.getElementById("tpl-merge-summary-modal") as HTMLTemplateElement | null;
+  if (!tplMerge) return;
+
+  const modalFrag = tplMerge.content.cloneNode(true) as DocumentFragment;
+  const modal = modalFrag.querySelector<HTMLElement>(".merge-summary-modal");
+  if (!modal) return;
+  const modalEl = modal;
+  modalEl.id = "merge-summary-modal";
+  document.body.appendChild(modalFrag);
+  modalEl.classList.remove("d-none");
+
+  const msgEl = modalEl.querySelector<HTMLElement>(".merge-summary__message");
+  if (msgEl) msgEl.textContent = message;
+  const closeBtn = modalEl.querySelector(".product-modal__close") as HTMLElement | null;
+  const okBtn = modalEl.querySelector(".merge-ok") as HTMLElement | null;
 
   closeBtn?.focus();
 
   function closeModal() {
-    modal.remove();
+    modalEl.remove();
   }
 
   closeBtn?.addEventListener("click", closeModal);
   okBtn?.addEventListener("click", closeModal);
-  modal
-    .querySelectorAll("[data-dismiss=modal]")
-    .forEach((el) => el.addEventListener("click", closeModal));
+  modalEl.querySelectorAll("[data-dismiss=modal]").forEach((el) => el.addEventListener("click", closeModal));
 }
 
 // HTML 이스케이프 함수

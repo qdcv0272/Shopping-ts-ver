@@ -205,7 +205,7 @@ a {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   box-shadow: 0 15px 40px rgba(24, 48, 96, 0.12);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
 }
 
 .main-header__logo {
@@ -289,7 +289,9 @@ a {
   cursor: pointer;
   font-weight: 600;
   color: #14223d;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .header-action:hover {
@@ -423,7 +425,9 @@ a {
   width: 8px;
   height: 8px;
   margin: 0 4px;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transition:
+    transform 120ms ease,
+    opacity 120ms ease;
 }
 
 .swiper-test .swiper-pagination-bullet-active {
@@ -440,64 +444,6 @@ a {
     width: 36px;
     height: 36px;
   }
-}
-
-/* OverlayScrollbars custom theme dedicated to the shopping shell */
-.shopping-shell .os-scrollbar {
-  --scrollbar-track: rgba(15, 23, 42, 0.08);
-  --scrollbar-track-active: rgba(15, 23, 42, 0.16);
-  --scrollbar-thumb: linear-gradient(135deg, #6366f1, #ec4899);
-  --scrollbar-thumb-hover: linear-gradient(135deg, #4f46e5, #db2777);
-  --scrollbar-thumb-active: linear-gradient(135deg, #4338ca, #be185d);
-  width: 10px;
-}
-
-.shopping-shell .os-scrollbar-horizontal {
-  display: none !important; /* vertical scroll only */
-}
-
-.shopping-shell .os-scrollbar-track {
-  background-color: transparent;
-  border-radius: 999px;
-  padding: 2px;
-  transition: background-color 0.2s ease;
-}
-
-.shopping-shell .os-scrollbar-vertical {
-  right: 5px;
-}
-
-.shopping-shell .os-scrollbar-track:hover {
-  background-color: var(--scrollbar-track);
-}
-
-.shopping-shell .os-scrollbar-track.os-scrollbar-track-active {
-  background-color: var(--scrollbar-track-active);
-}
-
-.shopping-shell .os-scrollbar-handle {
-  background: var(--scrollbar-thumb);
-  border-radius: 999px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-  transition: transform 0.15s ease, background 0.2s ease;
-}
-
-.shopping-shell .os-scrollbar-handle:hover {
-  background: var(--scrollbar-thumb-hover);
-}
-
-.shopping-shell .os-scrollbar-handle:active {
-  background: var(--scrollbar-thumb-active);
-  transform: scaleX(1.05);
-}
-
-.shopping-shell .os-scrollbar-vertical .os-scrollbar-track {
-  top: 30px;
-  max-height: 820px;
-}
-[data-overlayscrollbars-padding],
-[data-overlayscrollbars-viewport]:not([data-overlayscrollbars]) {
-  margin-bottom: -80px !important;
 }
 
 /* Hero area: swiper on top, floating category sheet trigger */
@@ -524,7 +470,13 @@ a {
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32);
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+  /* 성능 최적화: GPU 가속 */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .category-fab:hover {
@@ -555,12 +507,17 @@ a {
   background: linear-gradient(165deg, rgba(17, 25, 43, 0.96), rgba(11, 16, 30, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 28px 56px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(12px);
-  transform: translate(-50%, -50%) scale(0.96);
+  backdrop-filter: blur(6px);
+  transform: translate(-50%, -50%) scale(0.96) translateZ(0);
+  will-change: transform, opacity;
   opacity: 0;
   pointer-events: none;
   z-index: 85;
   overflow: hidden;
+}
+
+.category-sheet.is-animating {
+  backdrop-filter: none;
 }
 
 .category-sheet.is-open {
@@ -613,7 +570,11 @@ a {
   font-weight: 700;
   text-decoration: none;
   gap: 8px;
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
 }
 
 .category-chip:hover {
@@ -637,6 +598,8 @@ a {
   background: rgba(255, 255, 255, 0.96);
   color: #172034;
   box-shadow: 0 8px 30px rgba(20, 34, 61, 0.06);
+  content-visibility: auto;
+  contain-intrinsic-size: 240px 600px;
 }
 
 /* shop area */
@@ -692,7 +655,9 @@ a {
   appearance: none;
   box-shadow: none; /* remove floaty shadow so dropdown menu appears flush */
   position: relative;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
   /* caret will be drawn via pseudo-elements to avoid interfering with native dropdown rendering */
 }
 
@@ -730,7 +695,9 @@ a {
   position: absolute;
   right: 8px;
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -746,7 +713,9 @@ a {
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
   width: 0;
   height: 0;
   border-left: 4px solid transparent;
@@ -785,6 +754,9 @@ a {
   border-radius: 10px;
   padding: 10px;
   border: 1px solid rgba(20, 34, 61, 0.06);
+  contain: layout paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 120px 100px;
 }
 .product-thumb {
   width: 72px;
@@ -824,46 +796,23 @@ a {
 
 .products-grid {
   display: grid;
-  /* default to a single-column vertical list with internal scrolling */
+  /* 단일 열 레이아웃, 스크롤바 제거 */
   grid-template-columns: 1fr;
   gap: 12px;
   margin-top: 12px;
-  /* give extra bottom padding so items don't butt right up against following content */
-  padding-bottom: 40px;
-  max-height: 54vh;
-  overflow: auto;
-  padding-right: 22px; /* room between last card and scrollbar */
-  scrollbar-gutter: stable both-edges;
+  padding-bottom: 20px;
+  /* 성능 최적화: 스크롤바 제거, 높이 자동 */
+  contain: layout paint;
 }
 
 /* -- list layout (one item per row) to match screenshot #1 -- */
 .products-grid--list {
-  grid-template-columns: 1fr !important; /* single column rows — force it */
+  grid-template-columns: 1fr !important;
   gap: 12px;
-  /* ensure the list keeps its vertical scrolling behavior even when other
-     page-specific rules attempt to force multi-column layouts */
-  max-height: 54vh !important;
-  overflow: auto !important;
-  padding-right: 22px !important; /* room between last card and scrollbar */
+  /* 성능 최적화: 스크롤바 제거 */
 }
 
-/* OverlayScrollbars wraps the grid content in .os-viewport / .os-content.
-   Some browsers/third-party CSS can end up making the inner container a flex
-   row which causes horizontal layout — force these inner wrappers to use a
-   single-column grid when the list mode is active so vertical scrolling
-   always works as expected. */
-.products-grid.products-grid--list,
-.products-grid.products-grid--list .os-viewport,
-.products-grid.products-grid--list .os-content {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-}
-
-/* stronger enforcement inside the app container: ensure any .products-grid in #app that has
-   the --list class uses single column even if other page styles are more specific */
-.page-shell #app .products-grid.products-grid--list {
-  grid-template-columns: 1fr !important;
-}
+/* 스크롤바 제거로 인해 OverlayScrollbars 관련 스타일 삭제 */
 
 /* -- card/grid layout (multiple compact cards) to match screenshot #2 -- */
 .products-grid--card {
@@ -917,7 +866,13 @@ a {
   border-radius: 8px;
 }
 .products-grid {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* product quick-view modal */
@@ -932,6 +887,7 @@ a {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
+  will-change: opacity;
 }
 .product-modal__panel {
   position: relative;
@@ -942,6 +898,8 @@ a {
   box-shadow: 0 30px 80px rgba(2, 6, 23, 0.36);
   padding: 20px;
   z-index: 1;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 .product-modal__close {
   position: absolute;
@@ -1071,7 +1029,7 @@ a {
   border-radius: 18px;
   padding: 14px;
   box-shadow: 0 12px 36px rgba(20, 34, 61, 0.15);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
   display: flex;
   min-width: 0;
   height: 300px;
@@ -1583,676 +1541,6 @@ button.swiper-pagination-bullet {
 }
 /* Navigation font end */
 
-/*! 
- * OverlayScrollbars
- * Version: 2.12.0
- * 
- * Copyright (c) Rene Haas | KingSora.
- * https://github.com/KingSora
- * 
- * Released under the MIT license.
- */
-.os-size-observer,
-.os-size-observer-listener {
-  scroll-behavior: auto !important;
-  direction: inherit;
-  pointer-events: none;
-  overflow: hidden;
-  visibility: hidden;
-  box-sizing: border-box;
-}
-
-.os-size-observer,
-.os-size-observer-listener,
-.os-size-observer-listener-item,
-.os-size-observer-listener-item-final {
-  writing-mode: horizontal-tb;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.os-size-observer {
-  z-index: -1;
-  contain: strict;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  padding: inherit;
-  border: inherit;
-  box-sizing: inherit;
-  margin: -133px;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: scale(0.1);
-}
-.os-size-observer::before {
-  content: "";
-  flex: none;
-  box-sizing: inherit;
-  padding: 10px;
-  width: 10px;
-  height: 10px;
-}
-
-.os-size-observer-appear {
-  animation: os-size-observer-appear-animation 1ms forwards;
-}
-
-.os-size-observer-listener {
-  box-sizing: border-box;
-  position: relative;
-  flex: auto;
-  padding: inherit;
-  border: inherit;
-  margin: -133px;
-  transform: scale(calc(1 / 0.1));
-}
-.os-size-observer-listener.ltr {
-  margin-right: -266px;
-  margin-left: 0;
-}
-.os-size-observer-listener.rtl {
-  margin-left: -266px;
-  margin-right: 0;
-}
-.os-size-observer-listener:empty::before {
-  content: "";
-  width: 100%;
-  height: 100%;
-}
-.os-size-observer-listener:empty::before, .os-size-observer-listener > .os-size-observer-listener-item {
-  display: block;
-  position: relative;
-  padding: inherit;
-  border: inherit;
-  box-sizing: content-box;
-  flex: auto;
-}
-
-.os-size-observer-listener-scroll {
-  box-sizing: border-box;
-  display: flex;
-}
-
-.os-size-observer-listener-item {
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  direction: ltr;
-  flex: none;
-}
-
-.os-size-observer-listener-item-final {
-  transition: none;
-}
-
-@keyframes os-size-observer-appear-animation {
-  from {
-    cursor: auto;
-  }
-  to {
-    cursor: none;
-  }
-}
-.os-trinsic-observer {
-  flex: none;
-  box-sizing: border-box;
-  position: relative;
-  max-width: 0px;
-  max-height: 1px;
-  padding: 0;
-  margin: 0;
-  border: none;
-  overflow: hidden;
-  z-index: -1;
-  height: 0;
-  top: calc(100% + 1px);
-  contain: strict;
-}
-.os-trinsic-observer:not(:empty) {
-  height: calc(100% + 1px);
-  top: -1px;
-}
-.os-trinsic-observer:not(:empty) > .os-size-observer {
-  width: 1000%;
-  height: 1000%;
-  min-height: 1px;
-  min-width: 1px;
-}
-
-/**
- * hide native scrollbars
- * changes to this styles need to be reflected in the environment styles to correctly detect scrollbar hiding
- */
-[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport]),
-[data-overlayscrollbars-viewport~=scrollbarHidden],
-html[data-overlayscrollbars-viewport~=scrollbarHidden] > body {
-  scrollbar-width: none !important;
-}
-
-[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport])::-webkit-scrollbar,
-[data-overlayscrollbars-initialize]:not([data-overlayscrollbars-viewport])::-webkit-scrollbar-corner,
-[data-overlayscrollbars-viewport~=scrollbarHidden]::-webkit-scrollbar,
-[data-overlayscrollbars-viewport~=scrollbarHidden]::-webkit-scrollbar-corner,
-html[data-overlayscrollbars-viewport~=scrollbarHidden] > body::-webkit-scrollbar,
-html[data-overlayscrollbars-viewport~=scrollbarHidden] > body::-webkit-scrollbar-corner {
-  -webkit-appearance: none !important;
-          appearance: none !important;
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-[data-overlayscrollbars-initialize]:not([data-overlayscrollbars]):not(html):not(body) {
-  overflow: auto;
-}
-
-/**
- * body element
- */
-html[data-overlayscrollbars-body] {
-  overflow: hidden;
-}
-
-html[data-overlayscrollbars-body],
-html[data-overlayscrollbars-body] > body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-}
-
-html[data-overlayscrollbars-body] > body {
-  overflow: visible;
-  margin: 0;
-}
-
-/**
- * structure setup 
- */
-[data-overlayscrollbars] {
-  position: relative;
-}
-
-[data-overlayscrollbars~=host],
-[data-overlayscrollbars-padding] {
-  display: flex;
-  align-items: stretch !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  scroll-behavior: auto !important;
-}
-
-[data-overlayscrollbars-padding],
-[data-overlayscrollbars-viewport]:not([data-overlayscrollbars]) {
-  box-sizing: inherit;
-  position: relative;
-  flex: auto;
-  height: auto;
-  width: 100%;
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: none;
-  z-index: 0;
-}
-
-[data-overlayscrollbars-viewport]:not([data-overlayscrollbars]) {
-  --os-vaw: 0;
-  --os-vah: 0;
-  outline: none;
-}
-[data-overlayscrollbars-viewport]:not([data-overlayscrollbars]):focus {
-  outline: none;
-}
-[data-overlayscrollbars-viewport][data-overlayscrollbars-viewport~=arrange]::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: -1;
-  min-width: 1px;
-  min-height: 1px;
-  width: var(--os-vaw);
-  height: var(--os-vah);
-}
-
-/**
- * wrapper elements overflow:
- */
-[data-overlayscrollbars~=host],
-[data-overlayscrollbars-padding] {
-  overflow: hidden !important;
-}
-
-[data-overlayscrollbars~=host][data-overlayscrollbars~=noClipping],
-[data-overlayscrollbars-padding~=noClipping] {
-  overflow: visible !important;
-}
-
-/**
- * viewport overflow:
- */
-[data-overlayscrollbars-viewport] {
-  --os-viewport-overflow-x: hidden;
-  --os-viewport-overflow-y: hidden;
-  overflow-x: var(--os-viewport-overflow-x);
-  overflow-y: var(--os-viewport-overflow-y);
-}
-
-[data-overlayscrollbars-viewport~=overflowXVisible] {
-  --os-viewport-overflow-x: visible;
-}
-
-[data-overlayscrollbars-viewport~=overflowXHidden] {
-  --os-viewport-overflow-x: hidden;
-}
-
-[data-overlayscrollbars-viewport~=overflowXScroll] {
-  --os-viewport-overflow-x: scroll;
-}
-
-[data-overlayscrollbars-viewport~=overflowYVisible] {
-  --os-viewport-overflow-y: visible;
-}
-
-[data-overlayscrollbars-viewport~=overflowYHidden] {
-  --os-viewport-overflow-y: hidden;
-}
-
-[data-overlayscrollbars-viewport~=overflowYScroll] {
-  --os-viewport-overflow-y: scroll;
-}
-
-[data-overlayscrollbars-viewport~=overflowImportant] {
-  overflow-x: var(--os-viewport-overflow-x) !important;
-  overflow-y: var(--os-viewport-overflow-y) !important;
-}
-
-/**
- * viewport state modifiers:
- */
-[data-overlayscrollbars-viewport~=noContent]:not(#osFakeId) {
-  font-size: 0 !important;
-  line-height: 0 !important;
-}
-
-[data-overlayscrollbars-viewport~=noContent]:not(#osFakeId)::before,
-[data-overlayscrollbars-viewport~=noContent]:not(#osFakeId)::after,
-[data-overlayscrollbars-viewport~=noContent]:not(#osFakeId) > * {
-  display: none !important;
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border-width: 0 !important;
-}
-
-[data-overlayscrollbars-viewport~=measuring],
-[data-overlayscrollbars-viewport~=scrolling] {
-  scroll-behavior: auto !important;
-  scroll-snap-type: none !important;
-}
-
-[data-overlayscrollbars-viewport~=measuring][data-overlayscrollbars-viewport~=overflowXVisible] {
-  overflow-x: hidden !important;
-}
-
-[data-overlayscrollbars-viewport~=measuring][data-overlayscrollbars-viewport~=overflowYVisible] {
-  overflow-y: hidden !important;
-}
-
-/**
- * content element:
- */
-[data-overlayscrollbars-content] {
-  box-sizing: inherit;
-}
-
-/**
- * Display contents to bridge any flickering during deferred initialization.
- */
-[data-overlayscrollbars-contents]:not(#osFakeId):not([data-overlayscrollbars-padding]):not([data-overlayscrollbars-viewport]):not([data-overlayscrollbars-content]) {
-  display: contents;
-}
-
-/**
- * optional & experimental grid mode
- */
-[data-overlayscrollbars-grid],
-[data-overlayscrollbars-grid] [data-overlayscrollbars-padding] {
-  display: grid;
-  grid-template: 1fr/1fr;
-}
-
-[data-overlayscrollbars-grid] > [data-overlayscrollbars-padding],
-[data-overlayscrollbars-grid] > [data-overlayscrollbars-viewport],
-[data-overlayscrollbars-grid] > [data-overlayscrollbars-padding] > [data-overlayscrollbars-viewport] {
-  height: auto !important;
-  width: auto !important;
-}
-
-@property --os-scroll-percent {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-@property --os-viewport-percent {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-.os-scrollbar {
-  --os-viewport-percent: 0;
-  --os-scroll-percent: 0;
-  --os-scroll-direction: 0;
-  --os-scroll-percent-directional: calc(
-    var(--os-scroll-percent) - (var(--os-scroll-percent) + (1 - var(--os-scroll-percent)) * -1) *
-      var(--os-scroll-direction)
-  );
-}
-
-.os-scrollbar {
-  contain: size layout;
-  contain: size layout style;
-  transition: opacity 0.15s, visibility 0.15s, top 0.15s, right 0.15s, bottom 0.15s, left 0.15s;
-  pointer-events: none;
-  position: absolute;
-  opacity: 0;
-  visibility: hidden;
-}
-
-body > .os-scrollbar {
-  position: fixed;
-  z-index: 99999;
-}
-
-.os-scrollbar-transitionless {
-  transition: none !important;
-}
-
-.os-scrollbar-track {
-  position: relative;
-  padding: 0 !important;
-  border: none !important;
-}
-
-.os-scrollbar-handle {
-  position: absolute;
-}
-
-.os-scrollbar-track,
-.os-scrollbar-handle {
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-}
-
-.os-scrollbar.os-scrollbar-track-interactive .os-scrollbar-track,
-.os-scrollbar.os-scrollbar-handle-interactive .os-scrollbar-handle {
-  pointer-events: auto;
-  touch-action: none;
-}
-
-.os-scrollbar-horizontal {
-  bottom: 0;
-  left: 0;
-}
-
-.os-scrollbar-vertical {
-  top: 0;
-  right: 0;
-}
-
-.os-scrollbar-rtl.os-scrollbar-horizontal {
-  right: 0;
-}
-
-.os-scrollbar-rtl.os-scrollbar-vertical {
-  right: auto;
-  left: 0;
-}
-
-.os-scrollbar-visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.os-scrollbar-auto-hide.os-scrollbar-auto-hide-hidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.os-scrollbar-interaction.os-scrollbar-visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.os-scrollbar-unusable,
-.os-scrollbar-unusable *,
-.os-scrollbar-wheel,
-.os-scrollbar-wheel * {
-  pointer-events: none !important;
-}
-
-.os-scrollbar-unusable .os-scrollbar-handle {
-  opacity: 0 !important;
-  transition: none !important;
-}
-
-.os-scrollbar-horizontal .os-scrollbar-handle {
-  bottom: 0;
-  left: calc(var(--os-scroll-percent-directional) * 100%);
-  transform: translateX(calc(var(--os-scroll-percent-directional) * -100%));
-  width: calc(var(--os-viewport-percent) * 100%);
-}
-
-.os-scrollbar-vertical .os-scrollbar-handle {
-  right: 0;
-  top: calc(var(--os-scroll-percent-directional) * 100%);
-  transform: translateY(calc(var(--os-scroll-percent-directional) * -100%));
-  height: calc(var(--os-viewport-percent) * 100%);
-}
-
-@supports (container-type: size) {
-  .os-scrollbar-track {
-    container-type: size;
-  }
-  .os-scrollbar-horizontal .os-scrollbar-handle {
-    left: auto;
-    transform: translateX(calc(var(--os-scroll-percent-directional) * 100cqw + var(--os-scroll-percent-directional) * -100%));
-  }
-  .os-scrollbar-vertical .os-scrollbar-handle {
-    top: auto;
-    transform: translateY(calc(var(--os-scroll-percent-directional) * 100cqh + var(--os-scroll-percent-directional) * -100%));
-  }
-  .os-scrollbar-rtl.os-scrollbar-horizontal .os-scrollbar-handle {
-    right: auto;
-    left: 0;
-  }
-}
-.os-scrollbar-rtl.os-scrollbar-vertical .os-scrollbar-handle {
-  right: auto;
-  left: 0;
-}
-
-.os-scrollbar.os-scrollbar-horizontal.os-scrollbar-cornerless,
-.os-scrollbar.os-scrollbar-horizontal.os-scrollbar-cornerless.os-scrollbar-rtl {
-  left: 0;
-  right: 0;
-}
-
-.os-scrollbar.os-scrollbar-vertical.os-scrollbar-cornerless,
-.os-scrollbar.os-scrollbar-vertical.os-scrollbar-cornerless.os-scrollbar-rtl {
-  top: 0;
-  bottom: 0;
-}
-
-@media print {
-  .os-scrollbar {
-    display: none;
-  }
-}
-.os-scrollbar {
-  --os-size: 0;
-  --os-padding-perpendicular: 0;
-  --os-padding-axis: 0;
-  --os-track-border-radius: 0;
-  --os-track-bg: none;
-  --os-track-bg-hover: none;
-  --os-track-bg-active: none;
-  --os-track-border: none;
-  --os-track-border-hover: none;
-  --os-track-border-active: none;
-  --os-handle-border-radius: 0;
-  --os-handle-bg: none;
-  --os-handle-bg-hover: none;
-  --os-handle-bg-active: none;
-  --os-handle-border: none;
-  --os-handle-border-hover: none;
-  --os-handle-border-active: none;
-  --os-handle-min-size: 33px;
-  --os-handle-max-size: none;
-  --os-handle-perpendicular-size: 100%;
-  --os-handle-perpendicular-size-hover: 100%;
-  --os-handle-perpendicular-size-active: 100%;
-  --os-handle-interactive-area-offset: 0;
-}
-
-.os-scrollbar-track {
-  border: var(--os-track-border);
-  border-radius: var(--os-track-border-radius);
-  background: var(--os-track-bg);
-  transition: opacity 0.15s, background-color 0.15s, border-color 0.15s;
-}
-.os-scrollbar-track:hover {
-  border: var(--os-track-border-hover);
-  background: var(--os-track-bg-hover);
-}
-.os-scrollbar-track:active {
-  border: var(--os-track-border-active);
-  background: var(--os-track-bg-active);
-}
-
-.os-scrollbar-handle {
-  border: var(--os-handle-border);
-  border-radius: var(--os-handle-border-radius);
-  background: var(--os-handle-bg);
-}
-.os-scrollbar-handle:hover {
-  border: var(--os-handle-border-hover);
-  background: var(--os-handle-bg-hover);
-}
-.os-scrollbar-handle:active {
-  border: var(--os-handle-border-active);
-  background: var(--os-handle-bg-active);
-}
-
-.os-scrollbar-track:before,
-.os-scrollbar-handle:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: block;
-}
-
-.os-scrollbar-horizontal {
-  padding: var(--os-padding-perpendicular) var(--os-padding-axis);
-  right: var(--os-size);
-  height: var(--os-size);
-}
-.os-scrollbar-horizontal.os-scrollbar-rtl {
-  left: var(--os-size);
-  right: 0;
-}
-.os-scrollbar-horizontal .os-scrollbar-track:before {
-  top: calc(var(--os-padding-perpendicular) * -1);
-  bottom: calc(var(--os-padding-perpendicular) * -1);
-}
-.os-scrollbar-horizontal .os-scrollbar-handle {
-  min-width: var(--os-handle-min-size);
-  max-width: var(--os-handle-max-size);
-  height: var(--os-handle-perpendicular-size);
-  transition: opacity 0.15s, background-color 0.15s, border-color 0.15s, height 0.15s;
-}
-.os-scrollbar-horizontal .os-scrollbar-handle:before {
-  top: calc((var(--os-padding-perpendicular) + var(--os-handle-interactive-area-offset)) * -1);
-  bottom: calc(var(--os-padding-perpendicular) * -1);
-}
-.os-scrollbar-horizontal:hover .os-scrollbar-handle {
-  height: var(--os-handle-perpendicular-size-hover);
-}
-.os-scrollbar-horizontal:active .os-scrollbar-handle {
-  height: var(--os-handle-perpendicular-size-active);
-}
-
-.os-scrollbar-vertical {
-  padding: var(--os-padding-axis) var(--os-padding-perpendicular);
-  bottom: var(--os-size);
-  width: var(--os-size);
-}
-.os-scrollbar-vertical .os-scrollbar-track:before {
-  left: calc(var(--os-padding-perpendicular) * -1);
-  right: calc(var(--os-padding-perpendicular) * -1);
-}
-.os-scrollbar-vertical .os-scrollbar-handle {
-  min-height: var(--os-handle-min-size);
-  max-height: var(--os-handle-max-size);
-  width: var(--os-handle-perpendicular-size);
-  transition: opacity 0.15s, background-color 0.15s, border-color 0.15s, width 0.15s;
-}
-.os-scrollbar-vertical .os-scrollbar-handle:before {
-  left: calc((var(--os-padding-perpendicular) + var(--os-handle-interactive-area-offset)) * -1);
-  right: calc(var(--os-padding-perpendicular) * -1);
-}
-.os-scrollbar-vertical.os-scrollbar-rtl .os-scrollbar-handle:before {
-  right: calc((var(--os-padding-perpendicular) + var(--os-handle-interactive-area-offset)) * -1);
-  left: calc(var(--os-padding-perpendicular) * -1);
-}
-.os-scrollbar-vertical:hover .os-scrollbar-handle {
-  width: var(--os-handle-perpendicular-size-hover);
-}
-.os-scrollbar-vertical:active .os-scrollbar-handle {
-  width: var(--os-handle-perpendicular-size-active);
-}
-
-/* NONE THEME: */
-[data-overlayscrollbars-viewport~=measuring] > .os-scrollbar,
-.os-theme-none.os-scrollbar {
-  display: none !important;
-}
-
-/* DARK & LIGHT THEME: */
-.os-theme-dark,
-.os-theme-light {
-  box-sizing: border-box;
-  --os-size: 10px;
-  --os-padding-perpendicular: 2px;
-  --os-padding-axis: 2px;
-  --os-track-border-radius: 10px;
-  --os-handle-interactive-area-offset: 4px;
-  --os-handle-border-radius: 10px;
-}
-
-.os-theme-dark {
-  --os-handle-bg: rgba(0, 0, 0, 0.44);
-  --os-handle-bg-hover: rgba(0, 0, 0, 0.55);
-  --os-handle-bg-active: rgba(0, 0, 0, 0.66);
-}
-
-.os-theme-light {
-  --os-handle-bg: rgba(255, 255, 255, 0.44);
-  --os-handle-bg-hover: rgba(255, 255, 255, 0.55);
-  --os-handle-bg-active: rgba(255, 255, 255, 0.66);
-}
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
@@ -2262,29 +1550,11 @@ body > .os-scrollbar {
 /* main white panel that holds page content */
 .info-login {
   padding: 70px 18px 32px;
-  background: radial-gradient(
-      1200px 400px at 10% 0%,
-      rgba(132, 94, 247, 0.16),
-      transparent
-    ),
-    linear-gradient(
-      180deg,
-      rgba(248, 249, 255, 1) 0%,
-      rgba(241, 245, 255, 0.96) 80%
-    );
+  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent), linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
 }
 .info-signup {
   padding: 70px 18px 32px;
-  background: radial-gradient(
-      1200px 400px at 10% 0%,
-      rgba(132, 94, 247, 0.16),
-      transparent
-    ),
-    linear-gradient(
-      180deg,
-      rgba(248, 249, 255, 1) 0%,
-      rgba(241, 245, 255, 0.96) 80%
-    );
+  background: radial-gradient(1200px 400px at 10% 0%, rgba(132, 94, 247, 0.16), transparent), linear-gradient(180deg, rgba(248, 249, 255, 1) 0%, rgba(241, 245, 255, 0.96) 80%);
 }
 
 .info-login__card {
@@ -2295,7 +1565,7 @@ body > .os-scrollbar {
   border-radius: 24px;
   padding: 42px 40px;
   box-shadow: 0 30px 70px rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
 }
 
 .info-login__hero {
@@ -2343,7 +1613,9 @@ body > .os-scrollbar {
   border: 1px solid rgba(15, 23, 42, 0.15);
   padding: 12px 14px;
   font-size: 15px;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .info-login__field textarea {
@@ -2511,12 +1783,13 @@ body > .os-scrollbar {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   z-index: 999;
+  will-change: opacity;
 }
 .findid-modal__card {
   width: min(520px, 100%);
@@ -2524,6 +1797,8 @@ body > .os-scrollbar {
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 .findid-modal__header {
   display: flex;
@@ -2650,7 +1925,9 @@ body > .os-scrollbar {
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #fbfdff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: border-color 150ms ease, box-shadow 150ms ease,
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
     transform 150ms ease;
 }
 .findid-modal__search input:focus,
@@ -2730,12 +2007,13 @@ body > .os-scrollbar {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   z-index: 999;
+  will-change: opacity;
 }
 .findpw-modal__card {
   width: min(520px, 100%);
@@ -2743,12 +2021,16 @@ body > .os-scrollbar {
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
 /* Modal open/close animation */
 .findid-modal .findid-modal__card,
 .findpw-modal .findpw-modal__card {
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease;
   transform: translateY(12px);
   opacity: 0;
 }
@@ -2783,7 +2065,9 @@ body > .os-scrollbar {
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
   opacity: 0;
-  transition: opacity 260ms ease, transform 260ms ease;
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
   z-index: 1200;
 }
 .app-toast.is-visible {
@@ -2883,7 +2167,8 @@ body > .os-scrollbar {
   justify-content: center;
   padding: 24px;
   z-index: 999;
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
+  will-change: opacity;
 }
 .change-password-modal__card,
 .contact-modal__card,
@@ -2893,9 +2178,12 @@ body > .os-scrollbar {
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease;
   transform: translateY(12px);
   opacity: 0;
+  will-change: transform, opacity;
 }
 .change-password-modal.is-open .change-password-modal__card,
 .contact-modal.is-open .contact-modal__card,
@@ -2968,7 +2256,9 @@ body > .os-scrollbar {
   padding: 14px 16px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease,
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
     transform 140ms ease;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
 }
@@ -3011,7 +2301,7 @@ body > .os-scrollbar {
   border: 1px solid rgba(16, 24, 40, 0.07);
   box-shadow: 0 40px 90px rgba(15, 23, 42, 0.12);
   overflow: hidden;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
 }
 .info-panel::before,
 .info-panel::after {
@@ -3028,12 +2318,8 @@ body > .os-scrollbar {
   inset: auto auto 18px 18px;
   width: 140px;
   height: 140px;
-  background: radial-gradient(
-    circle,
-    rgba(132, 94, 247, 0.18),
-    transparent 70%
-  );
-  filter: blur(10px);
+  background: radial-gradient(circle, rgba(132, 94, 247, 0.18), transparent 70%);
+  filter: none;
 }
 
 .info-panel > * {
@@ -3064,11 +2350,7 @@ body > .os-scrollbar {
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  background: linear-gradient(
-    135deg,
-    rgba(125, 86, 255, 0.12),
-    rgba(46, 91, 255, 0.06)
-  );
+  background: linear-gradient(135deg, rgba(125, 86, 255, 0.12), rgba(46, 91, 255, 0.06));
   border: 1px solid rgba(46, 91, 255, 0.08);
   color: rgba(46, 91, 255, 0.9);
   box-shadow: 0 10px 26px rgba(46, 91, 255, 0.05);
@@ -3186,7 +2468,10 @@ body > .os-scrollbar {
   font-weight: 700;
   font-size: 14px;
   gap: 6px;
-  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease,
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
     color 150ms ease;
 }
 .btn--primary {
@@ -3246,7 +2531,9 @@ body > .os-scrollbar {
   border-radius: 16px;
   padding: 20px 22px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  transition: transform 220ms ease, box-shadow 220ms ease,
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
     border-color 220ms ease;
 }
 .card__title {
@@ -3446,7 +2733,10 @@ body > .os-scrollbar {
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 14px;
   background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
 }
 
 .address-manage__item.is-default {
@@ -3543,7 +2833,10 @@ body > .os-scrollbar {
   padding: 12px 14px;
   font-size: 14px;
   background: #fff;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
 }
 
 .address-manage__editor input:focus,
@@ -3663,7 +2956,9 @@ body > .os-scrollbar {
   border-radius: 10px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .address-manage__result-card:hover {
@@ -3694,12 +2989,7 @@ body > .os-scrollbar {
 .divider {
   height: 1px;
   margin: 28px 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(15, 23, 42, 0.12),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.12), transparent);
 }
 
 /* small screens tweaks */
